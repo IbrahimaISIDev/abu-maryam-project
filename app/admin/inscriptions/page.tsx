@@ -5,6 +5,7 @@ import Link from "next/link";
 import { registrations as initialData, type Registration } from "@/data/registrations";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import Modal from "@/components/ui/Modal";
 
 const statusMap: Record<string, { label: string; cls: string }> = {
   confirmed: { label: "Confirmé",   cls: "bg-[#eef4e8] text-[#5f7050]" },
@@ -48,14 +49,21 @@ function exportCSV(data: Registration[]) {
   URL.revokeObjectURL(url);
 }
 
+function whatsappLink(phone: string) {
+  const cleaned = phone.replace(/[\s\-()]/g, "").replace(/^\+/, "");
+  return `https://wa.me/${cleaned}`;
+}
+
 export default function InscriptionsPage() {
   const toast = useToast();
   const [items, setItems] = useState<Registration[]>(initialData);
   const [filter, setFilter] = useState<"all" | "confirmed" | "pending" | "cancelled">("all");
   const [search, setSearch] = useState("");
   const [cancelId, setCancelId] = useState<string | null>(null);
+  const [detailItem, setDetailItem] = useState<Registration | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("registeredAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   function handleSort(key: SortKey) {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -90,12 +98,40 @@ export default function InscriptionsPage() {
 
   function setStatus(id: string, status: Registration["status"]) {
     setItems((prev) => prev.map((r) => r.id === id ? { ...r, status } : r));
+    if (detailItem?.id === id) setDetailItem((prev) => prev ? { ...prev, status } : prev);
     const labels: Record<string, string> = {
       confirmed: "Inscription confirmée",
       cancelled: "Inscription annulée",
       pending: "Inscription remise en attente",
     };
     toast(labels[status] ?? "Statut mis à jour", status === "confirmed" ? "success" : status === "cancelled" ? "error" : "info");
+  }
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selected.size === sorted.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(sorted.map((r) => r.id)));
+    }
+  }
+
+  function bulkSetStatus(status: Registration["status"]) {
+    setItems((prev) => prev.map((r) => selected.has(r.id) ? { ...r, status } : r));
+    const count = selected.size;
+    const labels: Record<string, string> = {
+      confirmed: `${count} inscription${count > 1 ? "s" : ""} confirmée${count > 1 ? "s" : ""}`,
+      cancelled: `${count} inscription${count > 1 ? "s" : ""} annulée${count > 1 ? "s" : ""}`,
+    };
+    toast(labels[status] ?? "Statut mis à jour", status === "confirmed" ? "success" : "error");
+    setSelected(new Set());
   }
 
   const thClass = "px-4 py-3 font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase tracking-wider cursor-pointer select-none group text-left";
@@ -153,7 +189,16 @@ export default function InscriptionsPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#e2dac9] bg-[#f5f1e8]">
-              <th onClick={() => handleSort("fullName")} className={`${thClass} px-5`}>
+              <th className="px-5 py-3 w-10">
+                <input
+                  type="checkbox"
+                  checked={sorted.length > 0 && selected.size === sorted.length}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 accent-[#3c4a37] cursor-pointer"
+                  aria-label="Tout sélectionner"
+                />
+              </th>
+              <th onClick={() => handleSort("fullName")} className={`${thClass} px-2`}>
                 Nom <SortIcon active={sortKey === "fullName"} dir={sortDir} />
               </th>
               <th className="text-left px-4 py-3 font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase tracking-wider hidden md:table-cell">
@@ -177,7 +222,7 @@ export default function InscriptionsPage() {
           <tbody className="divide-y divide-[#f0ece3]">
             {sorted.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-5 py-14 text-center">
+                <td colSpan={8} className="px-5 py-14 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d8d0bf" strokeWidth="1.5">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -194,15 +239,27 @@ export default function InscriptionsPage() {
             ) : sorted.map((r) => {
               const s = statusMap[r.status];
               const p = paymentMap[r.paymentStatus];
+              const isChecked = selected.has(r.id);
               return (
-                <tr key={r.id} className="hover:bg-[#f9f6ef] transition-colors group">
-                  <td className="px-5 py-3.5">
+                <tr
+                  key={r.id}
+                  className={`hover:bg-[#f9f6ef] transition-colors group ${isChecked ? "bg-[#f5f1e8]" : ""}`}
+                >
+                  <td className="px-5 py-3.5 w-10" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => toggleSelect(r.id)}
+                      className="w-4 h-4 accent-[#3c4a37] cursor-pointer"
+                    />
+                  </td>
+                  <td className="px-2 py-3.5 cursor-pointer" onClick={() => setDetailItem(r)}>
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[#e9e3d4] flex items-center justify-center shrink-0 font-[var(--font-cormorant)] font-semibold text-[15px] text-[#6f7363]">
                         {r.fullName.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#232a20]">{r.fullName}</p>
+                        <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#232a20] hover:text-[#b58a3c] transition-colors">{r.fullName}</p>
                         {r.notes && <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] italic">{r.notes}</p>}
                       </div>
                     </div>
@@ -221,20 +278,32 @@ export default function InscriptionsPage() {
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <a
+                        href={whatsappLink(r.phone)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 rounded-[6px] text-[#25D366] hover:bg-[rgba(37,211,102,0.1)] transition-colors"
+                        title="Contacter sur WhatsApp"
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.558 4.103 1.514 5.817L.057 23.882l6.22-1.432A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.9 0-3.7-.494-5.28-1.366l-.38-.225-3.692.85.895-3.576-.246-.394A9.931 9.931 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+                        </svg>
+                      </a>
                       {r.status === "pending" && (
-                        <button onClick={() => setStatus(r.id, "confirmed")}
+                        <button onClick={(e) => { e.stopPropagation(); setStatus(r.id, "confirmed"); }}
                           className="px-2.5 py-1.5 text-[11.5px] font-[var(--font-hanken)] font-semibold text-[#5f7050] bg-[#eef4e8] hover:bg-[#deebd4] rounded-[7px] transition-colors">
                           Confirmer
                         </button>
                       )}
                       {r.status === "confirmed" && (
-                        <button onClick={() => setCancelId(r.id)}
+                        <button onClick={(e) => { e.stopPropagation(); setCancelId(r.id); }}
                           className="px-2.5 py-1.5 text-[11.5px] font-[var(--font-hanken)] font-medium text-[#8a2f29] border border-[#e2dac9] hover:border-[#8a2f29] rounded-[7px] transition-colors">
                           Annuler
                         </button>
                       )}
                       {r.status === "cancelled" && (
-                        <button onClick={() => setStatus(r.id, "pending")}
+                        <button onClick={(e) => { e.stopPropagation(); setStatus(r.id, "pending"); }}
                           className="px-2.5 py-1.5 text-[11.5px] font-[var(--font-hanken)] font-medium text-[#b58a3c] border border-[#e2dac9] hover:border-[#b58a3c] rounded-[7px] transition-colors">
                           Réactiver
                         </button>
@@ -256,6 +325,37 @@ export default function InscriptionsPage() {
         )}
       </div>
 
+      {/* Barre bulk actions */}
+      {selected.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#232a20] text-[#fbf9f3] px-5 py-3 rounded-full shadow-xl">
+          <span className="font-[var(--font-hanken)] text-[13px]">
+            {selected.size} sélectionné{selected.size > 1 ? "s" : ""}
+          </span>
+          <div className="w-px h-4 bg-[rgba(255,255,255,0.2)]" />
+          <button
+            onClick={() => bulkSetStatus("confirmed")}
+            className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#cda350] hover:text-[#e3c685] transition-colors"
+          >
+            Confirmer tous
+          </button>
+          <button
+            onClick={() => bulkSetStatus("cancelled")}
+            className="font-[var(--font-hanken)] text-[13px] font-medium text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors"
+          >
+            Annuler tous
+          </button>
+          <button
+            onClick={() => setSelected(new Set())}
+            className="ml-1 text-[rgba(251,249,243,0.4)] hover:text-[#fbf9f3] transition-colors"
+            aria-label="Désélectionner"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       <ConfirmModal
         isOpen={!!cancelId}
         title="Annuler cette inscription ?"
@@ -265,6 +365,117 @@ export default function InscriptionsPage() {
         onConfirm={() => { setStatus(cancelId!, "cancelled"); setCancelId(null); }}
         onCancel={() => setCancelId(null)}
       />
+
+      {/* Modal détail inscription */}
+      <Modal
+        isOpen={!!detailItem}
+        title="Détail de l'inscription"
+        onClose={() => setDetailItem(null)}
+      >
+        {detailItem && (() => {
+          const s = statusMap[detailItem.status];
+          const p = paymentMap[detailItem.paymentStatus];
+          return (
+            <div className="p-6 space-y-5">
+              {/* En-tête participant */}
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-[#e9e3d4] flex items-center justify-center shrink-0 font-[var(--font-cormorant)] font-semibold text-[26px] text-[#6f7363]">
+                  {detailItem.fullName.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20]">
+                    {detailItem.fullName}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`text-[11px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full ${s.cls}`}>
+                      {s.label}
+                    </span>
+                    <span className={`font-[var(--font-hanken)] text-[12px] font-semibold ${p.cls}`}>
+                      {p.label}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Infos contact */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#f5f1e8] rounded-[10px] p-3.5">
+                  <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-wider text-[#9a9483] font-semibold mb-1">Téléphone</p>
+                  <p className="font-[var(--font-hanken)] text-[13.5px] text-[#232a20] font-medium">{detailItem.phone}</p>
+                </div>
+                <div className="bg-[#f5f1e8] rounded-[10px] p-3.5">
+                  <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-wider text-[#9a9483] font-semibold mb-1">E-mail</p>
+                  <p className="font-[var(--font-hanken)] text-[13.5px] text-[#232a20] font-medium break-all">{detailItem.email}</p>
+                </div>
+                <div className="bg-[#f5f1e8] rounded-[10px] p-3.5">
+                  <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-wider text-[#9a9483] font-semibold mb-1">Ville</p>
+                  <p className="font-[var(--font-hanken)] text-[13.5px] text-[#232a20] font-medium">{detailItem.city}</p>
+                </div>
+                <div className="bg-[#f5f1e8] rounded-[10px] p-3.5">
+                  <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-wider text-[#9a9483] font-semibold mb-1">Inscrit le</p>
+                  <p className="font-[var(--font-hanken)] text-[13.5px] text-[#232a20] font-medium">
+                    {new Date(detailItem.registeredAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                </div>
+              </div>
+
+              {detailItem.notes && (
+                <div className="bg-[rgba(181,138,60,0.08)] border border-[rgba(181,138,60,0.2)] rounded-[10px] p-3.5">
+                  <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-wider text-[#b58a3c] font-semibold mb-1">Note</p>
+                  <p className="font-[var(--font-hanken)] text-[13.5px] text-[#3f463a] italic">{detailItem.notes}</p>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex flex-col gap-2 pt-1">
+                <a
+                  href={whatsappLink(detailItem.phone)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] hover:bg-[#1ea853] text-white font-[var(--font-hanken)] font-semibold text-[14px] rounded-[10px] transition-colors"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.558 4.103 1.514 5.817L.057 23.882l6.22-1.432A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.9 0-3.7-.494-5.28-1.366l-.38-.225-3.692.85.895-3.576-.246-.394A9.931 9.931 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+                  </svg>
+                  Contacter sur WhatsApp
+                </a>
+                <div className="grid grid-cols-2 gap-2">
+                  {detailItem.status === "pending" && (
+                    <button
+                      onClick={() => setStatus(detailItem.id, "confirmed")}
+                      className="py-2.5 bg-[#eef4e8] hover:bg-[#deebd4] text-[#5f7050] font-[var(--font-hanken)] font-semibold text-[13px] rounded-[9px] transition-colors"
+                    >
+                      Confirmer
+                    </button>
+                  )}
+                  {detailItem.status === "confirmed" && (
+                    <button
+                      onClick={() => { setCancelId(detailItem.id); setDetailItem(null); }}
+                      className="py-2.5 border border-[#e2dac9] hover:border-[#8a2f29] text-[#8a2f29] font-[var(--font-hanken)] font-medium text-[13px] rounded-[9px] transition-colors"
+                    >
+                      Annuler l'inscription
+                    </button>
+                  )}
+                  {detailItem.status === "cancelled" && (
+                    <button
+                      onClick={() => setStatus(detailItem.id, "pending")}
+                      className="py-2.5 border border-[#e2dac9] hover:border-[#b58a3c] text-[#b58a3c] font-[var(--font-hanken)] font-medium text-[13px] rounded-[9px] transition-colors"
+                    >
+                      Réactiver
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setDetailItem(null)}
+                    className="py-2.5 bg-[#f0ece3] hover:bg-[#e5e0d5] text-[#6f7363] font-[var(--font-hanken)] font-medium text-[13px] rounded-[9px] transition-colors"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
     </div>
   );
 }
