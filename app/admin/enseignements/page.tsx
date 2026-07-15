@@ -50,6 +50,7 @@ export default function EnseignementsPage() {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
+  const [publishFilter, setPublishFilter] = useState<"all" | "published" | "draft">("all");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<Teaching | null>(null);
   const [isNew, setIsNew] = useState(false);
@@ -72,6 +73,8 @@ export default function EnseignementsPage() {
   const filtered = items.filter((t) => {
     if (typeFilter !== "all" && t.type !== typeFilter) return false;
     if (themeFilter !== "all" && t.theme !== themeFilter) return false;
+    if (publishFilter === "published" && t.published === false) return false;
+    if (publishFilter === "draft" && t.published !== false) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
       return t.title.toLowerCase().includes(q) || t.theme.toLowerCase().includes(q);
@@ -105,7 +108,13 @@ export default function EnseignementsPage() {
     setIsNew(false);
   }
 
-  const counts = { all: items.length, video: items.filter((t) => t.type === "video").length, audio: items.filter((t) => t.type === "audio").length };
+  const counts = {
+    all: items.length,
+    video: items.filter((t) => t.type === "video").length,
+    audio: items.filter((t) => t.type === "audio").length,
+    published: items.filter((t) => t.published !== false).length,
+    draft: items.filter((t) => t.published === false).length,
+  };
 
   const thClass = "text-left px-4 py-3 font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase tracking-wider cursor-pointer select-none group";
 
@@ -139,6 +148,19 @@ export default function EnseignementsPage() {
               className={`px-4 py-1.5 rounded-full font-[var(--font-hanken)] text-[12.5px] font-medium transition-colors ${typeFilter === f ? "bg-[#fbf9f3] text-[#232a20] shadow-sm" : "text-[#6f7363] hover:text-[#3f463a]"}`}
             >
               {f === "all" ? `Tous · ${counts.all}` : f === "video" ? `Vidéos · ${counts.video}` : `Audios · ${counts.audio}`}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1 bg-[#e9e3d4] rounded-full p-1 shrink-0">
+          {([
+            { v: "all", label: `Tous · ${counts.all}` },
+            { v: "published", label: `Publiés · ${counts.published}` },
+            { v: "draft", label: `Brouillons · ${counts.draft}` },
+          ] as const).map(({ v, label }) => (
+            <button key={v} onClick={() => setPublishFilter(v)}
+              className={`px-4 py-1.5 rounded-full font-[var(--font-hanken)] text-[12.5px] font-medium transition-colors ${publishFilter === v ? "bg-[#fbf9f3] text-[#232a20] shadow-sm" : "text-[#6f7363] hover:text-[#3f463a]"}`}
+            >
+              {label}
             </button>
           ))}
         </div>
@@ -204,7 +226,14 @@ export default function EnseignementsPage() {
                     <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 text-[12px] ${t.type === "video" ? "bg-[#3c4a37] text-[#cda350]" : "bg-[rgba(181,138,60,0.12)] text-[#b58a3c]"}`}>
                       {t.type === "video" ? "▶" : "♪"}
                     </div>
-                    <span className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#232a20] line-clamp-1">{t.title}</span>
+                    <div className="min-w-0">
+                      <span className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#232a20] line-clamp-1">{t.title}</span>
+                      {t.published === false && (
+                        <span className="ml-2 text-[10px] font-semibold font-[var(--font-hanken)] px-1.5 py-0.5 rounded bg-[rgba(154,148,131,0.2)] text-[#9a9483]">
+                          Brouillon
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="px-4 py-3.5 hidden md:table-cell">
@@ -311,6 +340,25 @@ export default function EnseignementsPage() {
                 className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c] resize-none"
               />
             </div>
+            {/* Toggle publié / brouillon */}
+            <label className="flex items-center justify-between cursor-pointer bg-[#f5f1e8] rounded-[9px] px-4 py-3">
+              <div>
+                <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#232a20]">
+                  {editItem.published === false ? "Brouillon" : "Publié"}
+                </p>
+                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483]">
+                  {editItem.published === false ? "Visible uniquement en back-office" : "Visible sur le site public"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditItem({ ...editItem, published: editItem.published === false ? true : false })}
+                className={`relative w-10 h-6 rounded-full transition-colors ${editItem.published === false ? "bg-[#d8d0bf]" : "bg-[#3c4a37]"}`}
+              >
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${editItem.published === false ? "left-0.5" : "left-4"}`} />
+              </button>
+            </label>
+
             <div className="flex gap-3 pt-2">
               <button onClick={() => { setEditItem(null); setIsNew(false); }}
                 className="flex-1 py-2.5 border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] font-medium text-[#6f7363] hover:bg-[#f0ece3] transition-colors">

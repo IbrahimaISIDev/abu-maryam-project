@@ -34,6 +34,7 @@ export interface Teaching {
   thumbnail: string | null;
   mediaUrl: string | null;   // YouTube video ID ou URL directe
   publishedAt: string;       // ISO date string
+  published?: boolean;       // true = visible public, false = brouillon
   description?: string;
   seriesId?: string;
   episodeNumber?: number;
