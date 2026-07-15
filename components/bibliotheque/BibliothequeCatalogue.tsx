@@ -29,6 +29,13 @@ export default function BibliothequeCatalogue() {
   const [selectedThemes, setSelectedThemes] = useState<Theme[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<Language[]>([]);
   const [page, setPage] = useState(1);
+  const [transitioning, setTransitioning] = useState(false);
+
+  function goToPage(p: number) {
+    setTransitioning(true);
+    setTimeout(() => { setPage(p); setTransitioning(false); }, 180);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   const toggleTheme = (t: Theme) =>
     setSelectedThemes((prev) =>
@@ -194,41 +201,66 @@ export default function BibliothequeCatalogue() {
                     <p className="font-[var(--font-hanken)] text-[13px] text-[#9a9483] mb-4">
                       {filtered.length} résultat{filtered.length !== 1 ? "s" : ""}
                     </p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-[22px]">
-                      {paginated.map((t) => {
-                        const prog = getProgress(t.id);
-                        const pct = prog
-                          ? Math.round((prog.positionSeconds / (t.durationSeconds || 1)) * 100)
-                          : undefined;
-                        return (
-                          <Link key={t.id} href={`/bibliotheque/${t.id}`} className="block">
-                            <ContentCard
-                              teaching={t}
-                              progressPercent={pct}
-                              completed={prog?.completed}
-                            />
-                          </Link>
-                        );
-                      })}
+                    <div
+                      className={`grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-[22px] transition-opacity duration-200 ${transitioning ? "opacity-0" : "opacity-100"}`}
+                      aria-live="polite"
+                      aria-busy={transitioning}
+                    >
+                      {transitioning
+                        ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                            <div key={i} className="rounded-[12px] bg-[#e9e3d4] animate-pulse aspect-[3/4]" />
+                          ))
+                        : paginated.map((t) => {
+                            const prog = getProgress(t.id);
+                            const pct = prog
+                              ? Math.round((prog.positionSeconds / (t.durationSeconds || 1)) * 100)
+                              : undefined;
+                            return (
+                              <Link key={t.id} href={`/bibliotheque/${t.id}`} className="block" aria-label={`${t.title} — ${t.duration}`}>
+                                <ContentCard
+                                  teaching={t}
+                                  progressPercent={pct}
+                                  completed={prog?.completed}
+                                />
+                              </Link>
+                            );
+                          })}
                     </div>
 
                     {totalPages > 1 && (
-                      <div className="flex items-center justify-center gap-2 mt-8">
+                      <nav className="flex items-center justify-center gap-2 mt-8" aria-label="Pagination">
+                        <button
+                          onClick={() => page > 1 && goToPage(page - 1)}
+                          disabled={page === 1}
+                          className="w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium border border-[#e2dac9] bg-[#fbf9f3] text-[#6f7363] hover:border-[#b58a3c] hover:text-[#b58a3c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          aria-label="Page précédente"
+                        >
+                          ‹
+                        </button>
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                           <button
                             key={p}
-                            onClick={() => setPage(p)}
+                            onClick={() => goToPage(p)}
                             className={`w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium transition-colors ${
                               p === page
                                 ? "bg-[#3c4a37] text-[#fbf9f3]"
                                 : "bg-[#fbf9f3] text-[#6f7363] border border-[#e2dac9] hover:border-[#b58a3c] hover:text-[#b58a3c]"
                             }`}
                             aria-current={p === page ? "page" : undefined}
+                            aria-label={`Page ${p}`}
                           >
                             {p}
                           </button>
                         ))}
-                      </div>
+                        <button
+                          onClick={() => page < totalPages && goToPage(page + 1)}
+                          disabled={page === totalPages}
+                          className="w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium border border-[#e2dac9] bg-[#fbf9f3] text-[#6f7363] hover:border-[#b58a3c] hover:text-[#b58a3c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          aria-label="Page suivante"
+                        >
+                          ›
+                        </button>
+                      </nav>
                     )}
                   </>
                 )}
