@@ -1,0 +1,66 @@
+import { schedule, replays } from "@/data/live";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+
+export default function LiveSidebar() {
+  return (
+    <aside className="space-y-5">
+      {/* Programme à venir */}
+      <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[9px] p-5">
+        <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
+          Programme à venir
+        </h3>
+        <ul className="space-y-4">
+          {schedule.map((item, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <div className="text-center shrink-0">
+                <p className="font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase">
+                  {item.dayShort}
+                </p>
+                <p className="font-[var(--font-hanken)] text-[12.5px] font-bold text-[#3c4a37]">
+                  {item.time}
+                </p>
+              </div>
+              <div className="border-l border-[#e2dac9] pl-3 min-w-0">
+                <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#232a20] leading-snug">
+                  {item.title}
+                </p>
+                <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] mt-0.5">
+                  {item.subtitle}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Revoir les directs */}
+      <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[9px] p-5">
+        <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
+          Revoir les directs
+        </h3>
+        <ul className="space-y-3 divide-y divide-[#e2dac9]">
+          {replays.map((r) => (
+            <li key={r.id} className="flex items-center gap-3 pt-3 first:pt-0">
+              <div className="w-[78px] h-[48px] rounded-[5px] overflow-hidden shrink-0 relative">
+                <ImagePlaceholder className="w-full h-full" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-full bg-[rgba(60,74,55,0.7)] flex items-center justify-center text-[#fbf9f3] text-[10px]">
+                    ▶
+                  </span>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <p className="font-[var(--font-hanken)] font-medium text-[13px] text-[#232a20] leading-snug line-clamp-2">
+                  {r.title}
+                </p>
+                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mt-0.5">
+                  Il y a {r.daysAgo} jour{r.daysAgo > 1 ? "s" : ""}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+  );
+}
