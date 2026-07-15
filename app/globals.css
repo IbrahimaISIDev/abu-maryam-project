@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ── Couleurs As-Sakîna ── */
+  --color-bg-main:       #efe9dc;
+  --color-bg-card:       #fbf9f3;
+  --color-bg-secondary:  #e9e3d4;
+  --color-olive-dark:    #3c4a37;
+  --color-olive-text:    #5f7050;
+  --color-gold:          #b58a3c;
+  --color-gold-mid:      #cda350;
+  --color-gold-light:    #e3c685;
+  --color-terracotta:    #8a2f29;
+  --color-text-primary:  #232a20;
+  --color-text-dark:     #2b3326;
+  --color-text-label:    #3f463a;
+  --color-text-secondary:#6f7363;
+  --color-text-tertiary: #9a9483;
+  --color-border-light:  #e2dac9;
+  --color-border-field:  #d8d0bf;
+  --color-bg-theme-icon: #eef0e6;
+
+  /* ── Typographie ── */
+  --font-cormorant: var(--font-cormorant), Georgia, 'Times New Roman', serif;
+  --font-hanken:    var(--font-hanken), Arial, Helvetica, sans-serif;
+  --font-amiri:     var(--font-amiri), 'Scheherazade New', serif;
+
+  /* ── Border radius ── */
+  --radius-sm:   6px;
+  --radius-md:   9px;
+  --radius-lg:   13px;
+  --radius-xl:   16px;
+  --radius-pill: 30px;
+  --radius-full: 9999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Reset de base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #efe9dc;
+  color: #232a20;
+  font-family: var(--font-hanken), Arial, Helvetica, sans-serif;
 }
+
+/* ── Texte arabe toujours RTL ── */
+[lang="ar"],
+.arabic,
+.amiri {
+  direction: rtl;
+  font-family: var(--font-amiri), serif;
+  unicode-bidi: embed;
+}
+
+/* ── Animation pastille live ── */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(0.82); }
+}
+
+.animate-live-pulse {
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+/* ── Scrollbar discrète ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d8d0bf; border-radius: 3px; }
