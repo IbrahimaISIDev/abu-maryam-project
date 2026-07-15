@@ -9,10 +9,12 @@ import LiveReplays from "@/components/home/LiveReplays";
 import ThemeGrid from "@/components/home/ThemeGrid";
 import HomeCTA from "@/components/home/HomeCTA";
 import ContinueListening from "@/components/home/ContinueListening";
+import LiveBanner from "@/components/home/LiveBanner";
 
 export default function HomePage() {
   return (
     <>
+      <LiveBanner />
       <Navbar />
       <MobileHeader />
 
