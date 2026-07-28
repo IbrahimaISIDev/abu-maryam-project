@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Hanken_Grotesk, Amiri } from "next/font/google";
 import "./globals.css";
 import { PlayerProvider } from "@/contexts/PlayerContext";
+import { SearchProvider } from "@/contexts/SearchContext";
 import MiniPlayer from "@/components/player/MiniPlayer";
+import PublicSearch from "@/components/layout/PublicSearch";
 import PWARegister from "@/components/PWARegister";
 
 const cormorant = Cormorant_Garamond({
@@ -72,10 +74,13 @@ export default function RootLayout({
         >
           Aller au contenu principal
         </a>
-        <PlayerProvider>
-          {children}
-          <MiniPlayer />
-        </PlayerProvider>
+        <SearchProvider>
+          <PlayerProvider>
+            {children}
+            <MiniPlayer />
+          </PlayerProvider>
+          <PublicSearch />
+        </SearchProvider>
         <PWARegister />
       </body>
     </html>

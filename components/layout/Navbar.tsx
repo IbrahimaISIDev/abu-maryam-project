@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LiveDot from "@/components/ui/LiveDot";
 import BrandMark from "@/components/ui/BrandMark";
+import { useSearch } from "@/contexts/SearchContext";
 
 const navLinks = [
   { href: "/",            label: "Accueil" },
@@ -15,6 +16,7 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { openSearch } = useSearch();
 
   return (
     <header className="sticky top-0 z-50 hidden md:block bg-[#fbf9f3] dark:bg-[#20261b] border-b border-[#e2dac9] dark:border-[#3a4132]">
@@ -56,15 +58,27 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3 shrink-0">
-          <button
-            className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
-            aria-label="Changer de langue"
-          >
-            FR <span className="arabic text-[11px]">| ع</span>
-          </button>
+          <div className="flex items-center gap-1.5 font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#b7b2a0]">
+            <Link
+              href="/bibliotheque?langs=wolof"
+              className="hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
+              aria-label="Enseignements en wolof"
+            >
+              Wolof
+            </Link>
+            <span aria-hidden="true">|</span>
+            <Link
+              href="/bibliotheque?langs=arabe"
+              className="arabic hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
+              aria-label="دروس باللغة العربية"
+            >
+              ع
+            </Link>
+          </div>
 
           {/* Bouton recherche */}
           <button
+            onClick={openSearch}
             className="w-[34px] h-[34px] rounded-full border border-[#d8d0bf] dark:border-[#454c3c] flex items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
             aria-label="Rechercher"
           >
