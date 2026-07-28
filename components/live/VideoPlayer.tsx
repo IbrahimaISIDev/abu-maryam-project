@@ -1,5 +1,3 @@
-"use client";
-
 import { liveStatus } from "@/data/live";
 import Badge from "@/components/ui/Badge";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
