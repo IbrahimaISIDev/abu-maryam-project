@@ -24,7 +24,7 @@ export default function Badge({ theme, label, variant = "category", className = 
     return (
       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#8a2f29] text-[#fbf9f3] text-[11px] font-semibold tracking-widest uppercase font-[var(--font-hanken)] ${className}`}>
         <span className="w-[6px] h-[6px] rounded-full bg-[#fbf9f3] animate-live-pulse shrink-0" />
-        EN DIRECT
+        {label ?? "EN DIRECT"}
       </span>
     );
   }

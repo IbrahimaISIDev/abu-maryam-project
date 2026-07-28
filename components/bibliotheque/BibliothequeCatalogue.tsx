@@ -10,23 +10,38 @@ import { teachings } from "@/data/teachings";
 import { seriesList } from "@/data/series";
 import { useProgress } from "@/hooks/useProgress";
 import type { ContentType, Theme, Language } from "@/lib/types";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import {
+  formatLibraryCountSummary,
+  formatTabCourses,
+  formatTabSeries,
+  formatSortLabel,
+  formatResultsCount,
+  formatMobileAll,
+  formatPaginationPageLabel,
+} from "@/lib/format";
 
 const PAGE_SIZE = 9;
 const CATALOGUE_TOTAL = teachings.length;
 const ALL_THEMES = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence"] as const;
 const ALL_LANGUAGES = ["wolof", "arabe"] as const;
 
-const sortOptions = [
-  { value: "recent", label: "Plus récents" },
-  { value: "oldest", label: "Plus anciens" },
-];
-
 type Tab = "cours" | "series";
 
-export default function BibliothequeCatalogue() {
+export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary["library"]; lang: Locale }) {
   const { getProgress } = useProgress();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+
+  const sortOptions = [
+    { value: "recent", label: dict.sortRecent },
+    { value: "oldest", label: dict.sortOldest },
+  ];
+  const videoAudioLabel = {
+    video: lang === "ar" ? "▶ فيديو" : "▶ Vidéo",
+    audio: lang === "ar" ? "♪ صوت" : "♪ Audio",
+  };
 
   const [tab, setTab] = useState<Tab>(() => (searchParams.get("tab") === "series" ? "series" : "cours"));
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
@@ -125,10 +140,10 @@ export default function BibliothequeCatalogue() {
             خزانة العلم
           </p>
           <h1 className="font-[var(--font-cormorant)] font-semibold text-[30px] md:text-[42px] text-[#232a20] dark:text-[#f2ede0] mb-1.5">
-            Bibliothèque des enseignements
+            {dict.title}
           </h1>
           <p className="font-[var(--font-hanken)] text-[14px] text-[#6f7363] dark:text-[#b7b2a0] mb-6">
-            {CATALOGUE_TOTAL} enseignements · Tafsir, conférences, khoutbas, séries de cours — à suivre à votre rythme.
+            {formatLibraryCountSummary(CATALOGUE_TOTAL, lang)}
           </p>
 
           {/* Onglets Cours / Séries */}
@@ -143,7 +158,7 @@ export default function BibliothequeCatalogue() {
                     : "text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3f463a] dark:hover:text-[#d8d4c4]"
                 }`}
               >
-                {t === "cours" ? `Cours · ${CATALOGUE_TOTAL}` : `Séries · ${seriesList.length}`}
+                {t === "cours" ? formatTabCourses(CATALOGUE_TOTAL, lang) : formatTabSeries(seriesList.length, lang)}
               </button>
             ))}
           </div>
@@ -164,7 +179,7 @@ export default function BibliothequeCatalogue() {
                   type="search"
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-                  placeholder="Rechercher un cours, une sourate, un thème…"
+                  placeholder={dict.searchPlaceholder}
                   className="w-full pl-10 pr-4 py-3 bg-[#fbf9f3] dark:bg-[#20261b] border border-[#d8d0bf] dark:border-[#454c3c] rounded-full text-[14px] font-[var(--font-hanken)] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#9a9483] dark:placeholder:text-[#8f8973] focus:outline-none focus:border-[#b58a3c] focus:ring-1 focus:ring-[#b58a3c]"
                 />
               </div>
@@ -175,7 +190,7 @@ export default function BibliothequeCatalogue() {
               >
                 {sortOptions.map((o) => (
                   <option key={o.value} value={o.value}>
-                    Trier : {o.label}
+                    {formatSortLabel(o.label, lang)}
                   </option>
                 ))}
               </select>
@@ -191,11 +206,11 @@ export default function BibliothequeCatalogue() {
         {tab === "series" && (
           <div>
             <p className="font-[var(--font-hanken)] text-[13px] text-[#9a9483] dark:text-[#8f8973] mb-6">
-              Des parcours structurés pour approfondir un thème, verset par verset, étape par étape.
+              {dict.seriesIntro}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
               {seriesList.map((s) => (
-                <SeriesCard key={s.id} series={s} />
+                <SeriesCard key={s.id} series={s} lang={lang} />
               ))}
             </div>
           </div>
@@ -216,7 +231,7 @@ export default function BibliothequeCatalogue() {
                       : "bg-[#fbf9f3] dark:bg-[#20261b] text-[#3f463a] dark:text-[#d8d4c4] border-[#d8d0bf] dark:border-[#454c3c]"
                   }`}
                 >
-                  {type === "all" ? `Tout · ${counts.total}` : type === "video" ? "▶ Vidéo" : "♪ Audio"}
+                  {type === "all" ? formatMobileAll(counts.total, lang) : videoAudioLabel[type]}
                 </button>
               ))}
             </div>
@@ -225,6 +240,8 @@ export default function BibliothequeCatalogue() {
               {/* Filtres — desktop */}
               <div className="hidden md:block w-[248px] shrink-0">
                 <FilterPanel
+                  dict={dict}
+                  lang={lang}
                   selectedType={selectedType}
                   selectedThemes={selectedThemes}
                   selectedLanguages={selectedLanguages}
@@ -241,19 +258,19 @@ export default function BibliothequeCatalogue() {
                 {paginated.length === 0 ? (
                   <div className="py-20 text-center">
                     <p className="font-[var(--font-cormorant)] text-[24px] text-[#9a9483] dark:text-[#8f8973] mb-4">
-                      Aucun résultat trouvé
+                      {dict.noResults}
                     </p>
                     <button
                       onClick={resetFilters}
                       className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#b58a3c] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] transition-colors underline underline-offset-4"
                     >
-                      Réinitialiser les filtres
+                      {dict.resetFilters}
                     </button>
                   </div>
                 ) : (
                   <>
                     <p className="font-[var(--font-hanken)] text-[13px] text-[#9a9483] dark:text-[#8f8973] mb-4">
-                      {filtered.length} résultat{filtered.length !== 1 ? "s" : ""}
+                      {formatResultsCount(filtered.length, lang)}
                     </p>
                     <div
                       className={`grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-[22px] transition-opacity duration-200 ${transitioning ? "opacity-0" : "opacity-100"}`}
@@ -275,6 +292,7 @@ export default function BibliothequeCatalogue() {
                                   teaching={t}
                                   progressPercent={pct}
                                   completed={prog?.completed}
+                                  lang={lang}
                                 />
                               </Link>
                             );
@@ -287,7 +305,7 @@ export default function BibliothequeCatalogue() {
                           onClick={() => page > 1 && goToPage(page - 1)}
                           disabled={page === 1}
                           className="w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] text-[#6f7363] dark:text-[#b7b2a0] hover:border-[#b58a3c] hover:text-[#b58a3c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                          aria-label="Page précédente"
+                          aria-label={dict.paginationPrev}
                         >
                           ‹
                         </button>
@@ -301,7 +319,7 @@ export default function BibliothequeCatalogue() {
                                 : "bg-[#fbf9f3] dark:bg-[#20261b] text-[#6f7363] dark:text-[#b7b2a0] border border-[#e2dac9] dark:border-[#3a4132] hover:border-[#b58a3c] hover:text-[#b58a3c]"
                             }`}
                             aria-current={p === page ? "page" : undefined}
-                            aria-label={`Page ${p}`}
+                            aria-label={formatPaginationPageLabel(p, lang)}
                           >
                             {p}
                           </button>
@@ -310,7 +328,7 @@ export default function BibliothequeCatalogue() {
                           onClick={() => page < totalPages && goToPage(page + 1)}
                           disabled={page === totalPages}
                           className="w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] text-[#6f7363] dark:text-[#b7b2a0] hover:border-[#b58a3c] hover:text-[#b58a3c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                          aria-label="Page suivante"
+                          aria-label={dict.paginationNext}
                         >
                           ›
                         </button>

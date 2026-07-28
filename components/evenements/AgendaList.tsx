@@ -3,18 +3,11 @@
 import { useState } from "react";
 import Link from "@/components/ui/LocalizedLink";
 import { agendaItems } from "@/data/events";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { formatUntilDate } from "@/lib/format";
 
-const monthsShort = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
-
-const typeLabel: Record<string, string> = {
-  séminaire: "Séminaire",
-  conférence: "Conférence",
-  khoutba: "Khoutba",
-  cours: "Cours",
-  tafsir: "Tafsir",
-};
-
-export default function AgendaList() {
+export default function AgendaList({ dict, lang }: { dict: Dictionary["events"]; lang: Locale }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
 
   const filtered = agendaItems.filter((e) =>
@@ -23,7 +16,7 @@ export default function AgendaList() {
 
   const parseDate = (d: string) => {
     const [y, m, day] = d.split("-").map(Number);
-    return { month: monthsShort[m - 1], day, year: y };
+    return { month: dict.monthsShort[m - 1], day, year: y };
   };
 
   return (
@@ -31,7 +24,7 @@ export default function AgendaList() {
       {/* Titre + toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0]">
-          Agenda des activités
+          {dict.agendaTitle}
         </h2>
         <div className="flex gap-1 p-1 bg-[#e9e3d4] dark:bg-[#242b1e] rounded-full">
           <button
@@ -42,7 +35,7 @@ export default function AgendaList() {
                 : "text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a]"
             }`}
           >
-            À venir
+            {dict.tabUpcoming}
           </button>
           <button
             onClick={() => setTab("past")}
@@ -52,7 +45,7 @@ export default function AgendaList() {
                 : "text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a]"
             }`}
           >
-            Passés
+            {dict.tabPast}
           </button>
         </div>
       </div>
@@ -87,14 +80,14 @@ export default function AgendaList() {
               {/* Texte */}
               <div className="flex-1 min-w-0">
                 <p className="font-[var(--font-hanken)] text-[11.5px] font-semibold uppercase tracking-widest text-[#b58a3c] dark:text-[#e3c685] mb-1">
-                  {typeLabel[item.type] ?? item.type}
+                  {dict.typeLabels[item.type as keyof typeof dict.typeLabels] ?? item.type}
                 </p>
                 <h3 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] dark:text-[#f2ede0] leading-tight">
                   {item.title}
                 </h3>
                 <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973] mt-1">
                   📍 {item.location}
-                  {item.dateEnd && ` · jusqu'au ${parseDate(item.dateEnd).day} ${parseDate(item.dateEnd).month}`}
+                  {item.dateEnd && ` · ${formatUntilDate(parseDate(item.dateEnd).day, parseDate(item.dateEnd).month, lang)}`}
                 </p>
               </div>
 

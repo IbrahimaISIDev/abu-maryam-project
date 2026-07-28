@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { usePlayer } from "@/contexts/PlayerContext";
 import { useProgress } from "@/hooks/useProgress";
 import type { Teaching } from "@/lib/types";
+import type { Dictionary } from "@/dictionaries/types";
 
 interface TeachingPlayerProps {
   teaching: Teaching;
+  dict: Dictionary;
 }
 
-export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
+export default function TeachingPlayer({ teaching, dict }: TeachingPlayerProps) {
   const { state, play, pause, resume, seek } = usePlayer();
   const { updateProgress, getProgress } = useProgress();
   const [localPos, setLocalPos] = useState(() => {
@@ -97,7 +99,7 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
         <button
           onClick={handlePlayPause}
           className="relative z-10 w-[74px] h-[74px] rounded-full bg-[rgba(251,249,243,0.15)] border-2 border-[rgba(251,249,243,0.4)] flex items-center justify-center text-[#fbf9f3] hover:bg-[rgba(251,249,243,0.25)] transition-colors"
-          aria-label={isThisPlaying ? "Pause" : "Lancer la lecture"}
+          aria-label={isThisPlaying ? dict.common.pause : dict.live.launchPlayback}
         >
           {isThisPlaying ? (
             <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -114,7 +116,7 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
         {/* Type badge */}
         <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-[rgba(28,34,22,0.7)] text-[#fbf9f3] text-[12px] font-[var(--font-hanken)] px-3 py-1 rounded-full">
           <span>{teaching.type === "video" ? "▶" : "♪"}</span>
-          <span>{teaching.type === "video" ? "Vidéo" : "Audio"}</span>
+          <span>{teaching.type === "video" ? dict.common.video : dict.common.audio}</span>
         </div>
       </div>
 
@@ -125,7 +127,7 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
           className="relative h-[6px] bg-[rgba(251,249,243,0.15)] rounded-full cursor-pointer group"
           onClick={handleSeekClick}
           role="slider"
-          aria-label="Position de lecture"
+          aria-label={dict.library.seekAria}
           aria-valuemin={0}
           aria-valuemax={teaching.durationSeconds}
           aria-valuenow={localPos}
@@ -150,11 +152,12 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
 
         {/* Chapitrage */}
         {teaching.chapters && teaching.chapters.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" aria-label="Chapitres">
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" aria-label={dict.library.chaptersAria}>
             {teaching.chapters.map((ch, i) => (
               <button
                 key={i}
                 onClick={() => handleChapterClick(ch.timeSeconds)}
+                dir="ltr"
                 className={`shrink-0 px-3 py-1.5 rounded-full text-[11.5px] font-[var(--font-hanken)] font-medium border transition-colors ${
                   i === currentChapterIndex
                     ? "bg-[#b58a3c] border-[#b58a3c] text-[#232a20]"
@@ -172,7 +175,8 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
           <button
             onClick={() => { seek(Math.max(0, localPos - 15)); setLocalPos((p) => Math.max(0, p - 15)); }}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
-            aria-label="Reculer 15s"
+            aria-label={dict.live.rewindAria}
+            dir="ltr"
           >
             −15s
           </button>
@@ -180,7 +184,7 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
           <button
             onClick={handlePlayPause}
             className="w-9 h-9 rounded-full bg-[#b58a3c] flex items-center justify-center text-[#fbf9f3] hover:bg-[#9e7832] transition-colors"
-            aria-label={isThisPlaying ? "Pause" : "Lecture"}
+            aria-label={isThisPlaying ? dict.common.pause : dict.common.play}
           >
             {isThisPlaying ? (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -197,12 +201,13 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
           <button
             onClick={() => { seek(Math.min(teaching.durationSeconds, localPos + 30)); setLocalPos((p) => Math.min(teaching.durationSeconds, p + 30)); }}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
-            aria-label="Avancer 30s"
+            aria-label={dict.live.forwardAria}
+            dir="ltr"
           >
             +30s
           </button>
 
-          <span className="ml-auto font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)]">
+          <span dir="ltr" className="ml-auto font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)]">
             {fmtTime(localPos)} / {teaching.duration}
           </span>
         </div>

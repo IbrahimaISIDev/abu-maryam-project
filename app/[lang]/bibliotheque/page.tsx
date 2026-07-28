@@ -6,6 +6,8 @@ import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import BibliothequeCatalogue from "@/components/bibliotheque/BibliothequeCatalogue";
 import { teachings } from "@/data/teachings";
+import { getDictionary } from "@/dictionaries";
+import type { Locale } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Bibliothèque",
@@ -18,15 +20,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BibliothequePage() {
+export default async function BibliothequePage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
   return (
     <>
       <Navbar />
-      <MobileHeader title="Bibliothèque" />
+      <MobileHeader title={dict.nav.library} />
 
       <main id="main-content" className="pb-20 md:pb-0">
         <Suspense fallback={<div className="min-h-[60vh]" />}>
-          <BibliothequeCatalogue />
+          <BibliothequeCatalogue dict={dict.library} lang={lang} />
         </Suspense>
       </main>
 

@@ -1,13 +1,16 @@
 import { schedule, replays } from "@/data/live";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { formatDaysAgo } from "@/lib/format";
 
-export default function LiveSidebar() {
+export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   return (
     <aside className="space-y-5">
       {/* Programme à venir */}
       <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
         <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
-          Programme à venir
+          {dict.live.upcomingProgram}
         </h3>
         <ul className="space-y-4">
           {schedule.map((item, i) => (
@@ -36,7 +39,7 @@ export default function LiveSidebar() {
       {/* Revoir les directs */}
       <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
         <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
-          Revoir les directs
+          {dict.live.rewatchLives}
         </h3>
         <ul className="space-y-3 divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
           {replays.map((r) => (
@@ -54,7 +57,7 @@ export default function LiveSidebar() {
                   {r.title}
                 </p>
                 <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
-                  Il y a {r.daysAgo} jour{r.daysAgo > 1 ? "s" : ""}
+                  {formatDaysAgo(r.daysAgo, lang)}
                 </p>
               </div>
             </li>

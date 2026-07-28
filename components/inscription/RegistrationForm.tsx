@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { FormState, SubmitStatus } from "@/lib/types";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
 import Button from "@/components/ui/Button";
 
 const initialForm: FormState = {
@@ -9,17 +11,21 @@ const initialForm: FormState = {
   city: "", ageRange: "", mode: "presentiel", message: "", consent: false,
 };
 
-const ageRanges = ["15 – 20 ans", "21 – 25 ans", "26 – 30 ans"];
+const ageRanges = [
+  { value: "15 – 20 ans", labelFr: "15 – 20 ans", labelAr: "15 – 20 سنة" },
+  { value: "21 – 25 ans", labelFr: "21 – 25 ans", labelAr: "21 – 25 سنة" },
+  { value: "26 – 30 ans", labelFr: "26 – 30 ans", labelAr: "26 – 30 سنة" },
+];
 
-function validate(form: FormState): Partial<Record<keyof FormState, string>> {
+function validate(form: FormState, dict: Dictionary["inscription"]["form"]): Partial<Record<keyof FormState, string>> {
   const errors: Partial<Record<keyof FormState, string>> = {};
-  if (!form.firstName.trim()) errors.firstName = "Champ requis";
-  if (!form.lastName.trim()) errors.lastName = "Champ requis";
-  if (!form.phone.trim()) errors.phone = "Champ requis";
-  else if (!/^\+?[\d\s\-]{7,20}$/.test(form.phone)) errors.phone = "Format invalide";
-  if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = "Format invalide";
-  if (!form.ageRange) errors.ageRange = "Champ requis";
-  if (!form.consent) errors.consent = "Vous devez accepter";
+  if (!form.firstName.trim()) errors.firstName = dict.requiredField;
+  if (!form.lastName.trim()) errors.lastName = dict.requiredField;
+  if (!form.phone.trim()) errors.phone = dict.requiredField;
+  else if (!/^\+?[\d\s\-]{7,20}$/.test(form.phone)) errors.phone = dict.invalidFormat;
+  if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = dict.invalidFormat;
+  if (!form.ageRange) errors.ageRange = dict.requiredField;
+  if (!form.consent) errors.consent = dict.mustAccept;
   return errors;
 }
 
@@ -27,7 +33,7 @@ const fieldClass = "w-full bg-[#fbf9f3] dark:bg-[#20261b] border border-[#d8d0bf
 const labelClass = "block font-[var(--font-hanken)] text-[13px] font-semibold text-[#3f463a] dark:text-[#d8d4c4] mb-1.5";
 const errorClass = "font-[var(--font-hanken)] text-[11.5px] text-[#8a2f29] dark:text-[#e08b81] mt-1";
 
-export default function RegistrationForm() {
+export default function RegistrationForm({ dict, lang }: { dict: Dictionary["inscription"]["form"]; lang: Locale }) {
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [status, setStatus] = useState<SubmitStatus>("idle");
@@ -39,7 +45,7 @@ export default function RegistrationForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const errs = validate(form);
+    const errs = validate(form, dict);
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     setStatus("loading");
@@ -74,22 +80,22 @@ export default function RegistrationForm() {
         <div>
           <p className="arabic text-[#b58a3c] dark:text-[#e3c685] text-[22px] mb-2">بَارَكَ اللَّهُ فِيكِ</p>
           <h2 className="font-[var(--font-cormorant)] font-semibold text-[30px] text-[#232a20] dark:text-[#f2ede0] mb-2">
-            Inscription enregistrée
+            {dict.success.title}
           </h2>
           <p className="font-[var(--font-hanken)] text-[14.5px] text-[#6f7363] dark:text-[#b7b2a0] max-w-[360px] leading-relaxed">
-            Votre demande a bien été reçue. Un membre de l&apos;équipe vous contactera sur WhatsApp sous 48h pour confirmer votre place.
+            {dict.success.message}
           </p>
         </div>
         <div className="w-full max-w-[360px] bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[10px] p-4 text-left space-y-2">
-          <p className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase tracking-wider">Récapitulatif</p>
+          <p className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase tracking-wider">{dict.success.recap}</p>
           <p className="font-[var(--font-hanken)] text-[13.5px] text-[#232a20] dark:text-[#f2ede0] font-semibold">{form.firstName} {form.lastName}</p>
           <p className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#b7b2a0]">{form.phone}{form.city ? ` · ${form.city}` : ""}</p>
           <p className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#b7b2a0]">
-            {form.mode === "presentiel" ? "En présentiel" : "En ligne"} · {form.ageRange}
+            {form.mode === "presentiel" ? dict.onsiteMode : dict.onlineMode} · {form.ageRange}
           </p>
         </div>
         <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
-          Consultez vos messages WhatsApp dans les prochaines 48h.
+          {dict.success.checkMessages}
         </p>
       </div>
     );
@@ -98,11 +104,10 @@ export default function RegistrationForm() {
   return (
     <div className="bg-[#efe9dc] dark:bg-[#242b1e] rounded-[13px] p-6 md:p-8">
       <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] mb-1">
-        Formulaire d&apos;inscription
+        {dict.title}
       </h2>
       <p className="font-[var(--font-hanken)] text-[14px] text-[#6f7363] dark:text-[#b7b2a0] mb-7 leading-relaxed">
-        Remplissez ce formulaire en 2 minutes. Un membre de l&apos;équipe
-        vous confirmera votre place.
+        {dict.subtitle}
       </p>
 
       <form onSubmit={handleSubmit} noValidate>
@@ -110,21 +115,21 @@ export default function RegistrationForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClass}>
-              Prénom <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
+              {dict.firstName} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <input
               type="text" value={form.firstName} onChange={(e) => set("firstName", e.target.value)}
-              placeholder="Votre prénom" className={fieldClass} autoComplete="given-name"
+              placeholder={dict.firstNamePlaceholder} className={fieldClass} autoComplete="given-name"
             />
             {errors.firstName && <p className={errorClass}>{errors.firstName}</p>}
           </div>
           <div>
             <label className={labelClass}>
-              Nom <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
+              {dict.lastName} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <input
               type="text" value={form.lastName} onChange={(e) => set("lastName", e.target.value)}
-              placeholder="Votre nom" className={fieldClass} autoComplete="family-name"
+              placeholder={dict.lastNamePlaceholder} className={fieldClass} autoComplete="family-name"
             />
             {errors.lastName && <p className={errorClass}>{errors.lastName}</p>}
           </div>
@@ -134,19 +139,19 @@ export default function RegistrationForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClass}>
-              Téléphone (WhatsApp) <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
+              {dict.phone} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <input
               type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)}
-              placeholder="+221 …" className={fieldClass} autoComplete="tel"
+              placeholder={dict.phonePlaceholder} className={fieldClass} autoComplete="tel" dir="ltr"
             />
             {errors.phone && <p className={errorClass}>{errors.phone}</p>}
           </div>
           <div>
-            <label className={labelClass}>E-mail</label>
+            <label className={labelClass}>{dict.email}</label>
             <input
               type="email" value={form.email} onChange={(e) => set("email", e.target.value)}
-              placeholder="vous@exemple.com" className={fieldClass} autoComplete="email"
+              placeholder={dict.emailPlaceholder} className={fieldClass} autoComplete="email" dir="ltr"
             />
             {errors.email && <p className={errorClass}>{errors.email}</p>}
           </div>
@@ -155,22 +160,24 @@ export default function RegistrationForm() {
         {/* Ville + Tranche d'âge */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className={labelClass}>Ville</label>
+            <label className={labelClass}>{dict.city}</label>
             <input
               type="text" value={form.city} onChange={(e) => set("city", e.target.value)}
-              placeholder="Votre ville" className={fieldClass} autoComplete="address-level2"
+              placeholder={dict.cityPlaceholder} className={fieldClass} autoComplete="address-level2"
             />
           </div>
           <div>
             <label className={labelClass}>
-              Tranche d&apos;âge <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
+              {dict.ageRange} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <select
               value={form.ageRange} onChange={(e) => set("ageRange", e.target.value)}
               className={`${fieldClass} appearance-none cursor-pointer`}
             >
-              <option value="">Sélectionner…</option>
-              {ageRanges.map((a) => <option key={a} value={a}>{a}</option>)}
+              <option value="">{dict.ageRangePlaceholder}</option>
+              {ageRanges.map((a) => (
+                <option key={a.value} value={a.value}>{lang === "ar" ? a.labelAr : a.labelFr}</option>
+              ))}
             </select>
             {errors.ageRange && <p className={errorClass}>{errors.ageRange}</p>}
           </div>
@@ -179,7 +186,7 @@ export default function RegistrationForm() {
         {/* Mode de participation */}
         <div className="mb-4">
           <label className={labelClass}>
-            Mode de participation <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
+            {dict.mode} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {(["presentiel", "ligne"] as const).map((m) => {
@@ -197,7 +204,7 @@ export default function RegistrationForm() {
                     {active && <span className="w-2.5 h-2.5 rounded-full bg-[#3c4a37]" />}
                   </span>
                   <span className="font-[var(--font-hanken)] font-semibold text-[14px] text-[#3f463a] dark:text-[#d8d4c4]">
-                    {m === "presentiel" ? "En présentiel" : "En ligne"}
+                    {m === "presentiel" ? dict.onsiteMode : dict.onlineMode}
                   </span>
                 </button>
               );
@@ -207,10 +214,10 @@ export default function RegistrationForm() {
 
         {/* Message */}
         <div className="mb-5">
-          <label className={labelClass}>Message (optionnel)</label>
+          <label className={labelClass}>{dict.message}</label>
           <textarea
             value={form.message} onChange={(e) => set("message", e.target.value)}
-            placeholder="Questions, informations complémentaires…"
+            placeholder={dict.messagePlaceholder}
             rows={3} className={`${fieldClass} resize-none`}
           />
         </div>
@@ -233,24 +240,24 @@ export default function RegistrationForm() {
             checked={form.consent} onChange={(e) => set("consent", e.target.checked)}
           />
           <span className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed">
-            J&apos;accepte que mes données soient utilisées pour le traitement de mon inscription à ce séminaire.
+            {dict.consent}
           </span>
         </label>
         {errors.consent && <p className={`${errorClass} -mt-4 mb-4`}>{errors.consent}</p>}
 
         {/* Submit */}
         <Button type="submit" fullWidth size="lg" disabled={status === "loading"}>
-          {status === "loading" ? "Envoi en cours…" : "Valider mon inscription"}
+          {status === "loading" ? dict.submitting : dict.submit}
         </Button>
 
         {status === "error" && (
           <p className="mt-3 text-center font-[var(--font-hanken)] text-[13px] text-[#8a2f29] dark:text-[#e08b81]">
-            Une erreur est survenue. Veuillez réessayer.
+            {dict.errorGeneric}
           </p>
         )}
 
         <p className="mt-3 text-center font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
-          🔒 Vos données sont confidentielles et ne seront pas partagées.
+          {dict.privacyNote}
         </p>
       </form>
     </div>

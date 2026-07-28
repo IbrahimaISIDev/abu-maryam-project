@@ -28,9 +28,9 @@ export default async function HomePage({ params }: { params: Promise<{ lang: Loc
 
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 space-y-12 md:space-y-14 py-10 md:py-14">
           <SeminarBanner dict={dict.home} lang={lang} />
-          <ContinueListening title={dict.home.continueListeningTitle} viewAll={dict.home.viewAll} />
-          <TeachingsGrid dict={dict.home} />
-          <LiveReplays dict={dict.home} lang={lang} />
+          <ContinueListening title={dict.home.continueListeningTitle} viewAll={dict.home.viewAll} lang={lang} />
+          <TeachingsGrid dict={dict.home} lang={lang} />
+          <LiveReplays dict={dict.home} lang={lang} liveLabel={dict.common.liveNow} />
           <ThemeGrid dict={dict.home} lang={lang} />
           <HomeCTA dict={dict.home} lang={lang} />
         </div>

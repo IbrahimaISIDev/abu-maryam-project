@@ -18,19 +18,25 @@ import VideoPlayer from "@/components/live/VideoPlayer";
 import LiveSidebar from "@/components/live/LiveSidebar";
 import { liveStatus } from "@/data/live";
 import Image from "next/image";
+import { getDictionary } from "@/dictionaries";
+import { formatStartedAgo } from "@/lib/format";
+import type { Locale } from "@/lib/i18n";
 
-export default function EnDirectPage() {
+export default async function EnDirectPage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
   return (
     <>
       <Navbar />
-      <MobileHeader title="En direct" />
+      <MobileHeader title={dict.nav.live} />
 
       <main id="main-content" className="pb-20 md:pb-0">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-6 md:py-8">
           <div className="flex flex-col md:grid md:grid-cols-[1fr_340px] gap-6">
             {/* Colonne principale */}
             <div>
-              <VideoPlayer />
+              <VideoPlayer dict={dict} lang={lang} />
 
               {/* Infos sous le lecteur */}
               <div className="mt-5">
@@ -58,7 +64,7 @@ export default function EnDirectPage() {
                       {liveStatus.hostName}
                     </p>
                     <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973]">
-                      En direct · commencé il y a 32 min
+                      {formatStartedAgo(32, lang)}
                     </p>
                   </div>
                 </div>
@@ -66,10 +72,10 @@ export default function EnDirectPage() {
                 {/* Boutons action */}
                 <div className="flex gap-3 mb-5">
                   <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
-                    ↗ Partager
+                    ↗ {dict.common.share}
                   </button>
                   <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
-                    🔔 Être notifié
+                    🔔 {dict.live.notify}
                   </button>
                 </div>
 
@@ -82,7 +88,7 @@ export default function EnDirectPage() {
             </div>
 
             {/* Rail latéral */}
-            <LiveSidebar />
+            <LiveSidebar dict={dict} lang={lang} />
           </div>
         </div>
       </main>

@@ -1,9 +1,13 @@
 "use client";
 
 import type { ContentType, Theme, Language } from "@/lib/types";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
 import GlossaryTerm from "@/components/ui/GlossaryTerm";
 
 interface FilterPanelProps {
+  dict: Dictionary["library"];
+  lang: Locale;
   selectedType: ContentType | "all";
   selectedThemes: Theme[];
   selectedLanguages: Language[];
@@ -26,33 +30,34 @@ const themes: { id: Theme; label: string }[] = [
   { id: "conférence", label: "Conférence" },
 ];
 
-const languages: { id: Language; label: string }[] = [
-  { id: "wolof", label: "Wolof" },
-  { id: "arabe", label: "Arabe" },
-];
-
 export default function FilterPanel({
+  dict, lang,
   selectedType, selectedThemes, selectedLanguages,
   onTypeChange, onThemeToggle, onLanguageToggle,
   counts, themeCounts,
 }: FilterPanelProps) {
+  const languages: { id: Language; label: string }[] = [
+    { id: "wolof", label: dict.languageWolof },
+    { id: "arabe", label: dict.languageArabic },
+  ];
+
   return (
     <aside className="w-full">
       <h2 className="font-[var(--font-hanken)] font-semibold text-[15px] text-[#232a20] dark:text-[#f2ede0] mb-5">
-        Filtrer
+        {dict.filterTitle}
       </h2>
 
       {/* TYPE */}
       <div className="mb-6">
         <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#9a9483] dark:text-[#8f8973] mb-3">
-          Type
+          {dict.filterTypeLabel}
         </p>
         <ul className="space-y-2">
           {(
             [
-              { value: "all", label: "Tout", count: counts.total },
-              { value: "video", label: "▶ Vidéo", count: counts.video },
-              { value: "audio", label: "♪ Audio", count: counts.audio },
+              { value: "all", label: dict.filterAll, count: counts.total },
+              { value: "video", label: lang === "ar" ? "▶ فيديو" : "▶ Vidéo", count: counts.video },
+              { value: "audio", label: lang === "ar" ? "♪ صوت" : "♪ Audio", count: counts.audio },
             ] as const
           ).map(({ value, label, count }) => (
             <li key={value}>
@@ -92,7 +97,7 @@ export default function FilterPanel({
       {/* THÈMES */}
       <div className="mb-6">
         <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#9a9483] dark:text-[#8f8973] mb-3">
-          Thèmes
+          {dict.filterThemesLabel}
         </p>
         <ul className="space-y-2">
           {themes.map(({ id, label }) => {
@@ -145,7 +150,7 @@ export default function FilterPanel({
       {/* LANGUE */}
       <div>
         <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#9a9483] dark:text-[#8f8973] mb-3">
-          Langue
+          {dict.filterLanguageLabel}
         </p>
         <div className="flex flex-wrap gap-2">
           {languages.map(({ id, label }) => {

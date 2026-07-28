@@ -2,8 +2,9 @@ import Link from "@/components/ui/LocalizedLink";
 import { teachings } from "@/data/teachings";
 import ContentCard from "@/components/ui/ContentCard";
 import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
 
-export default function TeachingsGrid({ dict }: { dict: Dictionary["home"] }) {
+export default function TeachingsGrid({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
   const latest = teachings.slice(0, 4);
 
   return (
@@ -23,7 +24,7 @@ export default function TeachingsGrid({ dict }: { dict: Dictionary["home"] }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-[16px] md:gap-[22px]">
         {latest.map((t) => (
           <Link key={t.id} href={`/bibliotheque/${t.id}`} className="block">
-            <ContentCard teaching={t} />
+            <ContentCard teaching={t} lang={lang} />
           </Link>
         ))}
       </div>

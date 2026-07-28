@@ -1,11 +1,16 @@
 "use client";
 
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+
 interface ShareButtonsProps {
   title: string;
   url: string;
+  dict: Dictionary["common"];
+  lang: Locale;
 }
 
-export default function ShareButtons({ title, url }: ShareButtonsProps) {
+export default function ShareButtons({ title, url, dict, lang }: ShareButtonsProps) {
   const encodedTitle = encodeURIComponent(`${title} — Abu Maryam TV`);
   const encodedUrl = encodeURIComponent(url);
 
@@ -32,7 +37,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
       ),
     },
     {
-      label: "Copier le lien",
+      label: dict.copyLink,
       href: null,
       color: "#6f7363",
       icon: (
@@ -51,7 +56,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
   return (
     <div className="flex flex-wrap gap-2">
       <span className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase tracking-widest self-center">
-        Partager
+        {dict.share}
       </span>
       {share.map((s) =>
         s.href ? (
@@ -61,7 +66,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] font-[var(--font-hanken)] text-[12.5px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
-            aria-label={`Partager sur ${s.label}`}
+            aria-label={lang === "ar" ? `مشاركة على ${s.label}` : `Partager sur ${s.label}`}
           >
             <span style={{ color: s.color }}>{s.icon}</span>
             {s.label}

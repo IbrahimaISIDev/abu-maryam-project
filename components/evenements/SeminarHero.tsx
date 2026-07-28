@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "@/components/ui/LocalizedLink";
 import Image from "next/image";
 import { seminar } from "@/data/events";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { formatPlacesFraction } from "@/lib/format";
 
 function useCountdown(targetDate: string) {
   const [diff, setDiff] = useState(0);
@@ -38,7 +41,7 @@ function CountUnit({ value, label }: { value: number; label: string }) {
   );
 }
 
-export default function SeminarHero() {
+export default function SeminarHero({ dict }: { dict: Dictionary["events"]; lang: Locale }) {
   const { days, hours, minutes, seconds, started } = useCountdown(seminar.dateStart + "T00:00:00");
 
   return (
@@ -48,7 +51,7 @@ export default function SeminarHero() {
         {/* Badge */}
         <div className="mb-5">
           <span className="inline-flex items-center gap-2 border border-[rgba(138,47,41,0.6)] text-[#fbf9f3] bg-[rgba(138,47,41,0.25)] text-[10.5px] font-bold tracking-widest uppercase font-[var(--font-hanken)] px-3 py-1.5 rounded-[4px]">
-            À LA UNE · PLACES LIMITÉES
+            {dict.featuredBadge}
           </span>
         </div>
 
@@ -75,16 +78,16 @@ export default function SeminarHero() {
         {!started && (
           <div className="mb-6">
             <p className="font-[var(--font-hanken)] text-[10.5px] uppercase tracking-widest text-[rgba(251,249,243,0.5)] font-semibold mb-3">
-              Commence dans
+              {dict.countdownLabel}
             </p>
-            <div className="flex items-center gap-1">
-              <CountUnit value={days} label="jours" />
+            <div className="flex items-center gap-1" dir="ltr">
+              <CountUnit value={days} label={dict.days} />
               <span className="font-[var(--font-cormorant)] text-[28px] text-[rgba(251,249,243,0.3)] mb-2">:</span>
-              <CountUnit value={hours} label="heures" />
+              <CountUnit value={hours} label={dict.hours} />
               <span className="font-[var(--font-cormorant)] text-[28px] text-[rgba(251,249,243,0.3)] mb-2">:</span>
-              <CountUnit value={minutes} label="min" />
+              <CountUnit value={minutes} label={dict.minutes} />
               <span className="font-[var(--font-cormorant)] text-[28px] text-[rgba(251,249,243,0.3)] mb-2">:</span>
-              <CountUnit value={seconds} label="sec" />
+              <CountUnit value={seconds} label={dict.seconds} />
             </div>
           </div>
         )}
@@ -93,31 +96,31 @@ export default function SeminarHero() {
         <div className="flex flex-wrap gap-3 mb-6">
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
             <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
-              Dates
+              {dict.datesLabel}
             </p>
-            <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685]">
+            <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
               08 → 15 Août 2026
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
             <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
-              Inscription avant
+              {dict.registerBeforeLabel}
             </p>
-            <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685]">
+            <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
               20 Juillet 2026
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
             <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
-              Places restantes
+              {dict.placesRemainingLabel}
             </p>
-            <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685]">
-              {seminar.remainingPlaces} / {seminar.totalPlaces}
+            <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
+              {formatPlacesFraction(seminar.remainingPlaces, seminar.totalPlaces)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
             <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
-              Lieu
+              {dict.locationLabel}
             </p>
             <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685]">
               {seminar.location}
@@ -125,9 +128,9 @@ export default function SeminarHero() {
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
             <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
-              Tarif
+              {dict.priceLabel}
             </p>
-            <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685]">
+            <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
               {seminar.price}
             </p>
           </div>
@@ -139,7 +142,7 @@ export default function SeminarHero() {
             href="/inscription"
             className="inline-block bg-[#b58a3c] text-[#fbf9f3] font-[var(--font-hanken)] font-semibold text-[14.5px] px-7 py-3.5 rounded-full hover:bg-[#9e7832] transition-colors"
           >
-            S&apos;inscrire au séminaire
+            {dict.registerCta}
           </Link>
           <a
             href={`https://wa.me/?text=${encodeURIComponent("Séminaire Abu Maryam TV — Inscrivez-vous : https://abumaryam.tv/inscription")}`}
@@ -150,7 +153,7 @@ export default function SeminarHero() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.558 4.103 1.514 5.817L.057 23.882l6.22-1.432A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.9 0-3.7-.494-5.28-1.366l-.38-.225-3.692.85.895-3.576-.246-.394A9.931 9.931 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
             </svg>
-            Partager sur WhatsApp
+            {dict.shareWhatsapp}
           </a>
         </div>
         <p className="mt-2 font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.55)]">

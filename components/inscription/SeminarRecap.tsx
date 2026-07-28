@@ -1,6 +1,15 @@
 import { seminar } from "@/data/events";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { formatTrainingDays, formatClosingOn, formatLimitedPlaces } from "@/lib/format";
 
-export default function SeminarRecap() {
+export default function SeminarRecap({
+  dict,
+  lang,
+}: {
+  dict: Dictionary["inscription"]["recap"];
+  lang: Locale;
+}) {
   return (
     <div className="bg-[#3c4a37] rounded-[13px] p-7 md:p-8 flex flex-col text-[#fbf9f3]">
       {/* Verset */}
@@ -23,11 +32,11 @@ export default function SeminarRecap() {
         <li className="flex items-start gap-3">
           <span className="text-[#cda350] text-[16px] mt-0.5">📅</span>
           <div>
-            <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3]">
+            <p dir="ltr" className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3] text-left">
               08 → 15 Août 2026
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
-              8 jours de formation
+              {formatTrainingDays(8, lang)}
             </p>
           </div>
         </li>
@@ -35,10 +44,10 @@ export default function SeminarRecap() {
           <span className="text-[#cda350] text-[16px] mt-0.5">⏳</span>
           <div>
             <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3]">
-              Clôture le 20 juillet 2026
+              {formatClosingOn("20 juillet 2026", lang)}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
-              Places limitées · {seminar.remainingPlaces} restantes
+              {formatLimitedPlaces(seminar.remainingPlaces, lang)}
             </p>
           </div>
         </li>
@@ -49,14 +58,14 @@ export default function SeminarRecap() {
               {seminar.location}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
-              Présentiel · possibilité de suivre en ligne
+              {dict.onsiteNote}
             </p>
           </div>
         </li>
         <li className="flex items-start gap-3">
           <span className="text-[#cda350] text-[16px] mt-0.5">💰</span>
           <div>
-            <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3]">
+            <p dir="ltr" className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3] text-left">
               {seminar.price}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
@@ -70,7 +79,7 @@ export default function SeminarRecap() {
 
       {/* Ce que vous recevrez */}
       <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[rgba(251,249,243,0.55)] font-semibold mb-3">
-        Ce que vous recevrez
+        {dict.whatYouGet}
       </p>
       <ul className="space-y-2 mb-6">
         {seminar.perks.map((perk, i) => (
@@ -87,11 +96,14 @@ export default function SeminarRecap() {
 
       {/* Contact */}
       <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[rgba(251,249,243,0.55)] font-semibold mb-3">
-        Contact
+        {dict.contact}
       </p>
       <ul className="space-y-2">
         <li className="font-[var(--font-hanken)] text-[13px] text-[rgba(251,249,243,0.85)]">
-          📞 {seminar.contactPhone}{" "}
+          📞{" "}
+          <span dir="ltr" className="inline-block">
+            {seminar.contactPhone}
+          </span>{" "}
           <span className="text-[rgba(251,249,243,0.55)]">({seminar.contactPhoneNote})</span>
         </li>
         <li className="font-[var(--font-hanken)] text-[13px] text-[rgba(251,249,243,0.85)] break-all">

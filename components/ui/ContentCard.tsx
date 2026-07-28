@@ -1,4 +1,5 @@
 import type { Teaching } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
 import Badge from "./Badge";
 import ImagePlaceholder from "./ImagePlaceholder";
 
@@ -7,10 +8,10 @@ interface ContentCardProps {
   size?: "default" | "compact";
   progressPercent?: number;
   completed?: boolean;
+  lang?: Locale;
 }
 
 const typeIcon = { video: "▶", audio: "♪" };
-const typeLabel = { video: "Vidéo", audio: "Audio" };
 
 const themeLabel: Record<string, string> = {
   tafsir: "Tafsir", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -18,7 +19,9 @@ const themeLabel: Record<string, string> = {
   sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
 };
 
-export default function ContentCard({ teaching, size = "default", progressPercent, completed }: ContentCardProps) {
+export default function ContentCard({ teaching, size = "default", progressPercent, completed, lang = "fr" }: ContentCardProps) {
+  const typeLabel = lang === "ar" ? { video: "فيديو", audio: "صوت" } : { video: "Vidéo", audio: "Audio" };
+  const watchedLabel = lang === "ar" ? "تمت المشاهدة" : "Vu";
   const thumbH = size === "compact" ? "h-[110px]" : "h-[148px]";
 
   return (
@@ -47,7 +50,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
         {/* Badge Vu */}
         {completed && (
           <div className="absolute top-2 right-2 bg-[#3c4a37] text-[#cda350] text-[9.5px] font-semibold px-1.5 py-0.5 rounded-full font-[var(--font-hanken)]">
-            ✓ Vu
+            ✓ {watchedLabel}
           </div>
         )}
 

@@ -19,6 +19,9 @@ import Link from "@/components/ui/LocalizedLink";
 import SocialIcon from "@/components/ui/SocialIcon";
 import { teachings } from "@/data/teachings";
 import { socialLinks } from "@/data/socials";
+import { getDictionary } from "@/dictionaries";
+import { formatAboutCtaParagraph } from "@/lib/format";
+import type { Locale } from "@/lib/i18n";
 
 const topics = [
   {
@@ -58,11 +61,14 @@ const values = [
   },
 ];
 
-export default function AProposPage() {
+export default async function AProposPage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
   return (
     <>
       <Navbar />
-      <MobileHeader title="À propos" />
+      <MobileHeader title={dict.nav.about} />
 
       <main id="main-content" className="pb-20 md:pb-0">
         {/* Héro profil */}
@@ -106,9 +112,9 @@ export default function AProposPage() {
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { value: String(teachings.length), label: "Enseignements publiés" },
-                    { value: "18", sub: "ans", label: "de da'wah" },
-                    { value: "2", label: "Langues d'enseignement" },
+                    { value: String(teachings.length), label: dict.about.statTeachings },
+                    { value: "18", sub: dict.about.statYearsSuffix, label: dict.about.statYearsLabel },
+                    { value: "2", label: dict.about.statLanguages },
                   ].map((stat, i) => (
                     <div key={i} className="text-center md:text-left">
                       <p className="font-[var(--font-cormorant)] font-semibold text-[34px] md:text-[40px] text-[#232a20] dark:text-[#f2ede0] leading-none">
@@ -134,7 +140,7 @@ export default function AProposPage() {
           {/* Mission */}
           <section className="text-center max-w-[780px] mx-auto">
             <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3">
-              Mission
+              {dict.about.mission}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[36px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-5">
               Rendre le savoir islamique accessible, authentique et porteur de sérénité
@@ -147,7 +153,7 @@ export default function AProposPage() {
           {/* Domaines d'intervention */}
           <section>
             <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3 text-center">
-              Domaines d&apos;intervention
+              {dict.about.domains}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] md:text-[30px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-8 text-center max-w-[780px] mx-auto">
               Ses interventions et programmes se concentrent principalement sur plusieurs thématiques majeures
@@ -172,10 +178,10 @@ export default function AProposPage() {
           {/* Réseaux sociaux */}
           <section className="text-center">
             <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3">
-              Suivez l&apos;Oustaz
+              {dict.about.followTitle}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] md:text-[30px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-8">
-              Retrouvez ses enseignements sur vos plateformes préférées
+              {dict.about.followSubtitle}
             </h2>
             <div className="flex flex-wrap items-center justify-center gap-3">
               {socialLinks.map((s) => (
@@ -216,23 +222,23 @@ export default function AProposPage() {
           {/* CTA final */}
           <section className="rounded-[10px] bg-[#3c4a37] px-6 py-10 md:px-12 md:py-12 text-center">
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[34px] text-[#fbf9f3] mb-3">
-              Commencez à apprendre dès aujourd&apos;hui
+              {dict.about.ctaTitle}
             </h2>
             <p className="font-[var(--font-hanken)] text-[14px] text-[rgba(251,249,243,0.75)] max-w-[440px] mx-auto mb-7 leading-relaxed">
-              {teachings.length} enseignements gratuits, accessibles à tout moment, pour vous élever spirituellement.
+              {formatAboutCtaParagraph(teachings.length, lang)}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/bibliotheque"
                 className="bg-[#b58a3c] text-[#fbf9f3] font-[var(--font-hanken)] font-semibold text-[14.5px] px-7 py-3.5 rounded-full hover:bg-[#9e7832] transition-colors"
               >
-                Explorer la bibliothèque
+                {dict.home.exploreLibrary}
               </Link>
               <Link
                 href="/evenements"
                 className="border-2 border-[#fbf9f3] text-[#fbf9f3] font-[var(--font-hanken)] font-semibold text-[14.5px] px-7 py-3.5 rounded-full hover:bg-[rgba(251,249,243,0.1)] transition-colors"
               >
-                Voir les événements
+                {dict.home.viewEvents}
               </Link>
             </div>
           </section>

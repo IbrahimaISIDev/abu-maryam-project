@@ -15,18 +15,23 @@ import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import SeminarRecap from "@/components/inscription/SeminarRecap";
 import RegistrationForm from "@/components/inscription/RegistrationForm";
+import { getDictionary } from "@/dictionaries";
+import type { Locale } from "@/lib/i18n";
 
-export default function InscriptionPage() {
+export default async function InscriptionPage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
   return (
     <>
       <Navbar />
-      <MobileHeader title="Inscription" />
+      <MobileHeader title={dict.inscription.form.title} />
 
       <main id="main-content" className="pb-20 md:pb-0">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-8">
           <div className="flex flex-col md:grid md:grid-cols-[400px_1fr] gap-6 md:gap-8 items-start">
-            <SeminarRecap />
-            <RegistrationForm />
+            <SeminarRecap dict={dict.inscription.recap} lang={lang} />
+            <RegistrationForm dict={dict.inscription.form} lang={lang} />
           </div>
         </div>
       </main>

@@ -15,6 +15,9 @@ import GlossaryTerm from "@/components/ui/GlossaryTerm";
 import { getTeachingById, getSeriesEpisodes, getRelatedTeachings } from "@/data/teachings";
 import { getSeriesById } from "@/data/series";
 import type { Theme } from "@/lib/types";
+import { getDictionary } from "@/dictionaries";
+import { formatSeriesLabel } from "@/lib/format";
+import type { Locale } from "@/lib/i18n";
 
 const themeLabel: Record<string, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -56,16 +59,17 @@ export async function generateMetadata({
 export default async function TeachingDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: Locale; id: string }>;
 }) {
-  const { id } = await params;
+  const { lang, id } = await params;
   const teaching = getTeachingById(id);
   if (!teaching) notFound();
 
+  const dict = await getDictionary(lang);
   const series = teaching.seriesId ? getSeriesById(teaching.seriesId) : null;
   const seriesEpisodes = series ? getSeriesEpisodes(series.id) : [];
   const related = getRelatedTeachings(teaching, 4);
-  const publishedDate = new Date(teaching.publishedAt).toLocaleDateString("fr-FR", {
+  const publishedDate = new Date(teaching.publishedAt).toLocaleDateString(lang === "ar" ? "ar-EG" : "fr-FR", {
     day: "numeric", month: "long", year: "numeric",
   });
 
@@ -106,9 +110,9 @@ export default async function TeachingDetailPage({
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-6 md:py-8">
           {/* Fil d'Ariane */}
           <nav className="flex items-center gap-2 font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973] mb-6">
-            <Link href="/" className="hover:text-[#b58a3c] transition-colors">Accueil</Link>
+            <Link href="/" className="hover:text-[#b58a3c] transition-colors">{dict.nav.home}</Link>
             <span>›</span>
-            <Link href="/bibliotheque" className="hover:text-[#b58a3c] transition-colors">Bibliothèque</Link>
+            <Link href="/bibliotheque" className="hover:text-[#b58a3c] transition-colors">{dict.nav.library}</Link>
             <span>›</span>
             <span className="text-[#3f463a] dark:text-[#d8d4c4] line-clamp-1">{teaching.title}</span>
           </nav>
@@ -117,7 +121,7 @@ export default async function TeachingDetailPage({
             {/* Colonne principale */}
             <div className="space-y-6">
               {/* Player */}
-              <TeachingPlayer teaching={teaching} />
+              <TeachingPlayer teaching={teaching} dict={dict} />
 
               {/* Infos */}
               <div>
@@ -137,7 +141,8 @@ export default async function TeachingDetailPage({
                   )}
                   {series && teaching.episodeNumber && (
                     <span className="text-[11px] font-medium text-[#9a9483] dark:text-[#8f8973] font-[var(--font-hanken)]">
-                      Épisode {teaching.episodeNumber} / {series.totalEpisodes}
+                      {lang === "ar" ? "الحلقة" : "Épisode"}{" "}
+                      <span dir="ltr" className="inline-block">{teaching.episodeNumber} / {series.totalEpisodes}</span>
                     </span>
                   )}
                 </div>
@@ -183,7 +188,7 @@ export default async function TeachingDetailPage({
                       <polyline points="7 10 12 15 17 10" />
                       <line x1="12" y1="15" x2="12" y2="3" />
                     </svg>
-                    Télécharger l&apos;audio
+                    {dict.library.downloadAudio}
                   </a>
                 )}
 
@@ -191,21 +196,23 @@ export default async function TeachingDetailPage({
                 <ShareButtons
                   title={teaching.title}
                   url={`https://abumaryam.tv/bibliotheque/${teaching.id}`}
+                  dict={dict.common}
+                  lang={lang}
                 />
               </div>
 
               {/* Transcription écrite */}
-              <TranscriptSection teaching={teaching} />
+              <TranscriptSection teaching={teaching} dict={dict.library} />
 
               {/* Cours liés (si pas de série) */}
               {!series && related.length > 0 && (
                 <div>
                   <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] text-[#232a20] dark:text-[#f2ede0] mb-4">
-                    Dans le même thème
+                    {dict.library.sameThemeMain}
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {related.map((t) => (
-                      <ContentCard key={t.id} teaching={t} size="compact" />
+                      <ContentCard key={t.id} teaching={t} size="compact" lang={lang} />
                     ))}
                   </div>
                 </div>
@@ -224,14 +231,14 @@ export default async function TeachingDetailPage({
                       </p>
                     )}
                     <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#cda350] font-semibold mb-1">
-                      Série · {seriesEpisodes.length} épisodes
+                      {formatSeriesLabel(seriesEpisodes.length, lang)}
                     </p>
                     <h3 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#fbf9f3] leading-tight">
                       {series.title}
                     </h3>
                   </div>
 
-                  <SeriesProgress episodes={seriesEpisodes} />
+                  <SeriesProgress episodes={seriesEpisodes} lang={lang} />
 
                   {/* Liste des épisodes */}
                   <ul className="divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
@@ -279,9 +286,9 @@ export default async function TeachingDetailPage({
                   return (
                     <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[13px] p-5">
                       <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#b58a3c] font-semibold mb-3">
-                        Prochain épisode
+                        {dict.library.nextEpisode}
                       </p>
-                      <ContentCard teaching={next} size="compact" />
+                      <ContentCard teaching={next} size="compact" lang={lang} />
                     </div>
                   );
                 })()
@@ -291,7 +298,7 @@ export default async function TeachingDetailPage({
               {related.length > 0 && (
                 <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[13px] p-5">
                   <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#b58a3c] font-semibold mb-3">
-                    Du même thème
+                    {dict.library.sameThemeSidebar}
                   </p>
                   <ul className="space-y-3 divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
                     {related.slice(0, 3).map((t) => (

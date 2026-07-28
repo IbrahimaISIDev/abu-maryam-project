@@ -6,8 +6,17 @@ import ContentCard from "@/components/ui/ContentCard";
 import { useProgress } from "@/hooks/useProgress";
 import { getTeachingById } from "@/data/teachings";
 import type { Teaching, TeachingProgress } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
 
-export default function ContinueListening({ title, viewAll }: { title: string; viewAll: string }) {
+export default function ContinueListening({
+  title,
+  viewAll,
+  lang,
+}: {
+  title: string;
+  viewAll: string;
+  lang: Locale;
+}) {
   const { getInProgress } = useProgress();
   const items = useMemo(
     () =>
@@ -45,6 +54,7 @@ export default function ContinueListening({ title, viewAll }: { title: string; v
                 size="default"
                 progressPercent={pct}
                 completed={prog.completed}
+                lang={lang}
               />
             </Link>
           );

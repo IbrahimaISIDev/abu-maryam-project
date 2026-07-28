@@ -2,6 +2,7 @@
 
 import Link from "@/components/ui/LocalizedLink";
 import type { Series } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
 import { getSeriesEpisodes } from "@/data/teachings";
 import SeriesProgress from "./SeriesProgress";
 
@@ -24,9 +25,10 @@ const themeColor: Record<string, { bg: string; text: string }> = {
 
 interface SeriesCardProps {
   series: Series;
+  lang: Locale;
 }
 
-export default function SeriesCard({ series }: SeriesCardProps) {
+export default function SeriesCard({ series, lang }: SeriesCardProps) {
   const episodes = getSeriesEpisodes(series.id);
   const firstEp = episodes[0];
   const href = firstEp ? `/bibliotheque/${firstEp.id}` : "/bibliotheque";
@@ -52,7 +54,8 @@ export default function SeriesCard({ series }: SeriesCardProps) {
               </svg>
             </span>
             <span className="font-[var(--font-hanken)] text-[11px] font-semibold text-[#fbf9f3] opacity-80">
-              {episodes.length} / {series.totalEpisodes} épisodes
+              <span dir="ltr" className="inline-block">{episodes.length} / {series.totalEpisodes}</span>{" "}
+              {lang === "ar" ? "حلقة" : "épisodes"}
             </span>
           </div>
         </div>
@@ -72,7 +75,7 @@ export default function SeriesCard({ series }: SeriesCardProps) {
             {series.description}
           </p>
 
-          <SeriesProgress episodes={episodes} variant="compact" />
+          <SeriesProgress episodes={episodes} variant="compact" lang={lang} />
 
           {/* Langue + CTA */}
           <div className="flex items-center justify-between">
@@ -80,7 +83,7 @@ export default function SeriesCard({ series }: SeriesCardProps) {
               {series.language}
             </span>
             <span className="font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] dark:text-[#e3c685] group-hover:text-[#9e7832] dark:group-hover:text-[#cda350] transition-colors">
-              Commencer →
+              {lang === "ar" ? "← ابدأ" : "Commencer →"}
             </span>
           </div>
         </div>

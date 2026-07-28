@@ -6,7 +6,15 @@ import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatDaysAgo } from "@/lib/format";
 
-export default function LiveReplays({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+export default function LiveReplays({
+  dict,
+  lang,
+  liveLabel,
+}: {
+  dict: Dictionary["home"];
+  lang: Locale;
+  liveLabel: string;
+}) {
   return (
     <section>
       <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] mb-5">
@@ -24,7 +32,7 @@ export default function LiveReplays({ dict, lang }: { dict: Dictionary["home"]; 
 
             {/* Badges */}
             <div className="absolute top-4 left-4">
-              <Badge variant="live" />
+              <Badge variant="live" label={liveLabel} />
             </div>
 
             {/* Play central */}
