@@ -16,6 +16,7 @@ import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Link from "next/link";
+import { teachings } from "@/data/teachings";
 
 const values = [
   {
@@ -46,7 +47,7 @@ export default function AProposPage() {
       <Navbar />
       <MobileHeader title="À propos" />
 
-      <main className="pb-20 md:pb-0">
+      <main id="main-content" className="pb-20 md:pb-0">
         {/* Héro profil */}
         <div className="bg-[#e9e3d4]">
           <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-8 md:py-12">
@@ -85,7 +86,7 @@ export default function AProposPage() {
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { value: "320+", label: "Enseignements publiés" },
+                    { value: String(teachings.length), label: "Enseignements publiés" },
                     { value: "18", sub: "ans", label: "de da'wah" },
                     { value: "3", label: "Langues d'enseignement" },
                   ].map((stat, i) => (
@@ -149,7 +150,7 @@ export default function AProposPage() {
               Commencez à apprendre dès aujourd&apos;hui
             </h2>
             <p className="font-[var(--font-hanken)] text-[14px] text-[rgba(251,249,243,0.75)] max-w-[440px] mx-auto mb-7 leading-relaxed">
-              Plus de 320 enseignements gratuits, accessibles à tout moment, pour vous élever spirituellement.
+              {teachings.length} enseignements gratuits, accessibles à tout moment, pour vous élever spirituellement.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link

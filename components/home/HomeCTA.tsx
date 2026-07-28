@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { teachings } from "@/data/teachings";
 
 export default function HomeCTA() {
   return (
@@ -10,7 +11,7 @@ export default function HomeCTA() {
         Commencez votre chemin vers la connaissance
       </h2>
       <p className="font-[var(--font-hanken)] text-[14.5px] text-[rgba(251,249,243,0.75)] max-w-[480px] mx-auto mb-7 leading-relaxed">
-        Plus de 320 enseignements gratuits, accessibles à tout moment, pour
+        {teachings.length} enseignements gratuits, accessibles à tout moment, pour
         apprendre à votre rythme.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
