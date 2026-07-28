@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LiveDot from "@/components/ui/LiveDot";
+import BrandMark from "@/components/ui/BrandMark";
 
 const navLinks = [
   { href: "/",            label: "Accueil" },
@@ -20,11 +21,7 @@ export default function Navbar() {
       <nav className="max-w-[1280px] mx-auto flex items-center gap-8 px-10 py-[18px]">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 mr-4">
-          <div className="w-[38px] h-[38px] rounded-full bg-[#3c4a37] flex items-center justify-center">
-            <span className="arabic text-[#cda350] text-[19px] leading-none" aria-hidden="true">
-              أ
-            </span>
-          </div>
+          <BrandMark size={38} />
           <div className="flex flex-col">
             <span className="font-[var(--font-cormorant)] font-bold text-[21px] leading-tight text-[#232a20] dark:text-[#f2ede0]">
               Abu Maryam{" "}

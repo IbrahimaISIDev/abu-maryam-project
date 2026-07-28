@@ -1,5 +1,6 @@
 import Link from "next/link";
 import SocialIcon from "@/components/ui/SocialIcon";
+import BrandMark from "@/components/ui/BrandMark";
 import { socialLinks } from "@/data/socials";
 
 export default function Footer() {
@@ -7,11 +8,7 @@ export default function Footer() {
     <footer className="bg-[#fbf9f3] dark:bg-[#20261b] border-t border-[#e2dac9] dark:border-[#3a4132] mt-16">
       <div className="max-w-[1280px] mx-auto px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-5">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-[30px] h-[30px] rounded-full bg-[#3c4a37] flex items-center justify-center">
-            <span className="arabic text-[#cda350] text-[14px] leading-none" aria-hidden="true">
-              أ
-            </span>
-          </div>
+          <BrandMark size={30} />
           <span className="font-[var(--font-cormorant)] font-bold text-[18px] text-[#232a20] dark:text-[#f2ede0]">
             Abu Maryam <span className="text-[#b58a3c] dark:text-[#e3c685]">TV</span>
           </span>

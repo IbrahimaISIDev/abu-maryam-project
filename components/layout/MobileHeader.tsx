@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BrandMark from "@/components/ui/BrandMark";
 
 export default function MobileHeader({ title }: { title?: string }) {
   return (
@@ -16,11 +17,7 @@ export default function MobileHeader({ title }: { title?: string }) {
         </div>
       ) : (
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-[32px] h-[32px] rounded-full bg-[#3c4a37] flex items-center justify-center">
-            <span className="arabic text-[#cda350] text-[15px] leading-none" aria-hidden="true">
-              أ
-            </span>
-          </div>
+          <BrandMark size={32} />
           <span className="font-[var(--font-cormorant)] font-bold text-[18px] text-[#232a20] dark:text-[#f2ede0]">
             Abu Maryam <span className="text-[#b58a3c] dark:text-[#e3c685]">TV</span>
           </span>
