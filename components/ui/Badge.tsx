@@ -1,25 +1,16 @@
 import type { Theme } from "@/lib/types";
-
-const themeColors: Record<string, string> = {
-  tafsir:     "TAFSIR",
-  tawhid:     "TAWHÎD",
-  akhlaq:     "AKHLÂQ",
-  salat:      "SALÂT",
-  famille:    "FAMILLE",
-  sunna:      "SUNNA",
-  sahaba:     "SAHABA",
-  khoutba:    "KHOUTBA",
-  conférence: "CONFÉRENCE",
-};
+import type { Locale } from "@/lib/i18n";
+import { formatThemeLabel } from "@/lib/format";
 
 interface BadgeProps {
   theme?: Theme | string;
   label?: string;
   variant?: "category" | "live" | "urgent" | "featured";
   className?: string;
+  lang?: Locale;
 }
 
-export default function Badge({ theme, label, variant = "category", className = "" }: BadgeProps) {
+export default function Badge({ theme, label, variant = "category", className = "", lang = "fr" }: BadgeProps) {
   if (variant === "live") {
     return (
       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#8a2f29] text-[#fbf9f3] text-[11px] font-semibold tracking-widest uppercase font-[var(--font-hanken)] ${className}`}>
@@ -45,7 +36,7 @@ export default function Badge({ theme, label, variant = "category", className = 
     );
   }
 
-  const text = label ?? (theme ? themeColors[theme] ?? theme.toUpperCase() : "");
+  const text = label ?? (theme ? formatThemeLabel(theme, lang).toUpperCase() : "");
   return (
     <span className={`inline-block px-2 py-0.5 bg-[rgba(60,74,55,0.92)] text-[#e3c685] text-[10px] font-semibold tracking-widest uppercase font-[var(--font-hanken)] rounded-[4px] ${className}`}>
       {text}

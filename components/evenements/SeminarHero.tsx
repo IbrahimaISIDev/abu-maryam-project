@@ -7,6 +7,7 @@ import { seminar } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatPlacesFraction } from "@/lib/format";
+import { getSeminarField } from "@/lib/content-i18n";
 
 function useCountdown(targetDate: string) {
   const [diff, setDiff] = useState(0);
@@ -41,7 +42,7 @@ function CountUnit({ value, label }: { value: number; label: string }) {
   );
 }
 
-export default function SeminarHero({ dict }: { dict: Dictionary["events"]; lang: Locale }) {
+export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]; lang: Locale }) {
   const { days, hours, minutes, seconds, started } = useCountdown(seminar.dateStart + "T00:00:00");
 
   return (
@@ -62,16 +63,16 @@ export default function SeminarHero({ dict }: { dict: Dictionary["events"]; lang
 
         {/* Label */}
         <p className="font-[var(--font-hanken)] text-[12px] uppercase tracking-widest text-[#cda350] font-semibold mb-2">
-          {seminar.label}
+          {getSeminarField("label", lang)}
         </p>
 
         {/* Titre */}
         <h1 className="font-[var(--font-cormorant)] font-semibold text-[30px] md:text-[42px] text-[#fbf9f3] leading-tight mb-4">
-          {seminar.title}
+          {getSeminarField("title", lang)}
         </h1>
 
         <p className="font-[var(--font-hanken)] text-[14.5px] text-[rgba(251,249,243,0.8)] mb-5 max-w-[480px] leading-relaxed">
-          {seminar.description}
+          {getSeminarField("description", lang)}
         </p>
 
         {/* Countdown */}
@@ -157,7 +158,7 @@ export default function SeminarHero({ dict }: { dict: Dictionary["events"]; lang
           </a>
         </div>
         <p className="mt-2 font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.55)]">
-          {seminar.targetAudience}
+          {getSeminarField("targetAudience", lang)}
         </p>
       </div>
 

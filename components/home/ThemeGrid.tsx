@@ -2,7 +2,7 @@ import Link from "@/components/ui/LocalizedLink";
 import { themes } from "@/data/themes";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
-import { formatCoursesCount } from "@/lib/format";
+import { formatCoursesCount, formatThemeLabel } from "@/lib/format";
 
 export default function ThemeGrid({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
   return (
@@ -26,7 +26,7 @@ export default function ThemeGrid({ dict, lang }: { dict: Dictionary["home"]; la
             </div>
 
             <span className="font-[var(--font-hanken)] font-semibold text-[13px] text-[#232a20] dark:text-[#f2ede0] text-center">
-              {theme.labelFr}
+              {formatThemeLabel(theme.id, lang)}
             </span>
             <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">
               {formatCoursesCount(theme.count, lang)}

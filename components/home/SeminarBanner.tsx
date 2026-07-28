@@ -4,6 +4,7 @@ import { seminar } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatSeminarPlacesRemaining } from "@/lib/format";
+import { getSeminarField } from "@/lib/content-i18n";
 
 export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
   return (
@@ -24,12 +25,12 @@ export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]
 
         {/* Label */}
         <p className="font-[var(--font-hanken)] text-[12.5px] uppercase tracking-widest text-[#cda350] font-semibold mb-2">
-          {seminar.label}
+          {getSeminarField("label", lang)}
         </p>
 
         {/* Titre */}
         <h3 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[38px] text-[#fbf9f3] leading-tight mb-5">
-          {seminar.title}
+          {getSeminarField("title", lang)}
         </h3>
 
         {/* Dates */}

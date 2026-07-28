@@ -3,6 +3,7 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatDaysAgo, formatDayShort } from "@/lib/format";
+import { getScheduleTitle, getScheduleSubtitle, getReplayTitle } from "@/lib/content-i18n";
 
 export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   return (
@@ -25,10 +26,10 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
               </div>
               <div className="border-l border-[#e2dac9] dark:border-[#3a4132] pl-3 min-w-0">
                 <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#232a20] dark:text-[#f2ede0] leading-snug">
-                  {item.title}
+                  {getScheduleTitle(item, lang)}
                 </p>
                 <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
-                  {item.subtitle}
+                  {getScheduleSubtitle(item, lang)}
                 </p>
               </div>
             </li>
@@ -54,7 +55,7 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
               </div>
               <div className="min-w-0">
                 <p className="font-[var(--font-hanken)] font-medium text-[13px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
-                  {r.title}
+                  {getReplayTitle(r, lang)}
                 </p>
                 <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
                   {formatDaysAgo(r.daysAgo, lang)}

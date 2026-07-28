@@ -3,11 +3,19 @@
 import { useEffect } from "react";
 import Link from "@/components/ui/LocalizedLink";
 import { usePlayer } from "@/contexts/PlayerContext";
+import { useDictionary } from "@/contexts/DictionaryContext";
+import { getTeachingTitle } from "@/lib/content-i18n";
 
 const typeIcon = { video: "▶", audio: "♪" };
+const i18n = {
+  fr: { rewind: "Reculer 15 secondes", forward: "Avancer 30 secondes", pause: "Pause", play: "Lecture", close: "Fermer le player" },
+  ar: { rewind: "الرجوع 15 ثانية", forward: "التقدم 30 ثانية", pause: "إيقاف مؤقت", play: "تشغيل", close: "إغلاق المشغل" },
+};
 
 export default function MiniPlayer() {
   const { state, pause, resume, close, seek, audioRef } = usePlayer();
+  const { lang } = useDictionary();
+  const t = i18n[lang];
   const { teaching, isPlaying, positionSeconds } = state;
   const progress = teaching ? (positionSeconds / teaching.durationSeconds) * 100 : 0;
 
@@ -48,7 +56,7 @@ export default function MiniPlayer() {
             href={`/bibliotheque/${teaching.id}`}
             className="font-[var(--font-hanken)] font-semibold text-[13px] text-[#232a20] dark:text-[#f2ede0] line-clamp-1 hover:text-[#b58a3c] transition-colors"
           >
-            {teaching.title}
+            {getTeachingTitle(teaching, lang)}
           </Link>
           <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">
             {timeStr} · Oustaz Niang Mbaye (H.A)
@@ -61,7 +69,7 @@ export default function MiniPlayer() {
           <button
             onClick={() => seek(Math.max(0, positionSeconds - 15))}
             className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
-            aria-label="Reculer 15 secondes"
+            aria-label={t.rewind}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -74,7 +82,7 @@ export default function MiniPlayer() {
           <button
             onClick={isPlaying ? pause : resume}
             className="w-9 h-9 rounded-full bg-[#3c4a37] flex items-center justify-center text-[#fbf9f3] hover:bg-[#2e3a2b] transition-colors"
-            aria-label={isPlaying ? "Pause" : "Lecture"}
+            aria-label={isPlaying ? t.pause : t.play}
           >
             {isPlaying ? (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -92,7 +100,7 @@ export default function MiniPlayer() {
           <button
             onClick={() => seek(Math.min(teaching.durationSeconds, positionSeconds + 30))}
             className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
-            aria-label="Avancer 30 secondes"
+            aria-label={t.forward}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
@@ -105,7 +113,7 @@ export default function MiniPlayer() {
           <button
             onClick={close}
             className="w-8 h-8 flex items-center justify-center text-[#9a9483] dark:text-[#8f8973] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
-            aria-label="Fermer le player"
+            aria-label={t.close}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6 6 18M6 6l12 12" />

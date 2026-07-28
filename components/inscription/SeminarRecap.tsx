@@ -2,6 +2,7 @@ import { seminar } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatTrainingDays, formatClosingOn, formatLimitedPlaces } from "@/lib/format";
+import { getSeminarField, getSeminarPerks } from "@/lib/content-i18n";
 
 export default function SeminarRecap({
   dict,
@@ -19,12 +20,12 @@ export default function SeminarRecap({
 
       {/* Label */}
       <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#cda350] font-semibold mb-1">
-        {seminar.labelShort}
+        {getSeminarField("labelShort", lang)}
       </p>
 
       {/* Titre */}
       <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[32px] leading-tight text-[#fbf9f3] mb-6">
-        {seminar.title}
+        {getSeminarField("title", lang)}
       </h2>
 
       {/* Infos */}
@@ -69,7 +70,7 @@ export default function SeminarRecap({
               {seminar.price}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
-              {seminar.priceNote}
+              {getSeminarField("priceNote", lang)}
             </p>
           </div>
         </li>
@@ -82,7 +83,7 @@ export default function SeminarRecap({
         {dict.whatYouGet}
       </p>
       <ul className="space-y-2 mb-6">
-        {seminar.perks.map((perk, i) => (
+        {getSeminarPerks(lang).map((perk, i) => (
           <li key={i} className="flex items-center gap-2.5">
             <span className="text-[#e3c685] font-bold text-[14px]">✓</span>
             <span className="font-[var(--font-hanken)] text-[13.5px] text-[rgba(251,249,243,0.85)]">

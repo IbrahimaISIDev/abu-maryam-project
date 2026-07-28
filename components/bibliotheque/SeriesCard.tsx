@@ -4,14 +4,10 @@ import Link from "@/components/ui/LocalizedLink";
 import type { Series } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
 import { getSeriesEpisodes } from "@/data/teachings";
-import { formatContentLanguage } from "@/lib/format";
+import { formatContentLanguage, formatThemeLabel } from "@/lib/format";
+import { getSeriesTitle, getSeriesDescription } from "@/lib/content-i18n";
 import SeriesProgress from "./SeriesProgress";
 
-const themeLabel: Record<string, string> = {
-  tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
-  salat: "Salât", famille: "Famille", sunna: "Sunna",
-  sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
-};
 const themeColor: Record<string, { bg: string; text: string }> = {
   tafsir:   { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
   tawhid:   { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#b58a3c] dark:text-[#e3c685]" },
@@ -65,15 +61,15 @@ export default function SeriesCard({ series, lang }: SeriesCardProps) {
         <div className="px-5 py-4">
           {/* Badge thème */}
           <span className={`inline-block text-[10.5px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full mb-2 ${colors.bg} ${colors.text}`}>
-            {themeLabel[series.theme] ?? series.theme}
+            {formatThemeLabel(series.theme, lang)}
           </span>
 
           <h3 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-1.5 group-hover:text-[#3c4a37] dark:group-hover:text-[#a9c19a] transition-colors">
-            {series.title}
+            {getSeriesTitle(series, lang)}
           </h3>
 
           <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed line-clamp-2 mb-3">
-            {series.description}
+            {getSeriesDescription(series, lang)}
           </p>
 
           <SeriesProgress episodes={episodes} variant="compact" lang={lang} />

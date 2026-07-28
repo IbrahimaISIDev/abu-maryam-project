@@ -16,14 +16,10 @@ import { getTeachingById, getSeriesEpisodes, getRelatedTeachings } from "@/data/
 import { getSeriesById } from "@/data/series";
 import type { Theme } from "@/lib/types";
 import { getDictionary } from "@/dictionaries";
-import { formatSeriesLabel, formatContentLanguage, formatLevel } from "@/lib/format";
+import { formatSeriesLabel, formatContentLanguage, formatLevel, formatThemeLabel } from "@/lib/format";
+import { getTeachingTitle, getTeachingDescription, getSeriesTitle } from "@/lib/content-i18n";
 import type { Locale } from "@/lib/i18n";
 
-const themeLabel: Record<string, string> = {
-  tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
-  salat: "Salât", famille: "Famille", sunna: "Sunna",
-  sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
-};
 const levelColor: Record<string, string> = {
   débutant: "text-[#5f7050] bg-[#eef0e6]",
   intermédiaire: "text-[#b58a3c] bg-[rgba(181,138,60,0.1)]",
@@ -38,19 +34,21 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: Locale; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { lang, id } = await params;
   const teaching = getTeachingById(id);
   if (!teaching) return { title: "Cours introuvable" };
+  const title = getTeachingTitle(teaching, lang);
+  const description = getTeachingDescription(teaching, lang);
   return {
-    title: teaching.title,
+    title,
     description:
-      teaching.description ??
-      `Enseignement de type ${teaching.type} sur le thème ${themeLabel[teaching.theme]} — Oustaz Niang Mbaye (H.A)`,
+      description ??
+      `Enseignement de type ${teaching.type} sur le thème ${formatThemeLabel(teaching.theme, lang)} — Oustaz Niang Mbaye (H.A)`,
     openGraph: {
-      title: `${teaching.title} | Abu Maryam TV`,
-      description: teaching.description,
+      title: `${title} | Abu Maryam TV`,
+      description,
       type: "video.other",
     },
   };
@@ -77,8 +75,8 @@ export default async function TeachingDetailPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": teaching.type === "video" ? "VideoObject" : "AudioObject",
-    "name": teaching.title,
-    "description": teaching.description,
+    "name": getTeachingTitle(teaching, lang),
+    "description": getTeachingDescription(teaching, lang),
     "duration": `PT${teaching.durationSeconds}S`,
     "uploadDate": teaching.publishedAt,
     "author": {
@@ -92,7 +90,7 @@ export default async function TeachingDetailPage({
     "inLanguage": teaching.language,
     "about": {
       "@type": "Thing",
-      "name": themeLabel[teaching.theme],
+      "name": formatThemeLabel(teaching.theme, lang),
     },
   };
 
@@ -104,7 +102,7 @@ export default async function TeachingDetailPage({
       />
 
       <Navbar />
-      <MobileHeader title={teaching.title} />
+      <MobileHeader title={getTeachingTitle(teaching, lang)} />
 
       <main id="main-content" className="pb-24 md:pb-0 dark:bg-[#1b211a]">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-6 md:py-8">
@@ -114,22 +112,23 @@ export default async function TeachingDetailPage({
             <span>›</span>
             <Link href="/bibliotheque" className="hover:text-[#b58a3c] transition-colors">{dict.nav.library}</Link>
             <span>›</span>
-            <span className="text-[#3f463a] dark:text-[#d8d4c4] line-clamp-1">{teaching.title}</span>
+            <span className="text-[#3f463a] dark:text-[#d8d4c4] line-clamp-1">{getTeachingTitle(teaching, lang)}</span>
           </nav>
 
           <div className="flex flex-col lg:grid lg:grid-cols-[1fr_360px] gap-8">
             {/* Colonne principale */}
             <div className="space-y-6">
               {/* Player */}
-              <TeachingPlayer teaching={teaching} dict={dict} />
+              <TeachingPlayer teaching={teaching} dict={dict} lang={lang} />
 
               {/* Infos */}
               <div>
                 {/* Badges méta */}
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <Badge theme={teaching.theme as Theme} />
+                  <Badge theme={teaching.theme as Theme} lang={lang} />
                   <GlossaryTerm
                     term={teaching.theme}
+                    lang={lang}
                     className="w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-[var(--font-hanken)] font-bold text-[#9a9483] hover:text-[#b58a3c]"
                   >
                     ?
@@ -148,7 +147,7 @@ export default async function TeachingDetailPage({
                 </div>
 
                 <h1 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-3">
-                  {teaching.title}
+                  {getTeachingTitle(teaching, lang)}
                 </h1>
 
                 {/* Avatar + date */}
@@ -172,7 +171,7 @@ export default async function TeachingDetailPage({
                 {/* Description */}
                 {teaching.description && (
                   <p className="font-[var(--font-hanken)] text-[14.5px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed mb-5">
-                    {teaching.description}
+                    {getTeachingDescription(teaching, lang)}
                   </p>
                 )}
 
@@ -194,7 +193,7 @@ export default async function TeachingDetailPage({
 
                 {/* Partage */}
                 <ShareButtons
-                  title={teaching.title}
+                  title={getTeachingTitle(teaching, lang)}
                   url={`https://abumaryam.tv/bibliotheque/${teaching.id}`}
                   dict={dict.common}
                   lang={lang}
@@ -234,7 +233,7 @@ export default async function TeachingDetailPage({
                       {formatSeriesLabel(seriesEpisodes.length, lang)}
                     </p>
                     <h3 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#fbf9f3] leading-tight">
-                      {series.title}
+                      {getSeriesTitle(series, lang)}
                     </h3>
                   </div>
 
@@ -259,7 +258,7 @@ export default async function TeachingDetailPage({
                             </span>
                             <div className="min-w-0">
                               <p className={`font-[var(--font-hanken)] text-[13px] font-medium leading-snug line-clamp-2 ${isCurrent ? "text-[#232a20] dark:text-[#f2ede0]" : "text-[#6f7363] dark:text-[#b7b2a0]"}`}>
-                                {ep.title}
+                                {getTeachingTitle(ep, lang)}
                               </p>
                               <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
                                 {ep.duration}
@@ -309,7 +308,7 @@ export default async function TeachingDetailPage({
                           </div>
                           <div className="min-w-0">
                             <p className="font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] group-hover:text-[#b58a3c] leading-snug line-clamp-2 transition-colors">
-                              {t.title}
+                              {getTeachingTitle(t, lang)}
                             </p>
                             <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
                               {t.duration}

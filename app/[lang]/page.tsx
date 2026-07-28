@@ -19,7 +19,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: Loc
 
   return (
     <>
-      <LiveBanner dict={dict.home} />
+      <LiveBanner dict={dict.home} lang={lang} />
       <Navbar />
       <MobileHeader />
 

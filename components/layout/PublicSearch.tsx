@@ -4,16 +4,13 @@ import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSearch } from "@/contexts/SearchContext";
 import { useDictionary } from "@/contexts/DictionaryContext";
-import { formatNoResultsFor } from "@/lib/format";
+import { formatNoResultsFor, formatThemeLabel, formatSeriesLabel } from "@/lib/format";
+import { getTeachingTitle, getSeriesTitle, getAgendaItemTitle } from "@/lib/content-i18n";
 import { teachings } from "@/data/teachings";
 import { seriesList } from "@/data/series";
 import { agendaItems } from "@/data/events";
-
-const THEME_LABELS: Record<string, string> = {
-  tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
-  salat: "Salât", famille: "Famille", sunna: "Sunna",
-  sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
-};
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
 
 type ResultType = "enseignement" | "serie" | "evenement";
 
@@ -31,39 +28,39 @@ const TYPE_ICON: Record<ResultType, string> = {
   evenement: "📅",
 };
 
-function search(q: string): Result[] {
+function search(q: string, lang: Locale, common: Dictionary["common"]): Result[] {
   if (!q.trim() || q.length < 2) return [];
   const lq = q.toLowerCase();
 
   const teachingResults: Result[] = teachings
-    .filter((t) => t.title.toLowerCase().includes(lq) || t.theme.toLowerCase().includes(lq))
+    .filter((t) => t.title.toLowerCase().includes(lq) || getTeachingTitle(t, lang).toLowerCase().includes(lq) || t.theme.toLowerCase().includes(lq))
     .slice(0, 5)
     .map((t) => ({
       type: "enseignement" as const,
       id: t.id,
-      label: t.title,
-      sub: `${t.type === "video" ? "Vidéo" : "Audio"} · ${THEME_LABELS[t.theme] ?? t.theme} · ${t.duration}`,
+      label: getTeachingTitle(t, lang),
+      sub: `${t.type === "video" ? common.video : common.audio} · ${formatThemeLabel(t.theme, lang)} · ${t.duration}`,
       href: `/bibliotheque/${t.id}`,
     }));
 
   const seriesResults: Result[] = seriesList
-    .filter((s) => s.title.toLowerCase().includes(lq) || s.theme.toLowerCase().includes(lq))
+    .filter((s) => s.title.toLowerCase().includes(lq) || getSeriesTitle(s, lang).toLowerCase().includes(lq) || s.theme.toLowerCase().includes(lq))
     .slice(0, 3)
     .map((s) => ({
       type: "serie" as const,
       id: s.id,
-      label: s.title,
-      sub: `Série · ${s.totalEpisodes} épisodes`,
+      label: getSeriesTitle(s, lang),
+      sub: formatSeriesLabel(s.totalEpisodes, lang),
       href: "/bibliotheque?tab=series",
     }));
 
   const eventResults: Result[] = agendaItems
-    .filter((e) => e.title.toLowerCase().includes(lq) || e.location.toLowerCase().includes(lq))
+    .filter((e) => e.title.toLowerCase().includes(lq) || getAgendaItemTitle(e.id, e.title, lang).toLowerCase().includes(lq) || e.location.toLowerCase().includes(lq))
     .slice(0, 3)
     .map((e) => ({
       type: "evenement" as const,
       id: e.id,
-      label: e.title,
+      label: getAgendaItemTitle(e.id, e.title, lang),
       sub: e.location,
       href: "/evenements",
     }));
@@ -77,7 +74,7 @@ export default function PublicSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const results = useMemo(() => search(query), [query]);
+  const results = useMemo(() => search(query, lang, dict.common), [query, lang, dict.common]);
 
   const TYPE_LABELS: Record<ResultType, string> = {
     enseignement: dict.search.groups.teachings,

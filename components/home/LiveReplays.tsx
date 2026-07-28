@@ -5,6 +5,7 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatDaysAgo } from "@/lib/format";
+import { getLiveStatusTitle, getReplayTitle } from "@/lib/content-i18n";
 
 export default function LiveReplays({
   dict,
@@ -45,7 +46,7 @@ export default function LiveReplays({
             {/* Infos bas */}
             <div className="absolute bottom-4 left-4 right-4">
               <p className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#fbf9f3] leading-tight">
-                {liveStatus.title}
+                {getLiveStatusTitle(liveStatus, lang)}
               </p>
               <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.7)] mt-1">
                 👁 {liveStatus.viewers.toLocaleString(lang === "ar" ? "ar-EG" : "fr-FR")} {dict.viewers}
@@ -73,7 +74,7 @@ export default function LiveReplays({
                 </div>
                 <div className="min-w-0">
                   <p className="font-[var(--font-hanken)] font-medium text-[13.5px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
-                    {r.title}
+                    {getReplayTitle(r, lang)}
                   </p>
                   <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
                     {formatDaysAgo(r.daysAgo, lang)}

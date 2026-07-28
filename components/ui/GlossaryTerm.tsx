@@ -1,16 +1,18 @@
 "use client";
 
 import { useId, useState, type ReactNode } from "react";
-import { glossary } from "@/lib/glossary";
+import { glossary, glossaryAr } from "@/lib/glossary";
+import type { Locale } from "@/lib/i18n";
 
 interface GlossaryTermProps {
   term: string;
   children: ReactNode;
   className?: string;
+  lang?: Locale;
 }
 
-export default function GlossaryTerm({ term, children, className = "" }: GlossaryTermProps) {
-  const definition = glossary[term.toLowerCase()];
+export default function GlossaryTerm({ term, children, className = "", lang = "fr" }: GlossaryTermProps) {
+  const definition = (lang === "ar" ? glossaryAr : glossary)[term.toLowerCase()];
   const tooltipId = useId();
   const [open, setOpen] = useState(false);
 

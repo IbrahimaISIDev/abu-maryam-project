@@ -5,13 +5,16 @@ import { usePlayer } from "@/contexts/PlayerContext";
 import { useProgress } from "@/hooks/useProgress";
 import type { Teaching } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { getChapterLabel } from "@/lib/content-i18n";
 
 interface TeachingPlayerProps {
   teaching: Teaching;
   dict: Dictionary;
+  lang: Locale;
 }
 
-export default function TeachingPlayer({ teaching, dict }: TeachingPlayerProps) {
+export default function TeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
   const { state, play, pause, resume, seek } = usePlayer();
   const { updateProgress, getProgress } = useProgress();
   const [localPos, setLocalPos] = useState(() => {
@@ -164,7 +167,7 @@ export default function TeachingPlayer({ teaching, dict }: TeachingPlayerProps) 
                     : "border-[rgba(251,249,243,0.25)] text-[rgba(251,249,243,0.7)] hover:border-[#b58a3c] hover:text-[#fbf9f3]"
                 }`}
               >
-                {fmtTime(ch.timeSeconds)} · {ch.label}
+                {fmtTime(ch.timeSeconds)} · {getChapterLabel(teaching, i, lang, ch.label)}
               </button>
             ))}
           </div>

@@ -4,6 +4,7 @@ import type { ContentType, Theme, Language } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import GlossaryTerm from "@/components/ui/GlossaryTerm";
+import { formatThemeLabel } from "@/lib/format";
 
 interface FilterPanelProps {
   dict: Dictionary["library"];
@@ -18,17 +19,7 @@ interface FilterPanelProps {
   themeCounts: Partial<Record<Theme, number>>;
 }
 
-const themes: { id: Theme; label: string }[] = [
-  { id: "tafsir",     label: "Tafsîr" },
-  { id: "tawhid",     label: "Tawhîd" },
-  { id: "akhlaq",     label: "Akhlâq" },
-  { id: "salat",      label: "Salât" },
-  { id: "famille",    label: "Famille" },
-  { id: "sunna",      label: "Sunna" },
-  { id: "sahaba",     label: "Sahaba" },
-  { id: "khoutba",    label: "Khoutba" },
-  { id: "conférence", label: "Conférence" },
-];
+const themeIds: Theme[] = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence"];
 
 export default function FilterPanel({
   dict, lang,
@@ -40,6 +31,7 @@ export default function FilterPanel({
     { id: "wolof", label: dict.languageWolof },
     { id: "arabe", label: dict.languageArabic },
   ];
+  const themes: { id: Theme; label: string }[] = themeIds.map((id) => ({ id, label: formatThemeLabel(id, lang) }));
 
   return (
     <aside className="w-full">
@@ -133,6 +125,7 @@ export default function FilterPanel({
                 <span className="flex items-center gap-1.5 shrink-0">
                   <GlossaryTerm
                     term={id}
+                    lang={lang}
                     className="w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-[var(--font-hanken)] font-bold text-[#9a9483] dark:text-[#8f8973] hover:text-[#b58a3c] hover:border-[#b58a3c]"
                   >
                     ?

@@ -21,6 +21,7 @@ import {
   formatMobileAll,
   formatPaginationPageLabel,
 } from "@/lib/format";
+import { getTeachingTitle } from "@/lib/content-i18n";
 
 const PAGE_SIZE = 9;
 const CATALOGUE_TOTAL = teachings.length;
@@ -110,11 +111,13 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
     if (selectedLanguages.length) list = list.filter((t) => selectedLanguages.includes(t.language as Language));
     if (query.trim()) {
       const q = query.toLowerCase();
-      list = list.filter((t) => t.title.toLowerCase().includes(q));
+      list = list.filter(
+        (t) => t.title.toLowerCase().includes(q) || getTeachingTitle(t, lang).toLowerCase().includes(q)
+      );
     }
     if (sort === "oldest") return [...list].reverse();
     return list;
-  }, [selectedType, selectedThemes, selectedLanguages, query, sort]);
+  }, [selectedType, selectedThemes, selectedLanguages, query, sort, lang]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -287,7 +290,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
                               ? Math.round((prog.positionSeconds / (t.durationSeconds || 1)) * 100)
                               : undefined;
                             return (
-                              <Link key={t.id} href={`/bibliotheque/${t.id}`} className="block" aria-label={`${t.title} — ${t.duration}`}>
+                              <Link key={t.id} href={`/bibliotheque/${t.id}`} className="block" aria-label={`${getTeachingTitle(t, lang)} — ${t.duration}`}>
                                 <ContentCard
                                   teaching={t}
                                   progressPercent={pct}

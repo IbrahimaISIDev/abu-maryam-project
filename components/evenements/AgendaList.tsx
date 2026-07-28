@@ -6,6 +6,7 @@ import { agendaItems } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatUntilDate, formatEventCta } from "@/lib/format";
+import { getAgendaItemTitle } from "@/lib/content-i18n";
 
 export default function AgendaList({ dict, lang }: { dict: Dictionary["events"]; lang: Locale }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
@@ -83,7 +84,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
                   {dict.typeLabels[item.type as keyof typeof dict.typeLabels] ?? item.type}
                 </p>
                 <h3 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] dark:text-[#f2ede0] leading-tight">
-                  {item.title}
+                  {getAgendaItemTitle(item.id, item.title, lang)}
                 </h3>
                 <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973] mt-1">
                   📍 {item.location}

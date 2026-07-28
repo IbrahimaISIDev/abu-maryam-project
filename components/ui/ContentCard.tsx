@@ -1,6 +1,7 @@
 import type { Teaching } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
-import { formatContentLanguage } from "@/lib/format";
+import { formatContentLanguage, formatThemeLabel } from "@/lib/format";
+import { getTeachingTitle } from "@/lib/content-i18n";
 import Badge from "./Badge";
 import ImagePlaceholder from "./ImagePlaceholder";
 
@@ -13,12 +14,6 @@ interface ContentCardProps {
 }
 
 const typeIcon = { video: "▶", audio: "♪" };
-
-const themeLabel: Record<string, string> = {
-  tafsir: "Tafsir", tawhid: "Tawhîd", akhlaq: "Akhlâq",
-  salat: "Salât", famille: "Famille", sunna: "Sunna",
-  sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
-};
 
 export default function ContentCard({ teaching, size = "default", progressPercent, completed, lang = "fr" }: ContentCardProps) {
   const typeLabel = lang === "ar" ? { video: "فيديو", audio: "صوت" } : { video: "Vidéo", audio: "Audio" };
@@ -33,7 +28,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
 
         {/* Badge thème haut-gauche */}
         <div className="absolute top-2 left-2">
-          <Badge theme={teaching.theme} />
+          <Badge theme={teaching.theme} lang={lang} />
         </div>
 
         {/* Badge durée bas-droit */}
@@ -72,11 +67,11 @@ export default function ContentCard({ teaching, size = "default", progressPercen
           {typeIcon[teaching.type]} {typeLabel[teaching.type]} · {formatContentLanguage(teaching.language, lang)}
         </p>
         <h3 className="text-[19px] font-semibold text-[#232a20] dark:text-[#f2ede0] leading-tight font-[var(--font-cormorant)] line-clamp-2">
-          {teaching.title}
+          {getTeachingTitle(teaching, lang)}
         </h3>
         {size === "default" && (
           <p className="mt-1 text-[11px] text-[#9a9483] dark:text-[#8f8973] font-[var(--font-hanken)]">
-            {themeLabel[teaching.theme]}
+            {formatThemeLabel(teaching.theme, lang)}
           </p>
         )}
       </div>

@@ -23,47 +23,57 @@ import { getDictionary } from "@/dictionaries";
 import { formatAboutCtaParagraph, formatSocialLabel } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
 
-const topics = [
-  {
-    title: "Vie conjugale et médiation familiale",
-    desc: "Il est très connu pour ses conférences et ses séances de conseils sur les relations de couple (nèègu seuy en wolof). Il aborde régulièrement les causes de l'instabilité dans les ménages et propose des solutions inspirées des préceptes islamiques, notamment à travers des thèmes comme « Trois principes qui résolvent tous les problèmes conjugaux ».",
-  },
-  {
-    title: "Éducation et spiritualité",
-    desc: "Il anime des sessions d'exhortation religieuse, de récitation du Coran et d'invocations, notamment lors de séances matinales (après le Fadjr).",
-  },
-  {
-    title: "Présence numérique",
-    desc: "Il diffuse ses enseignements à travers sa chaîne officielle (Oustaz Niang Mbaye TV officiel) et collabore fréquemment avec des plateformes et émissions axées sur la promotion de la Sunnah au Sénégal (comme l'émission Ettu Sunnah).",
-  },
-];
+const topicsByLang = {
+  fr: [
+    {
+      title: "Vie conjugale et médiation familiale",
+      desc: "Il est très connu pour ses conférences et ses séances de conseils sur les relations de couple (nèègu seuy en wolof). Il aborde régulièrement les causes de l'instabilité dans les ménages et propose des solutions inspirées des préceptes islamiques, notamment à travers des thèmes comme « Trois principes qui résolvent tous les problèmes conjugaux ».",
+    },
+    {
+      title: "Éducation et spiritualité",
+      desc: "Il anime des sessions d'exhortation religieuse, de récitation du Coran et d'invocations, notamment lors de séances matinales (après le Fadjr).",
+    },
+    {
+      title: "Présence numérique",
+      desc: "Il diffuse ses enseignements à travers sa chaîne officielle (Oustaz Niang Mbaye TV officiel) et collabore fréquemment avec des plateformes et émissions axées sur la promotion de la Sunnah au Sénégal (comme l'émission Ettu Sunnah).",
+    },
+  ],
+  ar: [
+    {
+      title: "الحياة الزوجية والوساطة الأسرية",
+      desc: "اشتهر بمحاضراته وجلساته الإرشادية حول العلاقة الزوجية (نيغو سوي بالولوف). يتناول بانتظام أسباب عدم الاستقرار داخل الأسر ويقترح حلولاً مستوحاة من التعاليم الإسلامية، لا سيما عبر مواضيع مثل «ثلاثة مبادئ تحل جميع المشاكل الزوجية».",
+    },
+    {
+      title: "التربية والروحانية",
+      desc: "يقدّم جلسات وعظ ديني وتلاوة للقرآن وأذكار، لا سيما في الجلسات الصباحية (بعد صلاة الفجر).",
+    },
+    {
+      title: "الحضور الرقمي",
+      desc: "ينشر دروسه عبر قناته الرسمية (Oustaz Niang Mbaye TV officiel) ويتعاون بانتظام مع منصات وبرامج تُعنى بنشر السنة في السنغال (مثل برنامج Ettu Sunnah).",
+    },
+  ],
+};
 
-const values = [
-  {
-    numAr: "١",
-    title: "Authenticité",
-    desc: "Enseigner uniquement ce qui est établi par le Qur'an et la Sunna selon la compréhension des Salaf.",
-  },
-  {
-    numAr: "٢",
-    title: "Clarté",
-    desc: "Transmettre des savoirs complexes avec un langage simple et accessible à tous les niveaux.",
-  },
-  {
-    numAr: "٣",
-    title: "Accessibilité",
-    desc: "Des cours en wolof et en arabe, disponibles gratuitement à tout moment.",
-  },
-  {
-    numAr: "٤",
-    title: "Sérénité",
-    desc: "Créer un espace de paix spirituelle et d'élévation du cœur vers Allah.",
-  },
-];
+const valuesByLang = {
+  fr: [
+    { numAr: "١", title: "Authenticité", desc: "Enseigner uniquement ce qui est établi par le Qur'an et la Sunna selon la compréhension des Salaf." },
+    { numAr: "٢", title: "Clarté", desc: "Transmettre des savoirs complexes avec un langage simple et accessible à tous les niveaux." },
+    { numAr: "٣", title: "Accessibilité", desc: "Des cours en wolof et en arabe, disponibles gratuitement à tout moment." },
+    { numAr: "٤", title: "Sérénité", desc: "Créer un espace de paix spirituelle et d'élévation du cœur vers Allah." },
+  ],
+  ar: [
+    { numAr: "١", title: "الأصالة", desc: "تعليم ما ثبت فقط بالقرآن والسنة وفق فهم السلف الصالح." },
+    { numAr: "٢", title: "الوضوح", desc: "تبسيط العلوم المعقدة بلغة سهلة يفهمها الجميع على اختلاف مستوياتهم." },
+    { numAr: "٣", title: "سهولة الوصول", desc: "دروس بالولوف والعربية، متاحة مجانًا في أي وقت." },
+    { numAr: "٤", title: "السكينة", desc: "خلق فضاء من الطمأنينة الروحية والارتقاء بالقلب نحو الله." },
+  ],
+};
 
 export default async function AProposPage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
+  const topics = topicsByLang[lang];
+  const values = valuesByLang[lang];
 
   return (
     <>
@@ -101,12 +111,12 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
                   <span className="font-[var(--font-hanken)] font-normal text-[24px] md:text-[28px] text-[#6f7363] dark:text-[#b7b2a0]">(H.A)</span>
                 </h1>
                 <p className="font-[var(--font-hanken)] text-[14.5px] text-[#6f7363] dark:text-[#b7b2a0] mb-5">
-                  Imam · Prédicateur du Qur&apos;an et de la Sunna
+                  {lang === "ar" ? "إمام · داعية إلى القرآن والسنة" : "Imam · Prédicateur du Qur'an et de la Sunna"}
                 </p>
                 <p className="font-[var(--font-hanken)] text-[14.5px] text-[#3f463a] dark:text-[#d8d4c4] leading-relaxed mb-8 max-w-[520px]">
-                  Oustaz Niang Mbaye est un conférencier et prêcheur islamique sénégalais,
-                  particulièrement suivi pour ses interventions médiatiques et ses séminaires
-                  religieux axés sur la famille, l&apos;éducation et la société.
+                  {lang === "ar"
+                    ? "الأستاذ نيانغ مباي داعية ومحاضر إسلامي سنغالي، معروف بمتابعة واسعة بفضل ظهوره الإعلامي وندواته الدينية التي تركز على الأسرة والتربية والمجتمع."
+                    : "Oustaz Niang Mbaye est un conférencier et prêcheur islamique sénégalais, particulièrement suivi pour ses interventions médiatiques et ses séminaires religieux axés sur la famille, l'éducation et la société."}
                 </p>
 
                 {/* Stats */}
@@ -143,7 +153,9 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
               {dict.about.mission}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[36px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-5">
-              Rendre le savoir islamique accessible, authentique et porteur de sérénité
+              {lang === "ar"
+                ? "جعل العلم الشرعي في متناول الجميع، أصيلاً وباعثًا على السكينة"
+                : "Rendre le savoir islamique accessible, authentique et porteur de sérénité"}
             </h2>
             <p className="arabic text-[#b58a3c] dark:text-[#e3c685] text-[20px]">
               اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ
@@ -156,7 +168,9 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
               {dict.about.domains}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] md:text-[30px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-8 text-center max-w-[780px] mx-auto">
-              Ses interventions et programmes se concentrent principalement sur plusieurs thématiques majeures
+              {lang === "ar"
+                ? "تتركز تدخلاته وبرامجه بشكل رئيسي حول عدة محاور رئيسية"
+                : "Ses interventions et programmes se concentrent principalement sur plusieurs thématiques majeures"}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {topics.map((t) => (

@@ -3,6 +3,7 @@ import Badge from "@/components/ui/Badge";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
+import { getLiveStatusTitle } from "@/lib/content-i18n";
 
 export default function VideoPlayer({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   // Si youtubeChannelId est renseigné, on embed YouTube Live
@@ -15,7 +16,7 @@ export default function VideoPlayer({ dict, lang }: { dict: Dictionary; lang: Lo
         <iframe
           className="w-full h-full"
           src={`https://www.youtube.com/embed/live_stream?channel=${ytId}&autoplay=1`}
-          title={liveStatus.title}
+          title={getLiveStatusTitle(liveStatus, lang)}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />

@@ -89,6 +89,35 @@ export function formatAboutCtaParagraph(n: number, lang: Locale): string {
     : `${n} enseignements gratuits, accessibles à tout moment, pour vous élever spirituellement.`;
 }
 
+const themeLabelsAr: Record<string, string> = {
+  tafsir: "تفسير",
+  tawhid: "توحيد",
+  akhlaq: "أخلاق",
+  salat: "صلاة",
+  famille: "الأسرة",
+  sunna: "سنة",
+  sahaba: "صحابة",
+  khoutba: "خطبة",
+  "conférence": "محاضرة",
+};
+
+const themeLabelsFr: Record<string, string> = {
+  tafsir: "Tafsîr",
+  tawhid: "Tawhîd",
+  akhlaq: "Akhlâq",
+  salat: "Salât",
+  famille: "Famille",
+  sunna: "Sunna",
+  sahaba: "Sahaba",
+  khoutba: "Khoutba",
+  "conférence": "Conférence",
+};
+
+export function formatThemeLabel(theme: string, lang: Locale): string {
+  const map = lang === "ar" ? themeLabelsAr : themeLabelsFr;
+  return map[theme] ?? theme;
+}
+
 export function formatContentLanguage(value: string, lang: Locale): string {
   if (lang === "ar") {
     if (value === "wolof") return "الولوف";

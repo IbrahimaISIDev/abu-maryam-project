@@ -1,8 +1,10 @@
 import Link from "@/components/ui/LocalizedLink";
 import { liveStatus } from "@/data/live";
 import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { getLiveStatusTitle } from "@/lib/content-i18n";
 
-export default function LiveBanner({ dict }: { dict: Dictionary["home"] }) {
+export default function LiveBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
   if (!liveStatus.isLive) return null;
 
   return (
@@ -15,7 +17,7 @@ export default function LiveBanner({ dict }: { dict: Dictionary["home"] }) {
         <p className="font-[var(--font-hanken)] text-[12.5px] font-medium flex-1 truncate">
           <span className="font-semibold text-[#cda350]">{dict.liveBannerLabel}</span>
           {" — "}
-          {liveStatus.title}
+          {getLiveStatusTitle(liveStatus, lang)}
         </p>
         <Link
           href="/en-direct"

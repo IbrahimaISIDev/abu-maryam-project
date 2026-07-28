@@ -20,6 +20,7 @@ import { liveStatus } from "@/data/live";
 import Image from "next/image";
 import { getDictionary } from "@/dictionaries";
 import { formatStartedAgo } from "@/lib/format";
+import { getLiveStatusTitle, getLiveStatusDescription } from "@/lib/content-i18n";
 import type { Locale } from "@/lib/i18n";
 
 export default async function EnDirectPage({ params }: { params: Promise<{ lang: Locale }> }) {
@@ -44,7 +45,7 @@ export default async function EnDirectPage({ params }: { params: Promise<{ lang:
                   {liveStatus.arabicVerse}
                 </p>
                 <h1 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[32px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-4">
-                  {liveStatus.title}
+                  {getLiveStatusTitle(liveStatus, lang)}
                 </h1>
 
                 {/* Avatar + info */}
@@ -82,7 +83,7 @@ export default async function EnDirectPage({ params }: { params: Promise<{ lang:
                 <hr className="border-[#e2dac9] dark:border-[#3a4132] mb-4" />
 
                 <p className="font-[var(--font-hanken)] text-[14.5px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed">
-                  {liveStatus.description}
+                  {getLiveStatusDescription(liveStatus, lang)}
                 </p>
               </div>
             </div>
