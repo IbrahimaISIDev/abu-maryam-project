@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { ADMIN_COOKIE_NAME, verifySessionToken } from "@/lib/adminAuth";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -11,8 +12,8 @@ export function proxy(request: NextRequest) {
 
   // Protéger toutes les routes /admin/*
   if (pathname.startsWith("/admin")) {
-    const session = request.cookies.get("admin_session");
-    if (!session || session.value !== "authenticated") {
+    const session = request.cookies.get(ADMIN_COOKIE_NAME);
+    if (!verifySessionToken(session?.value)) {
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
