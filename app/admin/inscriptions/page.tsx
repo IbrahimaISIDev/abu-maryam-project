@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { registrations as initialData, type Registration } from "@/data/registrations";
+import type { Registration } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Modal from "@/components/ui/Modal";
@@ -56,7 +56,8 @@ function whatsappLink(phone: string) {
 
 export default function InscriptionsPage() {
   const toast = useToast();
-  const [items, setItems] = useState<Registration[]>(initialData);
+  const [items, setItems] = useState<Registration[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "confirmed" | "pending" | "cancelled">("all");
   const [search, setSearch] = useState("");
   const [cancelId, setCancelId] = useState<string | null>(null);
@@ -64,6 +65,24 @@ export default function InscriptionsPage() {
   const [sortKey, setSortKey] = useState<SortKey>("registeredAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/inscription")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { registrations: Registration[] }) => {
+        if (!cancelled) setItems(data.registrations);
+      })
+      .catch(() => {
+        if (!cancelled) toast("Impossible de charger les inscriptions", "error");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [toast]);
 
   function handleSort(key: SortKey) {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -220,7 +239,13 @@ export default function InscriptionsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-[#f0ece3]">
-            {sorted.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="px-5 py-14 text-center">
+                  <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Chargement des inscriptions…</p>
+                </td>
+              </tr>
+            ) : sorted.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-5 py-14 text-center">
                   <div className="flex flex-col items-center gap-2">
@@ -453,7 +478,7 @@ export default function InscriptionsPage() {
                       onClick={() => { setCancelId(detailItem.id); setDetailItem(null); }}
                       className="py-2.5 border border-[#e2dac9] hover:border-[#8a2f29] text-[#8a2f29] font-[var(--font-hanken)] font-medium text-[13px] rounded-[9px] transition-colors"
                     >
-                      Annuler l'inscription
+                      Annuler l&apos;inscription
                     </button>
                   )}
                   {detailItem.status === "cancelled" && (

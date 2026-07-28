@@ -1,14 +1,4 @@
-export interface Registration {
-  id: string;
-  fullName: string;
-  email: string;
-  phone: string;
-  city: string;
-  registeredAt: string;
-  status: "confirmed" | "pending" | "cancelled";
-  paymentStatus: "paid" | "unpaid" | "free";
-  notes?: string;
-}
+import type { Registration } from "@/lib/types";
 
 export const registrations: Registration[] = [
   { id: "reg-01", fullName: "Ousmane Diallo", email: "o.diallo@gmail.com", phone: "+221 77 123 45 67", city: "Dakar", registeredAt: "2026-06-10T09:15:00Z", status: "confirmed", paymentStatus: "paid" },

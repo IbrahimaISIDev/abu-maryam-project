@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { registrations as seedRegistrations } from "@/data/registrations";
+import type { Registration } from "@/lib/types";
+import { ADMIN_COOKIE_NAME, verifySessionToken } from "@/lib/adminAuth";
 
 interface InscriptionPayload {
   firstName: string;
@@ -12,16 +16,9 @@ interface InscriptionPayload {
   consent: boolean;
 }
 
-interface StoredRegistration extends InscriptionPayload {
-  id: string;
-  registeredAt: string;
-  status: "pending";
-  paymentStatus: "unpaid";
-}
-
 // Store en mémoire — persiste pendant la durée du processus Node.js
 // Sera remplacé par un appel NestJS une fois le backend connecté
-const store: StoredRegistration[] = [];
+const store: Registration[] = [...seedRegistrations];
 
 function validate(data: Partial<InscriptionPayload>): string | null {
   if (!data.firstName?.trim()) return "Prénom requis";
@@ -49,17 +46,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error }, { status: 422 });
   }
 
-  const registration: StoredRegistration = {
+  const registration: Registration = {
     id: `reg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    firstName: body.firstName!.trim(),
-    lastName: body.lastName!.trim(),
+    fullName: `${body.firstName!.trim()} ${body.lastName!.trim()}`,
+    email: body.email?.trim() || "",
     phone: body.phone!.trim(),
-    email: body.email?.trim() || undefined,
-    city: body.city?.trim() || undefined,
+    city: body.city?.trim() || "",
     ageRange: body.ageRange!,
     mode: body.mode!,
     message: body.message?.trim() || undefined,
-    consent: true,
     status: "pending",
     paymentStatus: "unpaid",
     registeredAt: new Date().toISOString(),
@@ -71,5 +66,11 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get(ADMIN_COOKIE_NAME);
+  if (!verifySessionToken(session?.value)) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
   return NextResponse.json({ total: store.length, registrations: store });
 }

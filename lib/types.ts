@@ -40,6 +40,13 @@ export interface Teaching {
   episodeNumber?: number;
   level?: DifficultyLevel;
   arabicVerse?: string;
+  chapters?: Chapter[];
+  transcript?: string;
+}
+
+export interface Chapter {
+  label: string;
+  timeSeconds: number;
 }
 
 export interface LiveStatus {
@@ -117,4 +124,19 @@ export interface PlayerState {
   teaching: Teaching | null;
   isPlaying: boolean;
   positionSeconds: number;
+}
+
+export interface Registration {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  city: string;
+  registeredAt: string;
+  status: "confirmed" | "pending" | "cancelled";
+  paymentStatus: "paid" | "unpaid" | "free";
+  notes?: string;
+  ageRange?: string;
+  mode?: "presentiel" | "ligne";
+  message?: string;
 }
