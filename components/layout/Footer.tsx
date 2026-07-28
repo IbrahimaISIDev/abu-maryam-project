@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import SocialIcon from "@/components/ui/SocialIcon";
 import BrandMark from "@/components/ui/BrandMark";
 import { socialLinks } from "@/data/socials";

@@ -1,8 +1,11 @@
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import Image from "next/image";
 import { seminar } from "@/data/events";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { formatSeminarPlacesRemaining } from "@/lib/format";
 
-export default function SeminarBanner() {
+export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
   return (
     <div className="rounded-[8px] overflow-hidden bg-[#3c4a37] min-h-[300px] flex flex-col md:flex-row">
       {/* Texte — 58% */}
@@ -10,7 +13,7 @@ export default function SeminarBanner() {
         {/* Badge urgence */}
         <div className="mb-4">
           <span className="inline-block bg-[#8a2f29] text-[#fbf9f3] text-[10.5px] font-bold tracking-widest uppercase font-[var(--font-hanken)] px-3 py-1">
-            PLACES LIMITÉES
+            {dict.seminarBadge}
           </span>
         </div>
 
@@ -32,20 +35,20 @@ export default function SeminarBanner() {
         {/* Dates */}
         <div className="flex flex-wrap gap-3 mb-5">
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">Dates</p>
-            <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685]">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarDatesLabel}</p>
+            <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
               08 → 15 Août 2026
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">Clôture</p>
-            <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685]">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarClosingLabel}</p>
+            <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
               20 Juillet 2026
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">Tarif</p>
-            <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685]">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarPriceLabel}</p>
+            <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
               {seminar.price}
             </p>
           </div>
@@ -57,10 +60,10 @@ export default function SeminarBanner() {
             href="/inscription"
             className="bg-[#b58a3c] text-[#fbf9f3] font-[var(--font-hanken)] font-semibold text-[14px] px-6 py-3 rounded-full hover:bg-[#9e7832] transition-colors"
           >
-            S&apos;inscrire maintenant
+            {dict.seminarRegisterCta}
           </Link>
           <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483]">
-            {seminar.remainingPlaces} places sur {seminar.totalPlaces}
+            {formatSeminarPlacesRemaining(seminar.remainingPlaces, seminar.totalPlaces, lang)}
           </p>
         </div>
       </div>

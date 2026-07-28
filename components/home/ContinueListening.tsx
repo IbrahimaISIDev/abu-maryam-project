@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import ContentCard from "@/components/ui/ContentCard";
 import { useProgress } from "@/hooks/useProgress";
 import { getTeachingById } from "@/data/teachings";
 import type { Teaching, TeachingProgress } from "@/lib/types";
 
-export default function ContinueListening() {
+export default function ContinueListening({ title, viewAll }: { title: string; viewAll: string }) {
   const { getInProgress } = useProgress();
   const items = useMemo(
     () =>
@@ -26,13 +26,13 @@ export default function ContinueListening() {
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[32px] text-[#232a20]">
-          Continuer à écouter
+          {title}
         </h2>
         <Link
           href="/bibliotheque"
           className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] hover:text-[#9e7832] transition-colors"
         >
-          Voir tout →
+          {viewAll}
         </Link>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -1,21 +1,22 @@
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import { teachings } from "@/data/teachings";
 import ContentCard from "@/components/ui/ContentCard";
+import type { Dictionary } from "@/dictionaries/types";
 
-export default function TeachingsGrid() {
+export default function TeachingsGrid({ dict }: { dict: Dictionary["home"] }) {
   const latest = teachings.slice(0, 4);
 
   return (
     <section>
       <div className="flex items-center justify-between mb-5">
         <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0]">
-          Derniers enseignements
+          {dict.teachingsGridTitle}
         </h2>
         <Link
           href="/bibliotheque"
           className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] underline underline-offset-4 transition-colors hidden md:inline"
         >
-          Voir tout →
+          {dict.viewAll}
         </Link>
       </div>
 
@@ -32,7 +33,7 @@ export default function TeachingsGrid() {
           href="/bibliotheque"
           className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] dark:text-[#e3c685] underline underline-offset-4"
         >
-          Voir tout →
+          {dict.viewAll}
         </Link>
       </div>
     </section>

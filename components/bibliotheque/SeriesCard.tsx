@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import type { Series } from "@/lib/types";
 import { getSeriesEpisodes } from "@/data/teachings";
 import SeriesProgress from "./SeriesProgress";

@@ -10,24 +10,29 @@ import ThemeGrid from "@/components/home/ThemeGrid";
 import HomeCTA from "@/components/home/HomeCTA";
 import ContinueListening from "@/components/home/ContinueListening";
 import LiveBanner from "@/components/home/LiveBanner";
+import { getDictionary } from "@/dictionaries";
+import type { Locale } from "@/lib/i18n";
 
-export default function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
   return (
     <>
-      <LiveBanner />
+      <LiveBanner dict={dict.home} />
       <Navbar />
       <MobileHeader />
 
       <main id="main-content" className="pb-20 md:pb-0">
-        <Hero />
+        <Hero dict={dict.home} />
 
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 space-y-12 md:space-y-14 py-10 md:py-14">
-          <SeminarBanner />
-          <ContinueListening />
-          <TeachingsGrid />
-          <LiveReplays />
-          <ThemeGrid />
-          <HomeCTA />
+          <SeminarBanner dict={dict.home} lang={lang} />
+          <ContinueListening title={dict.home.continueListeningTitle} viewAll={dict.home.viewAll} />
+          <TeachingsGrid dict={dict.home} />
+          <LiveReplays dict={dict.home} lang={lang} />
+          <ThemeGrid dict={dict.home} lang={lang} />
+          <HomeCTA dict={dict.home} lang={lang} />
         </div>
       </main>
 

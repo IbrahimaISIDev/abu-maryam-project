@@ -1,7 +1,8 @@
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import { liveStatus } from "@/data/live";
+import type { Dictionary } from "@/dictionaries/types";
 
-export default function LiveBanner() {
+export default function LiveBanner({ dict }: { dict: Dictionary["home"] }) {
   if (!liveStatus.isLive) return null;
 
   return (
@@ -12,7 +13,7 @@ export default function LiveBanner() {
           <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c0392b]" />
         </span>
         <p className="font-[var(--font-hanken)] text-[12.5px] font-medium flex-1 truncate">
-          <span className="font-semibold text-[#cda350]">En direct maintenant</span>
+          <span className="font-semibold text-[#cda350]">{dict.liveBannerLabel}</span>
           {" — "}
           {liveStatus.title}
         </p>
@@ -20,7 +21,7 @@ export default function LiveBanner() {
           href="/en-direct"
           className="shrink-0 font-[var(--font-hanken)] text-[12px] font-semibold text-[#cda350] hover:text-[#e3c685] transition-colors whitespace-nowrap"
         >
-          Regarder →
+          {dict.liveBannerWatch}
         </Link>
       </div>
     </div>

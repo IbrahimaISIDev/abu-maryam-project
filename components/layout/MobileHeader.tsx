@@ -1,18 +1,20 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import BrandMark from "@/components/ui/BrandMark";
 import { useSearch } from "@/contexts/SearchContext";
+import { useDictionary } from "@/contexts/DictionaryContext";
 
 export default function MobileHeader({ title }: { title?: string }) {
   const { openSearch } = useSearch();
+  const { dict } = useDictionary();
 
   return (
     <header className="md:hidden sticky top-0 z-50 bg-[#fbf9f3] dark:bg-[#20261b] border-b border-[#e2dac9] dark:border-[#3a4132] px-4 py-3 flex items-center justify-between">
       {title ? (
         <div className="flex items-center gap-3">
-          <Link href="/" className="text-[#3c4a37] dark:text-[#a9c19a]" aria-label="Retour">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <Link href="/" className="text-[#3c4a37] dark:text-[#a9c19a]" aria-label={dict.mobileHeader.back}>
+            <svg className="rtl:-scale-x-100" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </Link>
@@ -30,13 +32,13 @@ export default function MobileHeader({ title }: { title?: string }) {
       )}
 
       <div className="flex items-center gap-2">
-        <button onClick={openSearch} className="w-[32px] h-[32px] flex items-center justify-center text-[#6f7363] dark:text-[#b7b2a0]" aria-label="Rechercher">
+        <button onClick={openSearch} className="w-[32px] h-[32px] flex items-center justify-center text-[#6f7363] dark:text-[#b7b2a0]" aria-label={dict.mobileHeader.search}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3" />
           </svg>
         </button>
-        <button className="w-[32px] h-[32px] flex items-center justify-center text-[#6f7363] dark:text-[#b7b2a0]" aria-label="Menu">
+        <button className="w-[32px] h-[32px] flex items-center justify-center text-[#6f7363] dark:text-[#b7b2a0]" aria-label={dict.mobileHeader.menu}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 12h18M3 6h18M3 18h18" />
           </svg>

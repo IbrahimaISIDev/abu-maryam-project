@@ -1,13 +1,16 @@
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import { liveStatus, replays } from "@/data/live";
 import Badge from "@/components/ui/Badge";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { formatDaysAgo } from "@/lib/format";
 
-export default function LiveReplays() {
+export default function LiveReplays({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
   return (
     <section>
       <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] mb-5">
-        Direct & Replays
+        {dict.liveReplaysTitle}
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-[1.7fr_1fr] gap-5 md:gap-6">
@@ -37,7 +40,7 @@ export default function LiveReplays() {
                 {liveStatus.title}
               </p>
               <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.7)] mt-1">
-                👁 {liveStatus.viewers.toLocaleString("fr-FR")} spectateurs
+                👁 {liveStatus.viewers.toLocaleString(lang === "ar" ? "ar-EG" : "fr-FR")} {dict.viewers}
               </p>
             </div>
           </div>
@@ -46,7 +49,7 @@ export default function LiveReplays() {
         {/* Colonne droite — replays */}
         <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
           <h3 className="font-[var(--font-hanken)] font-semibold text-[13px] uppercase tracking-widest text-[#6f7363] dark:text-[#b7b2a0] mb-4">
-            Revoir les directs
+            {dict.rewatchLives}
           </h3>
           <ul className="flex flex-col divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
             {replays.map((r) => (
@@ -65,7 +68,7 @@ export default function LiveReplays() {
                     {r.title}
                   </p>
                   <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
-                    Il y a {r.daysAgo} jours
+                    {formatDaysAgo(r.daysAgo, lang)}
                   </p>
                 </div>
               </li>

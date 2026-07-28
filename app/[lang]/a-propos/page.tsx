@@ -15,7 +15,7 @@ import MobileHeader from "@/components/layout/MobileHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import SocialIcon from "@/components/ui/SocialIcon";
 import { teachings } from "@/data/teachings";
 import { socialLinks } from "@/data/socials";

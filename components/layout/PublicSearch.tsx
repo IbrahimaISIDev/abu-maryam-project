@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSearch } from "@/contexts/SearchContext";
+import { useDictionary } from "@/contexts/DictionaryContext";
+import { formatNoResultsFor } from "@/lib/format";
 import { teachings } from "@/data/teachings";
 import { seriesList } from "@/data/series";
 import { agendaItems } from "@/data/events";
@@ -22,12 +24,6 @@ interface Result {
   sub: string;
   href: string;
 }
-
-const TYPE_LABELS: Record<ResultType, string> = {
-  enseignement: "Enseignements",
-  serie: "Séries",
-  evenement: "Événements",
-};
 
 const TYPE_ICON: Record<ResultType, string> = {
   enseignement: "▶",
@@ -77,10 +73,22 @@ function search(q: string): Result[] {
 
 export default function PublicSearch() {
   const { isOpen, query, setQuery, selected, setSelected, closeSearch, toggleSearch } = useSearch();
+  const { dict, lang } = useDictionary();
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const results = useMemo(() => search(query), [query]);
+
+  const TYPE_LABELS: Record<ResultType, string> = {
+    enseignement: dict.search.groups.teachings,
+    serie: dict.search.groups.series,
+    evenement: dict.search.groups.events,
+  };
+
+  function goTo(href: string) {
+    router.push(`/${lang}${href}`);
+    closeSearch();
+  }
 
   function handleQueryChange(value: string) {
     setQuery(value);
@@ -112,8 +120,7 @@ export default function PublicSearch() {
     if (e.key === "ArrowDown") { e.preventDefault(); setSelected((s) => Math.min(s + 1, results.length - 1)); }
     if (e.key === "ArrowUp") { e.preventDefault(); setSelected((s) => Math.max(s - 1, 0)); }
     if (e.key === "Enter" && results[selected]) {
-      router.push(results[selected].href);
-      closeSearch();
+      goTo(results[selected].href);
     }
   }
 
@@ -138,7 +145,7 @@ export default function PublicSearch() {
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
             onKeyDown={handleKey}
-            placeholder="Rechercher un enseignement, une série, un événement…"
+            placeholder={dict.search.placeholder}
             className="flex-1 bg-transparent font-[var(--font-hanken)] text-[15px] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#9a9483] dark:placeholder:text-[#8f8973] outline-none"
           />
           <kbd className="hidden sm:flex items-center gap-1 px-2 py-0.5 bg-[#e9e3d4] dark:bg-[#2b3326] rounded text-[11px] font-[var(--font-hanken)] text-[#9a9483] dark:text-[#8f8973]">
@@ -162,7 +169,7 @@ export default function PublicSearch() {
                       </p>
                     )}
                     <button
-                      onClick={() => { router.push(r.href); closeSearch(); }}
+                      onClick={() => goTo(r.href)}
                       className={`w-full text-left px-5 py-2.5 flex items-center gap-3 transition-colors ${i === selected ? "bg-[#f0ece3] dark:bg-[rgba(255,255,255,0.05)]" : "hover:bg-[#f5f1e8] dark:hover:bg-[rgba(255,255,255,0.03)]"}`}
                     >
                       <div className="w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 text-[12px] bg-[#3c4a37] text-[#cda350]">
@@ -180,20 +187,20 @@ export default function PublicSearch() {
           </ul>
         ) : query.length >= 2 ? (
           <div className="px-5 py-8 text-center">
-            <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483] dark:text-[#8f8973]">Aucun résultat pour « {query} »</p>
+            <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483] dark:text-[#8f8973]">{formatNoResultsFor(query, lang)}</p>
           </div>
         ) : (
           <div className="px-5 py-5">
             <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973] text-center">
-              Tapez au moins 2 caractères pour rechercher
+              {dict.search.minChars}
             </p>
           </div>
         )}
 
         <div className="px-5 py-3 border-t border-[#e2dac9] dark:border-[#3a4132] flex items-center gap-4">
-          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">↑↓ naviguer</span>
-          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">↵ ouvrir</span>
-          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">Esc fermer</span>
+          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">↑↓ {dict.search.navigate}</span>
+          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">↵ {dict.search.open}</span>
+          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">Esc {dict.search.close}</span>
         </div>
       </div>
     </div>

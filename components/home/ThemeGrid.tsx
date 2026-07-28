@@ -1,11 +1,14 @@
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import { themes } from "@/data/themes";
+import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
+import { formatCoursesCount } from "@/lib/format";
 
-export default function ThemeGrid() {
+export default function ThemeGrid({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
   return (
     <section>
       <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] mb-5 text-center">
-        Explorer par thème
+        {dict.themeGridTitle}
       </h2>
 
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
@@ -26,7 +29,7 @@ export default function ThemeGrid() {
               {theme.labelFr}
             </span>
             <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">
-              {theme.count} cours
+              {formatCoursesCount(theme.count, lang)}
             </span>
           </Link>
         ))}

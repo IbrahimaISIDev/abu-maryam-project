@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/ui/LocalizedLink";
 import FilterPanel from "./FilterPanel";
 import SeriesCard from "./SeriesCard";
 import ContentCard from "@/components/ui/ContentCard";
