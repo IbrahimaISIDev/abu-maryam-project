@@ -16,7 +16,24 @@ import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import Image from "next/image";
 import Link from "next/link";
+import SocialIcon from "@/components/ui/SocialIcon";
 import { teachings } from "@/data/teachings";
+import { socialLinks } from "@/data/socials";
+
+const topics = [
+  {
+    title: "Vie conjugale et médiation familiale",
+    desc: "Il est très connu pour ses conférences et ses séances de conseils sur les relations de couple (nèègu seuy en wolof). Il aborde régulièrement les causes de l'instabilité dans les ménages et propose des solutions inspirées des préceptes islamiques, notamment à travers des thèmes comme « Trois principes qui résolvent tous les problèmes conjugaux ».",
+  },
+  {
+    title: "Éducation et spiritualité",
+    desc: "Il anime des sessions d'exhortation religieuse, de récitation du Coran et d'invocations, notamment lors de séances matinales (après le Fadjr).",
+  },
+  {
+    title: "Présence numérique",
+    desc: "Il diffuse ses enseignements à travers sa chaîne officielle (Oustaz Niang Mbaye TV officiel) et collabore fréquemment avec des plateformes et émissions axées sur la promotion de la Sunnah au Sénégal (comme l'émission Ettu Sunnah).",
+  },
+];
 
 const values = [
   {
@@ -81,10 +98,9 @@ export default function AProposPage() {
                   Imam · Prédicateur du Qur&apos;an et de la Sunna
                 </p>
                 <p className="font-[var(--font-hanken)] text-[14.5px] text-[#3f463a] dark:text-[#d8d4c4] leading-relaxed mb-8 max-w-[520px]">
-                  Depuis de nombreuses années, l&apos;Oustaz se consacre à l&apos;enseignement du
-                  Qur&apos;an et de la Sunna selon la compréhension des pieux prédécesseurs (Salaf),
-                  à travers des conférences, tafsirs, khoutbas et séries de cours en wolof, arabe
-                  et français.
+                  Oustaz Niang Mbaye est un conférencier et prêcheur islamique sénégalais,
+                  particulièrement suivi pour ses interventions médiatiques et ses séminaires
+                  religieux axés sur la famille, l&apos;éducation et la société.
                 </p>
 
                 {/* Stats */}
@@ -126,6 +142,55 @@ export default function AProposPage() {
             <p className="arabic text-[#b58a3c] dark:text-[#e3c685] text-[20px]">
               اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ
             </p>
+          </section>
+
+          {/* Domaines d'intervention */}
+          <section>
+            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3 text-center">
+              Domaines d&apos;intervention
+            </p>
+            <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] md:text-[30px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-8 text-center max-w-[780px] mx-auto">
+              Ses interventions et programmes se concentrent principalement sur plusieurs thématiques majeures
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {topics.map((t) => (
+                <div
+                  key={t.title}
+                  className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[13px] p-6 flex flex-col gap-3"
+                >
+                  <h3 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20] dark:text-[#f2ede0] leading-snug">
+                    {t.title}
+                  </h3>
+                  <p className="font-[var(--font-hanken)] text-[13.5px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed">
+                    {t.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Réseaux sociaux */}
+          <section className="text-center">
+            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3">
+              Suivez l&apos;Oustaz
+            </p>
+            <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] md:text-[30px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-8">
+              Retrouvez ses enseignements sur vos plateformes préférées
+            </h2>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {socialLinks.map((s) => (
+                <a
+                  key={s.id}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-5 py-3 rounded-full border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] font-[var(--font-hanken)] font-semibold text-[14px] text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
+                >
+                  <SocialIcon id={s.id} className="w-[18px] h-[18px]" />
+                  {s.label}
+                </a>
+              ))}
+            </div>
           </section>
 
           {/* 4 valeurs */}
