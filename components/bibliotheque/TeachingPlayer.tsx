@@ -12,18 +12,15 @@ interface TeachingPlayerProps {
 export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
   const { state, play, pause, resume, seek } = usePlayer();
   const { updateProgress, getProgress } = useProgress();
-  const [localPos, setLocalPos] = useState(0);
+  const [localPos, setLocalPos] = useState(() => {
+    const saved = getProgress(teaching.id);
+    return saved && !saved.completed ? saved.positionSeconds : 0;
+  });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isThisPlaying =
     state.teaching?.id === teaching.id && state.isPlaying;
   const isThisLoaded = state.teaching?.id === teaching.id;
-
-  // Reprendre là où on s'était arrêté
-  useEffect(() => {
-    const saved = getProgress(teaching.id);
-    if (saved && !saved.completed) setLocalPos(saved.positionSeconds);
-  }, [teaching.id, getProgress]);
 
   // Tick de progression
   useEffect(() => {
@@ -63,6 +60,16 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
     seek(newPos);
     if (!isThisLoaded) play(teaching, newPos);
   }
+
+  function handleChapterClick(t: number) {
+    setLocalPos(t);
+    seek(t);
+    if (!isThisLoaded) play(teaching, t);
+  }
+
+  const currentChapterIndex = teaching.chapters
+    ? teaching.chapters.reduce((acc, ch, i) => (ch.timeSeconds <= localPos ? i : acc), -1)
+    : -1;
 
   return (
     <div className="bg-[#232a20] rounded-[14px] overflow-hidden">
@@ -128,11 +135,37 @@ export default function TeachingPlayer({ teaching }: TeachingPlayerProps) {
             className="h-full bg-[#b58a3c] rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
+          {teaching.chapters?.map((ch, i) => (
+            <div
+              key={i}
+              className="absolute top-1/2 -translate-y-1/2 w-[2px] h-2 bg-[rgba(251,249,243,0.6)] pointer-events-none"
+              style={{ left: `${(ch.timeSeconds / teaching.durationSeconds) * 100}%` }}
+            />
+          ))}
           <div
             className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[#b58a3c] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             style={{ left: `calc(${progress}% - 6px)` }}
           />
         </div>
+
+        {/* Chapitrage */}
+        {teaching.chapters && teaching.chapters.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" aria-label="Chapitres">
+            {teaching.chapters.map((ch, i) => (
+              <button
+                key={i}
+                onClick={() => handleChapterClick(ch.timeSeconds)}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-[11.5px] font-[var(--font-hanken)] font-medium border transition-colors ${
+                  i === currentChapterIndex
+                    ? "bg-[#b58a3c] border-[#b58a3c] text-[#232a20]"
+                    : "border-[rgba(251,249,243,0.25)] text-[rgba(251,249,243,0.7)] hover:border-[#b58a3c] hover:text-[#fbf9f3]"
+                }`}
+              >
+                {fmtTime(ch.timeSeconds)} · {ch.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Contrôles + temps */}
         <div className="flex items-center gap-3">

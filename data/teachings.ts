@@ -18,6 +18,12 @@ export const teachings: Teaching[] = [
     episodeNumber: 1,
     level: "intermédiaire",
     arabicVerse: "الْحَمْدُ لِلَّهِ الَّذِي أَنزَلَ عَلَىٰ عَبْدِهِ الْكِتَابَ",
+    chapters: [
+      { label: "Introduction", timeSeconds: 0 },
+      { label: "Lecture des versets d'ouverture", timeSeconds: 360 },
+      { label: "Explication verset par verset", timeSeconds: 1200 },
+      { label: "Questions & réponses", timeSeconds: 3600 },
+    ],
   },
   {
     id: "2",
@@ -145,6 +151,12 @@ export const teachings: Teaching[] = [
     episodeNumber: 1,
     level: "avancé",
     arabicVerse: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+    chapters: [
+      { label: "Introduction", timeSeconds: 0 },
+      { label: "Les noms d'Allah", timeSeconds: 480 },
+      { label: "Les attributs divins", timeSeconds: 1800 },
+      { label: "Conclusion", timeSeconds: 4500 },
+    ],
   },
   {
     id: "10",
