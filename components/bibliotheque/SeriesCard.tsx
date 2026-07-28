@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { Series } from "@/lib/types";
 import { getSeriesEpisodes } from "@/data/teachings";
+import SeriesProgress from "./SeriesProgress";
 
 const themeLabel: Record<string, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -68,6 +71,8 @@ export default function SeriesCard({ series }: SeriesCardProps) {
           <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] leading-relaxed line-clamp-2 mb-3">
             {series.description}
           </p>
+
+          <SeriesProgress episodes={episodes} variant="compact" />
 
           {/* Langue + CTA */}
           <div className="flex items-center justify-between">
