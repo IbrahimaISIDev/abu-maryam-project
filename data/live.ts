@@ -6,7 +6,7 @@ export const liveStatus: LiveStatus = {
   arabicVerse: "مكانة الله في قلوبنا",
   viewers: 1248,
   streamUrl: null,
-  youtubeChannelId: null, // À renseigner : ID de la chaîne YouTube
+  youtubeChannelId: "UCiMv6OE5QEAZsGVaqJUuhYg", // Oustaz Niang Mbaye TV officiel
   startedAt: "2026-07-15T20:30:00",
   hostName: "Oustaz Niang Mbaye (H.A)",
   description:
