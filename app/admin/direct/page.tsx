@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { liveStatus } from "@/data/live";
 import { useToast } from "@/contexts/ToastContext";
@@ -13,26 +13,22 @@ interface DirectConfig {
   channelId: string;
 }
 
+function readStoredConfig(): DirectConfig | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function DirectAdminPage() {
   const toast = useToast();
-  const [isLive, setIsLive] = useState(liveStatus.isLive);
-  const [liveTitle, setLiveTitle] = useState(liveStatus.title ?? "");
-  const [channelId, setChannelId] = useState(liveStatus.youtubeChannelId ?? "");
+  const [isLive, setIsLive] = useState(() => readStoredConfig()?.isLive ?? liveStatus.isLive);
+  const [liveTitle, setLiveTitle] = useState(() => readStoredConfig()?.liveTitle ?? liveStatus.title ?? "");
+  const [channelId, setChannelId] = useState(() => readStoredConfig()?.channelId ?? liveStatus.youtubeChannelId ?? "");
   const [isDirty, setIsDirty] = useState(false);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const config: DirectConfig = JSON.parse(stored);
-        setIsLive(config.isLive);
-        setLiveTitle(config.liveTitle);
-        setChannelId(config.channelId);
-      }
-    } catch {
-      // localStorage unavailable or invalid JSON — ignore
-    }
-  }, []);
 
   function markDirty() {
     setIsDirty(true);

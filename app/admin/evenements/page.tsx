@@ -146,7 +146,7 @@ export default function EvenementsAdminPage() {
         </div>
         {agenda.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-12">
-            <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Aucun créneau pour l'instant</p>
+            <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Aucun créneau pour l&apos;instant</p>
           </div>
         ) : (
           <ul className="divide-y divide-[#f0ece3]">
@@ -221,7 +221,7 @@ export default function EvenementsAdminPage() {
               />
             </div>
             <div>
-              <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">Date limite d'inscription</label>
+              <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">Date limite d&apos;inscription</label>
               <input type="date" value={semEdit.registrationDeadline ?? ""} onChange={(e) => setSemEdit({ ...semEdit, registrationDeadline: e.target.value })}
                 className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]"
               />

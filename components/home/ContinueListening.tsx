@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import ContentCard from "@/components/ui/ContentCard";
 import { useProgress } from "@/hooks/useProgress";
@@ -8,19 +8,17 @@ import { getTeachingById } from "@/data/teachings";
 import type { Teaching, TeachingProgress } from "@/lib/types";
 
 export default function ContinueListening() {
-  const { getInProgress, getProgress } = useProgress();
-  const [items, setItems] = useState<{ teaching: Teaching; prog: TeachingProgress }[]>([]);
-
-  useEffect(() => {
-    const inProgress = getInProgress();
-    const resolved = inProgress
-      .map((p) => {
-        const t = getTeachingById(p.teachingId);
-        return t ? { teaching: t, prog: p } : null;
-      })
-      .filter(Boolean) as { teaching: Teaching; prog: TeachingProgress }[];
-    setItems(resolved);
-  }, [getInProgress]);
+  const { getInProgress } = useProgress();
+  const items = useMemo(
+    () =>
+      getInProgress()
+        .map((p) => {
+          const t = getTeachingById(p.teachingId);
+          return t ? { teaching: t, prog: p } : null;
+        })
+        .filter((x): x is { teaching: Teaching; prog: TeachingProgress } => x !== null),
+    [getInProgress]
+  );
 
   if (items.length === 0) return null;
 

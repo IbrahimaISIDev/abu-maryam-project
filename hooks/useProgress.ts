@@ -1,66 +1,73 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import type { TeachingProgress } from "@/lib/types";
 
 const STORAGE_KEY = "abu-maryam-tv:progress";
+const listeners = new Set<() => void>();
+const emptySnapshot: Record<string, TeachingProgress> = {};
+let cache: Record<string, TeachingProgress> | null = null;
 
-function loadProgress(): Record<string, TeachingProgress> {
-  if (typeof window === "undefined") return {};
+function readFromStorage(): Record<string, TeachingProgress> {
+  if (typeof window === "undefined") return emptySnapshot;
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
   } catch {
-    return {};
+    return emptySnapshot;
   }
 }
 
-function saveProgress(data: Record<string, TeachingProgress>) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function getSnapshot(): Record<string, TeachingProgress> {
+  if (cache === null) cache = readFromStorage();
+  return cache;
+}
+
+function getServerSnapshot(): Record<string, TeachingProgress> {
+  return emptySnapshot;
+}
+
+function commit(next: Record<string, TeachingProgress>) {
+  cache = next;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
 }
 
 export function useProgress() {
-  const [data, setData] = useState<Record<string, TeachingProgress>>({});
-
-  useEffect(() => {
-    setData(loadProgress());
-  }, []);
+  const data = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const updateProgress = useCallback(
     (teachingId: string, positionSeconds: number, durationSeconds: number) => {
-      setData((prev) => {
-        const completed = positionSeconds / durationSeconds > 0.9;
-        const next: Record<string, TeachingProgress> = {
-          ...prev,
-          [teachingId]: {
-            teachingId,
-            positionSeconds,
-            completed,
-            lastPlayedAt: new Date().toISOString(),
-          },
-        };
-        saveProgress(next);
-        return next;
+      const completed = positionSeconds / durationSeconds > 0.9;
+      commit({
+        ...getSnapshot(),
+        [teachingId]: {
+          teachingId,
+          positionSeconds,
+          completed,
+          lastPlayedAt: new Date().toISOString(),
+        },
       });
     },
     []
   );
 
   const markCompleted = useCallback((teachingId: string) => {
-    setData((prev) => {
-      const next = {
-        ...prev,
-        [teachingId]: {
-          ...(prev[teachingId] ?? {
-            teachingId,
-            positionSeconds: 0,
-            lastPlayedAt: new Date().toISOString(),
-          }),
-          completed: true,
-        },
-      };
-      saveProgress(next);
-      return next;
+    const current = getSnapshot();
+    commit({
+      ...current,
+      [teachingId]: {
+        ...(current[teachingId] ?? {
+          teachingId,
+          positionSeconds: 0,
+          lastPlayedAt: new Date().toISOString(),
+        }),
+        completed: true,
+      },
     });
   }, []);
 

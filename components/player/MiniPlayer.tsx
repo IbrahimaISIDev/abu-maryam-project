@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePlayer } from "@/contexts/PlayerContext";
 
@@ -9,13 +9,7 @@ const typeIcon = { video: "▶", audio: "♪" };
 export default function MiniPlayer() {
   const { state, pause, resume, close, seek, audioRef } = usePlayer();
   const { teaching, isPlaying, positionSeconds } = state;
-  const [progress, setProgress] = useState(0);
-
-  // Sync barre de progression
-  useEffect(() => {
-    if (!teaching) return;
-    setProgress((positionSeconds / teaching.durationSeconds) * 100);
-  }, [positionSeconds, teaching]);
+  const progress = teaching ? (positionSeconds / teaching.durationSeconds) * 100 : 0;
 
   // Tick de progression simulé (pour les placeholders sans vrai audio)
   useEffect(() => {

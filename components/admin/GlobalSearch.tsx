@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { teachings } from "@/data/teachings";
 import { registrations } from "@/data/registrations";
@@ -51,36 +51,39 @@ function search(q: string): Result[] {
 export default function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Result[]>([]);
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const results = useMemo(() => search(query), [query]);
+
+  function handleQueryChange(value: string) {
+    setQuery(value);
+    setSelected(0);
+  }
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setOpen((o) => !o);
+        if (!open) {
+          setQuery("");
+          setSelected(0);
+        }
+        setOpen(!open);
       }
       if (e.key === "Escape") setOpen(false);
     }
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, []);
-
-  useEffect(() => {
-    if (open) {
-      setQuery("");
-      setResults([]);
-      setSelected(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
   }, [open]);
 
+  // Focus de l'input à l'ouverture — effet de synchronisation avec le DOM, pas de setState ici
   useEffect(() => {
-    setResults(search(query));
-    setSelected(0);
-  }, [query]);
+    if (!open) return;
+    const id = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(id);
+  }, [open]);
 
   function handleKey(e: React.KeyboardEvent) {
     if (e.key === "ArrowDown") { e.preventDefault(); setSelected((s) => Math.min(s + 1, results.length - 1)); }
@@ -110,7 +113,7 @@ export default function GlobalSearch() {
           <input
             ref={inputRef}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => handleQueryChange(e.target.value)}
             onKeyDown={handleKey}
             placeholder="Rechercher un enseignement, un inscrit…"
             className="flex-1 bg-transparent font-[var(--font-hanken)] text-[15px] text-[#232a20] placeholder:text-[#9a9483] outline-none"

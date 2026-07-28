@@ -73,7 +73,7 @@ export default function SeriesAdminPage() {
             <rect x="3" y="10" width="18" height="4" rx="1" />
             <rect x="3" y="17" width="18" height="4" rx="1" />
           </svg>
-          <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Aucune série pour l'instant</p>
+          <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Aucune série pour l&apos;instant</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -185,7 +185,7 @@ export default function SeriesAdminPage() {
               </div>
             </div>
             <div>
-              <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">Nombre total d'épisodes prévus</label>
+              <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">Nombre total d&apos;épisodes prévus</label>
               <input
                 type="number"
                 min={1}
