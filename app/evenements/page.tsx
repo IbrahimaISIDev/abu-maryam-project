@@ -22,7 +22,7 @@ export default function EvenementsPage() {
       <Navbar />
       <MobileHeader title="Événements" />
 
-      <main className="pb-20 md:pb-0">
+      <main id="main-content" className="pb-20 md:pb-0">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-8 space-y-12">
           <SeminarHero />
           <AgendaList />

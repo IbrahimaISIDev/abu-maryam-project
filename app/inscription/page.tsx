@@ -22,7 +22,7 @@ export default function InscriptionPage() {
       <Navbar />
       <MobileHeader title="Inscription" />
 
-      <main className="pb-20 md:pb-0">
+      <main id="main-content" className="pb-20 md:pb-0">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-8">
           <div className="flex flex-col md:grid md:grid-cols-[400px_1fr] gap-6 md:gap-8 items-start">
             <SeminarRecap />

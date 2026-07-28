@@ -25,7 +25,7 @@ export default function EnDirectPage() {
       <Navbar />
       <MobileHeader title="En direct" />
 
-      <main className="pb-20 md:pb-0">
+      <main id="main-content" className="pb-20 md:pb-0">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-6 md:py-8">
           <div className="flex flex-col md:grid md:grid-cols-[1fr_340px] gap-6">
             {/* Colonne principale */}
