@@ -1,7 +1,7 @@
 import { seminar } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
-import { formatTrainingDays, formatClosingOn, formatLimitedPlaces } from "@/lib/format";
+import { formatTrainingDays, formatClosingOn, formatLimitedPlaces, formatSeminarDateRange, formatSeminarSingleDate, formatLocation } from "@/lib/format";
 import { getSeminarField, getSeminarPerks } from "@/lib/content-i18n";
 
 export default function SeminarRecap({
@@ -34,7 +34,7 @@ export default function SeminarRecap({
           <span className="text-[#cda350] text-[16px] mt-0.5">📅</span>
           <div>
             <p dir="ltr" className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3] text-left">
-              08 → 15 Août 2026
+              {formatSeminarDateRange(seminar.dateStart, seminar.dateEnd, lang)}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
               {formatTrainingDays(8, lang)}
@@ -45,7 +45,7 @@ export default function SeminarRecap({
           <span className="text-[#cda350] text-[16px] mt-0.5">⏳</span>
           <div>
             <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3]">
-              {formatClosingOn("20 juillet 2026", lang)}
+              {formatClosingOn(formatSeminarSingleDate(seminar.registrationDeadline, lang), lang)}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
               {formatLimitedPlaces(seminar.remainingPlaces, lang)}
@@ -56,7 +56,7 @@ export default function SeminarRecap({
           <span className="text-[#cda350] text-[16px] mt-0.5">📍</span>
           <div>
             <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3]">
-              {seminar.location}
+              {formatLocation(seminar.location, lang)}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
               {dict.onsiteNote}

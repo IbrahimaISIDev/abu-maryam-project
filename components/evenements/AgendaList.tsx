@@ -5,7 +5,7 @@ import Link from "@/components/ui/LocalizedLink";
 import { agendaItems } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
-import { formatUntilDate, formatEventCta } from "@/lib/format";
+import { formatUntilDate, formatEventCta, formatLocation } from "@/lib/format";
 import { getAgendaItemTitle } from "@/lib/content-i18n";
 
 export default function AgendaList({ dict, lang }: { dict: Dictionary["events"]; lang: Locale }) {
@@ -87,7 +87,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
                   {getAgendaItemTitle(item.id, item.title, lang)}
                 </h3>
                 <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973] mt-1">
-                  📍 {item.location}
+                  📍 {formatLocation(item.location, lang)}
                   {item.dateEnd && ` · ${formatUntilDate(parseDate(item.dateEnd).day, parseDate(item.dateEnd).month, lang)}`}
                 </p>
               </div>

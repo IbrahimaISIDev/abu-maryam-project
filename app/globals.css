@@ -69,8 +69,11 @@ body {
   }
 }
 
-/* ── Texte arabe toujours RTL ── */
-[lang="ar"],
+/* ── Texte arabe toujours RTL ──
+   Ciblé uniquement sur .arabic/.amiri (versets, extraits ponctuels) : ne pas
+   ajouter [lang="ar"] ici, ce sélecteur matche aussi <html lang="ar">
+   (site entier en arabe) et son unicode-bidi: embed casse la résolution
+   bidi des isolats RTL imbriqués dans les dates/chaînes mixtes du contenu. */
 .arabic,
 .amiri {
   direction: rtl;

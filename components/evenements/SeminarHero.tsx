@@ -6,7 +6,7 @@ import Image from "next/image";
 import { seminar } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
-import { formatPlacesFraction } from "@/lib/format";
+import { formatPlacesFraction, formatSeminarDateRange, formatSeminarSingleDate, formatLocation } from "@/lib/format";
 import { getSeminarField } from "@/lib/content-i18n";
 
 function useCountdown(targetDate: string) {
@@ -100,7 +100,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
               {dict.datesLabel}
             </p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
-              08 → 15 Août 2026
+              {formatSeminarDateRange(seminar.dateStart, seminar.dateEnd, lang)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
@@ -108,7 +108,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
               {dict.registerBeforeLabel}
             </p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
-              20 Juillet 2026
+              {formatSeminarSingleDate(seminar.registrationDeadline, lang)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
@@ -124,7 +124,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
               {dict.locationLabel}
             </p>
             <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685]">
-              {seminar.location}
+              {formatLocation(seminar.location, lang)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">

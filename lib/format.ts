@@ -164,3 +164,55 @@ export function formatLevel(value: string, lang: Locale): string {
   }
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+const monthsFr = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+const monthsAr = ["يناير", "فبراير", "مارس", "أبريل", "ماي", "يونيو", "يوليو", "أوت", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+function parseIsoDate(iso: string): { day: number; month: number; year: number } {
+  const [year, month, day] = iso.split("-").map(Number);
+  return { day, month, year };
+}
+
+// U+2067 RLI / U+2069 PDI — isolent le nom de mois arabe (RTL) à l'intérieur
+// d'une chaîne par ailleurs rendue en dir="ltr", pour empêcher l'algorithme
+// bidi de réordonner l'ensemble des jetons (jours, flèche, année) autour de lui.
+function isolateRtl(word: string): string {
+  return `⁧${word}⁩`;
+}
+
+/** Formate une plage de dates (ex. seminar.dateStart → dateEnd), isolée en dir="ltr" par l'appelant. */
+export function formatSeminarDateRange(startIso: string, endIso: string, lang: Locale): string {
+  const months = lang === "ar" ? monthsAr : monthsFr;
+  const start = parseIsoDate(startIso);
+  const end = parseIsoDate(endIso);
+  const month = (m: number) => (lang === "ar" ? isolateRtl(months[m]) : months[m]);
+  if (start.month === end.month && start.year === end.year) {
+    return `${String(start.day).padStart(2, "0")} → ${String(end.day).padStart(2, "0")} ${month(end.month - 1)} ${end.year}`;
+  }
+  return `${String(start.day).padStart(2, "0")} ${month(start.month - 1)} → ${String(end.day).padStart(2, "0")} ${month(end.month - 1)} ${end.year}`;
+}
+
+/** Formate une date unique (ex. date limite d'inscription), isolée en dir="ltr" par l'appelant. */
+export function formatSeminarSingleDate(iso: string, lang: Locale): string {
+  const months = lang === "ar" ? monthsAr : monthsFr;
+  const d = parseIsoDate(iso);
+  const month = lang === "ar" ? isolateRtl(months[d.month - 1]) : months[d.month - 1];
+  return `${String(d.day).padStart(2, "0")} ${month} ${d.year}`;
+}
+
+const locationWordsAr: [string, string][] = [
+  ["Grande Mosquée de", "الجامع الكبير في"],
+  ["Mosquée Al-Aqsa", "مسجد الأقصى"],
+  ["Centre Islamique", "المركز الإسلامي"],
+  ["En ligne", "عبر الإنترنت"],
+];
+
+/** Traduit les mots génériques d'un lieu (Mosquée, Centre Islamique, En ligne…) en gardant les noms de villes tels quels. */
+export function formatLocation(location: string, lang: Locale): string {
+  if (lang !== "ar") return location;
+  let result = location;
+  for (const [fr, ar] of locationWordsAr) {
+    result = result.replace(fr, ar);
+  }
+  return result;
+}

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { seminar } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
-import { formatSeminarPlacesRemaining } from "@/lib/format";
+import { formatSeminarPlacesRemaining, formatSeminarDateRange, formatSeminarSingleDate } from "@/lib/format";
 import { getSeminarField } from "@/lib/content-i18n";
 
 export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
@@ -38,13 +38,13 @@ export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
             <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarDatesLabel}</p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
-              08 → 15 Août 2026
+              {formatSeminarDateRange(seminar.dateStart, seminar.dateEnd, lang)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
             <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarClosingLabel}</p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
-              20 Juillet 2026
+              {formatSeminarSingleDate(seminar.registrationDeadline, lang)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
