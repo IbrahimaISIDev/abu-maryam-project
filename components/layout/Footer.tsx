@@ -1,9 +1,15 @@
+"use client";
+
 import Link from "@/components/ui/LocalizedLink";
 import SocialIcon from "@/components/ui/SocialIcon";
 import BrandMark from "@/components/ui/BrandMark";
 import { socialLinks } from "@/data/socials";
+import { useDictionary } from "@/contexts/DictionaryContext";
+import { formatSocialLabel } from "@/lib/format";
 
 export default function Footer() {
+  const { lang } = useDictionary();
+
   return (
     <footer className="bg-[#fbf9f3] dark:bg-[#20261b] border-t border-[#e2dac9] dark:border-[#3a4132] mt-16">
       <div className="max-w-[1280px] mx-auto px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-5">
@@ -21,8 +27,8 @@ export default function Footer() {
               href={s.href}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={s.label}
-              title={s.label}
+              aria-label={formatSocialLabel(s.id, s.label, lang)}
+              title={formatSocialLabel(s.id, s.label, lang)}
               className="w-[34px] h-[34px] rounded-full border border-[#d8d0bf] dark:border-[#454c3c] flex items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
             >
               <SocialIcon id={s.id} className="w-4 h-4" />

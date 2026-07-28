@@ -4,6 +4,7 @@ import Link from "@/components/ui/LocalizedLink";
 import type { Series } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
 import { getSeriesEpisodes } from "@/data/teachings";
+import { formatContentLanguage } from "@/lib/format";
 import SeriesProgress from "./SeriesProgress";
 
 const themeLabel: Record<string, string> = {
@@ -80,7 +81,7 @@ export default function SeriesCard({ series, lang }: SeriesCardProps) {
           {/* Langue + CTA */}
           <div className="flex items-center justify-between">
             <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973] uppercase tracking-wider">
-              {series.language}
+              {formatContentLanguage(series.language, lang)}
             </span>
             <span className="font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] dark:text-[#e3c685] group-hover:text-[#9e7832] dark:group-hover:text-[#cda350] transition-colors">
               {lang === "ar" ? "← ابدأ" : "Commencer →"}

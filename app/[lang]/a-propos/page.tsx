@@ -20,7 +20,7 @@ import SocialIcon from "@/components/ui/SocialIcon";
 import { teachings } from "@/data/teachings";
 import { socialLinks } from "@/data/socials";
 import { getDictionary } from "@/dictionaries";
-import { formatAboutCtaParagraph } from "@/lib/format";
+import { formatAboutCtaParagraph, formatSocialLabel } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
 
 const topics = [
@@ -193,7 +193,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
                   className="flex items-center gap-2.5 px-5 py-3 rounded-full border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] font-[var(--font-hanken)] font-semibold text-[14px] text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
                 >
                   <SocialIcon id={s.id} className="w-[18px] h-[18px]" />
-                  {s.label}
+                  {formatSocialLabel(s.id, s.label, lang)}
                 </a>
               ))}
             </div>

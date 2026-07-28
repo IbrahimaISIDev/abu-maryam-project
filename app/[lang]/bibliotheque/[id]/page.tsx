@@ -16,7 +16,7 @@ import { getTeachingById, getSeriesEpisodes, getRelatedTeachings } from "@/data/
 import { getSeriesById } from "@/data/series";
 import type { Theme } from "@/lib/types";
 import { getDictionary } from "@/dictionaries";
-import { formatSeriesLabel } from "@/lib/format";
+import { formatSeriesLabel, formatContentLanguage, formatLevel } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
 
 const themeLabel: Record<string, string> = {
@@ -136,7 +136,7 @@ export default async function TeachingDetailPage({
                   </GlossaryTerm>
                   {teaching.level && (
                     <span className={`text-[11px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full ${levelColor[teaching.level]}`}>
-                      {teaching.level.charAt(0).toUpperCase() + teaching.level.slice(1)}
+                      {formatLevel(teaching.level, lang)}
                     </span>
                   )}
                   {series && teaching.episodeNumber && (
@@ -162,7 +162,7 @@ export default async function TeachingDetailPage({
                     </p>
                     <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
                       {publishedDate} · {teaching.duration} ·{" "}
-                      {teaching.language.charAt(0).toUpperCase() + teaching.language.slice(1)}
+                      {formatContentLanguage(teaching.language, lang)}
                     </p>
                   </div>
                 </div>

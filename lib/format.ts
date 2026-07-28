@@ -88,3 +88,50 @@ export function formatAboutCtaParagraph(n: number, lang: Locale): string {
     ? `${n} درساً مجانياً، متاحة في أي وقت، لترتقي بروحانيتك.`
     : `${n} enseignements gratuits, accessibles à tout moment, pour vous élever spirituellement.`;
 }
+
+export function formatContentLanguage(value: string, lang: Locale): string {
+  if (lang === "ar") {
+    if (value === "wolof") return "الولوف";
+    if (value === "arabe") return "العربية";
+    return value;
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+export function formatDayShort(value: string, lang: Locale): string {
+  if (lang === "ar") {
+    const map: Record<string, string> = { Ven: "جمعة", Sam: "سبت", Dim: "أحد" };
+    return map[value] ?? value;
+  }
+  return value;
+}
+
+export function formatEventCta(label: string, lang: Locale): string {
+  if (lang === "ar") {
+    const map: Record<string, string> = {
+      "S'inscrire": "التسجيل",
+      "Regarder en direct": "مشاهدة البث المباشر",
+      "Rejoindre": "الانضمام",
+      "Voir": "عرض",
+    };
+    return map[label] ?? label;
+  }
+  return label;
+}
+
+export function formatSocialLabel(id: string, label: string, lang: Locale): string {
+  if (lang === "ar" && id === "telegram-group") return "مجموعة تيليجرام";
+  return label;
+}
+
+export function formatLevel(value: string, lang: Locale): string {
+  if (lang === "ar") {
+    const map: Record<string, string> = {
+      "débutant": "مبتدئ",
+      "intermédiaire": "متوسط",
+      "avancé": "متقدم",
+    };
+    return map[value] ?? value;
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}

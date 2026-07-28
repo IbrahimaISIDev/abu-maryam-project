@@ -5,7 +5,7 @@ import Link from "@/components/ui/LocalizedLink";
 import { agendaItems } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
-import { formatUntilDate } from "@/lib/format";
+import { formatUntilDate, formatEventCta } from "@/lib/format";
 
 export default function AgendaList({ dict, lang }: { dict: Dictionary["events"]; lang: Locale }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
@@ -102,7 +102,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
                         : "border border-[#d8d0bf] dark:border-[#454c3c] text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c]"
                     }`}
                   >
-                    {item.ctaLabel}
+                    {formatEventCta(item.ctaLabel, lang)}
                   </Link>
                 </div>
               )}

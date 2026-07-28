@@ -2,7 +2,7 @@ import { schedule, replays } from "@/data/live";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
-import { formatDaysAgo } from "@/lib/format";
+import { formatDaysAgo, formatDayShort } from "@/lib/format";
 
 export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   return (
@@ -17,7 +17,7 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
             <li key={i} className="flex items-start gap-3">
               <div className="text-center shrink-0">
                 <p className="font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase">
-                  {item.dayShort}
+                  {formatDayShort(item.dayShort, lang)}
                 </p>
                 <p className="font-[var(--font-hanken)] text-[12.5px] font-bold text-[#3c4a37] dark:text-[#a9c19a]">
                   {item.time}
