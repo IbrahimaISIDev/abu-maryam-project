@@ -31,17 +31,17 @@ export default function ConfirmModal({
         className="absolute inset-0 bg-[rgba(35,42,32,0.55)] backdrop-blur-[2px]"
         onClick={onCancel}
       />
-      <div className="relative bg-[#fbf9f3] border border-[#e2dac9] rounded-[14px] shadow-xl p-6 w-full max-w-[380px]">
-        <h2 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] mb-1.5">
+      <div className="relative bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[14px] shadow-xl p-6 w-full max-w-[380px]">
+        <h2 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] dark:text-[#f2ede0] mb-1.5">
           {title}
         </h2>
-        <p className="font-[var(--font-hanken)] text-[13.5px] text-[#6f7363] leading-relaxed mb-6">
+        <p className="font-[var(--font-hanken)] text-[13.5px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed mb-6">
           {message}
         </p>
         <div className="flex gap-3 justify-end">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-[9px] font-[var(--font-hanken)] text-[13px] font-medium text-[#6f7363] border border-[#e2dac9] hover:bg-[#f0ece3] transition-colors"
+            className="px-4 py-2 rounded-[9px] font-[var(--font-hanken)] text-[13px] font-medium text-[#6f7363] dark:text-[#b7b2a0] border border-[#e2dac9] dark:border-[#3a4132] hover:bg-[#f0ece3] dark:hover:bg-[rgba(255,255,255,0.05)] transition-colors"
           >
             Annuler
           </button>

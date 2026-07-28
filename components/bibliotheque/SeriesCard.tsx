@@ -11,15 +11,15 @@ const themeLabel: Record<string, string> = {
   sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
 };
 const themeColor: Record<string, { bg: string; text: string }> = {
-  tafsir:   { bg: "bg-[#eef0e6]", text: "text-[#5f7050]" },
-  tawhid:   { bg: "bg-[rgba(181,138,60,0.1)]", text: "text-[#b58a3c]" },
-  sahaba:   { bg: "bg-[rgba(138,47,41,0.08)]", text: "text-[#8a2f29]" },
-  akhlaq:   { bg: "bg-[#eef0e6]", text: "text-[#5f7050]" },
-  sunna:    { bg: "bg-[rgba(181,138,60,0.1)]", text: "text-[#b58a3c]" },
-  famille:  { bg: "bg-[rgba(138,47,41,0.08)]", text: "text-[#8a2f29]" },
-  salat:    { bg: "bg-[#eef0e6]", text: "text-[#5f7050]" },
-  khoutba:  { bg: "bg-[rgba(181,138,60,0.1)]", text: "text-[#b58a3c]" },
-  conférence: { bg: "bg-[rgba(138,47,41,0.08)]", text: "text-[#8a2f29]" },
+  tafsir:   { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
+  tawhid:   { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#b58a3c] dark:text-[#e3c685]" },
+  sahaba:   { bg: "bg-[rgba(138,47,41,0.08)] dark:bg-[rgba(224,139,129,0.18)]", text: "text-[#8a2f29] dark:text-[#e08b81]" },
+  akhlaq:   { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
+  sunna:    { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#b58a3c] dark:text-[#e3c685]" },
+  famille:  { bg: "bg-[rgba(138,47,41,0.08)] dark:bg-[rgba(224,139,129,0.18)]", text: "text-[#8a2f29] dark:text-[#e08b81]" },
+  salat:    { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
+  khoutba:  { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#b58a3c] dark:text-[#e3c685]" },
+  conférence: { bg: "bg-[rgba(138,47,41,0.08)] dark:bg-[rgba(224,139,129,0.18)]", text: "text-[#8a2f29] dark:text-[#e08b81]" },
 };
 
 interface SeriesCardProps {
@@ -30,11 +30,11 @@ export default function SeriesCard({ series }: SeriesCardProps) {
   const episodes = getSeriesEpisodes(series.id);
   const firstEp = episodes[0];
   const href = firstEp ? `/bibliotheque/${firstEp.id}` : "/bibliotheque";
-  const colors = themeColor[series.theme] ?? { bg: "bg-[#eef0e6]", text: "text-[#5f7050]" };
+  const colors = themeColor[series.theme] ?? { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" };
 
   return (
     <Link href={href} className="group block">
-      <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] overflow-hidden hover:border-[#d8d0bf] hover:shadow-sm transition-all">
+      <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[12px] overflow-hidden hover:border-[#d8d0bf] dark:hover:border-[#454c3c] hover:shadow-sm transition-all">
         {/* Tête de carte — olive foncé */}
         <div className="relative bg-[#3c4a37] px-5 pt-5 pb-6 min-h-[120px] flex flex-col justify-between">
           {/* Verset arabe */}
@@ -64,11 +64,11 @@ export default function SeriesCard({ series }: SeriesCardProps) {
             {themeLabel[series.theme] ?? series.theme}
           </span>
 
-          <h3 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20] leading-tight mb-1.5 group-hover:text-[#3c4a37] transition-colors">
+          <h3 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-1.5 group-hover:text-[#3c4a37] dark:group-hover:text-[#a9c19a] transition-colors">
             {series.title}
           </h3>
 
-          <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] leading-relaxed line-clamp-2 mb-3">
+          <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed line-clamp-2 mb-3">
             {series.description}
           </p>
 
@@ -76,10 +76,10 @@ export default function SeriesCard({ series }: SeriesCardProps) {
 
           {/* Langue + CTA */}
           <div className="flex items-center justify-between">
-            <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] uppercase tracking-wider">
+            <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973] uppercase tracking-wider">
               {series.language}
             </span>
-            <span className="font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] group-hover:text-[#9e7832] transition-colors">
+            <span className="font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] dark:text-[#e3c685] group-hover:text-[#9e7832] dark:group-hover:text-[#cda350] transition-colors">
               Commencer →
             </span>
           </div>

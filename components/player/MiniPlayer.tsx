@@ -27,9 +27,9 @@ export default function MiniPlayer() {
   const timeStr = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
   return (
-    <div className="fixed bottom-[64px] md:bottom-0 left-0 right-0 z-40 bg-[#fbf9f3] border-t border-[#e2dac9] shadow-[0_-2px_12px_rgba(0,0,0,0.08)]">
+    <div className="fixed bottom-[64px] md:bottom-0 left-0 right-0 z-40 bg-[#fbf9f3] dark:bg-[#20261b] border-t border-[#e2dac9] dark:border-[#3a4132] shadow-[0_-2px_12px_rgba(0,0,0,0.08)]">
       {/* Barre de progression */}
-      <div className="h-[3px] bg-[#e2dac9] relative">
+      <div className="h-[3px] bg-[#e2dac9] dark:bg-[#3a4132] relative">
         <div
           className="h-full bg-[#b58a3c] transition-all duration-500"
           style={{ width: `${progress}%` }}
@@ -38,7 +38,7 @@ export default function MiniPlayer() {
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-10 py-2.5 flex items-center gap-3">
         {/* Icône type */}
-        <div className="w-9 h-9 rounded-full bg-[#eef0e6] flex items-center justify-center text-[#3c4a37] text-[14px] shrink-0">
+        <div className="w-9 h-9 rounded-full bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)] flex items-center justify-center text-[#3c4a37] dark:text-[#a9c19a] text-[14px] shrink-0">
           {typeIcon[teaching.type]}
         </div>
 
@@ -46,11 +46,11 @@ export default function MiniPlayer() {
         <div className="flex-1 min-w-0">
           <Link
             href={`/bibliotheque/${teaching.id}`}
-            className="font-[var(--font-hanken)] font-semibold text-[13px] text-[#232a20] line-clamp-1 hover:text-[#b58a3c] transition-colors"
+            className="font-[var(--font-hanken)] font-semibold text-[13px] text-[#232a20] dark:text-[#f2ede0] line-clamp-1 hover:text-[#b58a3c] transition-colors"
           >
             {teaching.title}
           </Link>
-          <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483]">
+          <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">
             {timeStr} · Oustaz Niang Mbaye (H.A)
           </p>
         </div>
@@ -60,7 +60,7 @@ export default function MiniPlayer() {
           {/* Reculer 15s */}
           <button
             onClick={() => seek(Math.max(0, positionSeconds - 15))}
-            className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] hover:text-[#3c4a37] transition-colors"
+            className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
             aria-label="Reculer 15 secondes"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -91,7 +91,7 @@ export default function MiniPlayer() {
           {/* Avancer 30s */}
           <button
             onClick={() => seek(Math.min(teaching.durationSeconds, positionSeconds + 30))}
-            className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] hover:text-[#3c4a37] transition-colors"
+            className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
             aria-label="Avancer 30 secondes"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -104,7 +104,7 @@ export default function MiniPlayer() {
           {/* Fermer */}
           <button
             onClick={close}
-            className="w-8 h-8 flex items-center justify-center text-[#9a9483] hover:text-[#3c4a37] transition-colors"
+            className="w-8 h-8 flex items-center justify-center text-[#9a9483] dark:text-[#8f8973] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
             aria-label="Fermer le player"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

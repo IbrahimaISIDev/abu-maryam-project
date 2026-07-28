@@ -17,10 +17,10 @@ export default function SeriesProgress({ episodes, variant = "full" }: SeriesPro
     if (completed === 0) return null;
     return (
       <div className="mt-2">
-        <div className="h-[4px] bg-[#e2dac9] rounded-full overflow-hidden">
+        <div className="h-[4px] bg-[#e2dac9] dark:bg-[#3a4132] rounded-full overflow-hidden">
           <div className="h-full bg-[#b58a3c] rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
-        <p className="font-[var(--font-hanken)] text-[10.5px] text-[#9a9483] mt-1">
+        <p className="font-[var(--font-hanken)] text-[10.5px] text-[#9a9483] dark:text-[#8f8973] mt-1">
           {completed} / {episodes.length} suivis
         </p>
       </div>

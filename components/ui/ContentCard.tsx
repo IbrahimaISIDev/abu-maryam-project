@@ -22,7 +22,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
   const thumbH = size === "compact" ? "h-[110px]" : "h-[148px]";
 
   return (
-    <div className="group bg-[#fbf9f3] rounded-[9px] overflow-hidden border border-[#e2dac9] hover:border-[#d8d0bf] transition-colors cursor-pointer">
+    <div className="group bg-[#fbf9f3] dark:bg-[#20261b] rounded-[9px] overflow-hidden border border-[#e2dac9] dark:border-[#3a4132] hover:border-[#d8d0bf] dark:hover:border-[#454c3c] transition-colors cursor-pointer">
       {/* Miniature */}
       <div className={`relative ${thumbH} overflow-hidden`}>
         <ImagePlaceholder className="w-full h-full" />
@@ -64,14 +64,14 @@ export default function ContentCard({ teaching, size = "default", progressPercen
 
       {/* Méta */}
       <div className="p-3">
-        <p className="text-[11.5px] font-medium text-[#b58a3c] font-[var(--font-hanken)] mb-1">
+        <p className="text-[11.5px] font-medium text-[#b58a3c] dark:text-[#e3c685] font-[var(--font-hanken)] mb-1">
           {typeIcon[teaching.type]} {typeLabel[teaching.type]} · {teaching.language.charAt(0).toUpperCase() + teaching.language.slice(1)}
         </p>
-        <h3 className="text-[19px] font-semibold text-[#232a20] leading-tight font-[var(--font-cormorant)] line-clamp-2">
+        <h3 className="text-[19px] font-semibold text-[#232a20] dark:text-[#f2ede0] leading-tight font-[var(--font-cormorant)] line-clamp-2">
           {teaching.title}
         </h3>
         {size === "default" && (
-          <p className="mt-1 text-[11px] text-[#9a9483] font-[var(--font-hanken)]">
+          <p className="mt-1 text-[11px] text-[#9a9483] dark:text-[#8f8973] font-[var(--font-hanken)]">
             {themeLabel[teaching.theme]}
           </p>
         )}

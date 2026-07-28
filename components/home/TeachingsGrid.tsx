@@ -8,12 +8,12 @@ export default function TeachingsGrid() {
   return (
     <section>
       <div className="flex items-center justify-between mb-5">
-        <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20]">
+        <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0]">
           Derniers enseignements
         </h2>
         <Link
           href="/bibliotheque"
-          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] hover:text-[#9e7832] underline underline-offset-4 transition-colors hidden md:inline"
+          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] underline underline-offset-4 transition-colors hidden md:inline"
         >
           Voir tout →
         </Link>
@@ -30,7 +30,7 @@ export default function TeachingsGrid() {
       <div className="mt-4 md:hidden text-center">
         <Link
           href="/bibliotheque"
-          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] underline underline-offset-4"
+          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] dark:text-[#e3c685] underline underline-offset-4"
         >
           Voir tout →
         </Link>

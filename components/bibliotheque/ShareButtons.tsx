@@ -50,7 +50,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
 
   return (
     <div className="flex flex-wrap gap-2">
-      <span className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-widest self-center">
+      <span className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase tracking-widest self-center">
         Partager
       </span>
       {share.map((s) =>
@@ -60,7 +60,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
             href={s.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e2dac9] bg-[#fbf9f3] font-[var(--font-hanken)] text-[12.5px] font-medium text-[#3f463a] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] font-[var(--font-hanken)] text-[12.5px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
             aria-label={`Partager sur ${s.label}`}
           >
             <span style={{ color: s.color }}>{s.icon}</span>
@@ -70,7 +70,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
           <button
             key={s.label}
             onClick={copyLink}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e2dac9] bg-[#fbf9f3] font-[var(--font-hanken)] text-[12.5px] font-medium text-[#3f463a] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] font-[var(--font-hanken)] text-[12.5px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
           >
             <span style={{ color: s.color }}>{s.icon}</span>
             {s.label}

@@ -16,12 +16,12 @@ export default function ImagePlaceholder({
       className={`flex flex-col items-center justify-center overflow-hidden ${className}`}
       style={{
         aspectRatio: aspectRatio ?? undefined,
-        backgroundColor: "#e2dac9",
+        backgroundColor: "var(--placeholder-bg)",
         backgroundImage:
-          "repeating-linear-gradient(45deg, rgba(216,208,191,0.45) 0px, rgba(216,208,191,0.45) 1px, transparent 1px, transparent 8px), repeating-linear-gradient(-45deg, rgba(216,208,191,0.45) 0px, rgba(216,208,191,0.45) 1px, transparent 1px, transparent 8px)",
+          "repeating-linear-gradient(45deg, var(--placeholder-pattern) 0px, var(--placeholder-pattern) 1px, transparent 1px, transparent 8px), repeating-linear-gradient(-45deg, var(--placeholder-pattern) 0px, var(--placeholder-pattern) 1px, transparent 1px, transparent 8px)",
       }}
     >
-      <div className="flex flex-col items-center gap-1 text-[#9a9483]">
+      <div className="flex flex-col items-center gap-1 text-[#9a9483] dark:text-[#8f8973]">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <rect x="3" y="3" width="18" height="18" rx="2" />
           <circle cx="8.5" cy="8.5" r="1.5" />

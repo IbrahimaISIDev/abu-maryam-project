@@ -34,6 +34,18 @@
   --radius-full: 9999px;
 }
 
+:root {
+  --placeholder-bg: #e2dac9;
+  --placeholder-pattern: rgba(216, 208, 191, 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --placeholder-bg: #2b3326;
+    --placeholder-pattern: rgba(58, 65, 50, 0.6);
+  }
+}
+
 /* ── Reset de base ── */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -48,6 +60,13 @@ body {
   background-color: #efe9dc;
   color: #232a20;
   font-family: var(--font-hanken), Arial, Helvetica, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1b211a;
+    color: #f2ede0;
+  }
 }
 
 /* ── Texte arabe toujours RTL ── */

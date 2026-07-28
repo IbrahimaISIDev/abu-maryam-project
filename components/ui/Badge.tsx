@@ -39,7 +39,7 @@ export default function Badge({ theme, label, variant = "category", className = 
 
   if (variant === "featured") {
     return (
-      <span className={`inline-flex items-center gap-1 px-3 py-1 border border-[#8a2f29] text-[#8a2f29] text-[10.5px] font-bold tracking-widest uppercase font-[var(--font-hanken)] rounded-[4px] ${className}`}>
+      <span className={`inline-flex items-center gap-1 px-3 py-1 border border-[#8a2f29] dark:border-[#e08b81] text-[#8a2f29] dark:text-[#e08b81] text-[10.5px] font-bold tracking-widest uppercase font-[var(--font-hanken)] rounded-[4px] ${className}`}>
         {label ?? "À LA UNE · PLACES LIMITÉES"}
       </span>
     );

@@ -37,7 +37,7 @@ export default function EnDirectPage() {
                 <p className="arabic text-[#b58a3c] text-[18px] text-right mb-2">
                   {liveStatus.arabicVerse}
                 </p>
-                <h1 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[32px] text-[#232a20] leading-tight mb-4">
+                <h1 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[32px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-4">
                   {liveStatus.title}
                 </h1>
 
@@ -47,10 +47,10 @@ export default function EnDirectPage() {
                     <ImagePlaceholder className="w-full h-full" label="" />
                   </div>
                   <div>
-                    <p className="font-[var(--font-hanken)] font-semibold text-[14px] text-[#232a20]">
+                    <p className="font-[var(--font-hanken)] font-semibold text-[14px] text-[#232a20] dark:text-[#f2ede0]">
                       {liveStatus.hostName}
                     </p>
-                    <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483]">
+                    <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973]">
                       En direct · commencé il y a 32 min
                     </p>
                   </div>
@@ -58,17 +58,17 @@ export default function EnDirectPage() {
 
                 {/* Boutons action */}
                 <div className="flex gap-3 mb-5">
-                  <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
+                  <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
                     ↗ Partager
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
+                  <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
                     🔔 Être notifié
                   </button>
                 </div>
 
-                <hr className="border-[#e2dac9] mb-4" />
+                <hr className="border-[#e2dac9] dark:border-[#3a4132] mb-4" />
 
-                <p className="font-[var(--font-hanken)] text-[14.5px] text-[#6f7363] leading-relaxed">
+                <p className="font-[var(--font-hanken)] text-[14.5px] text-[#6f7363] dark:text-[#b7b2a0] leading-relaxed">
                   {liveStatus.description}
                 </p>
               </div>

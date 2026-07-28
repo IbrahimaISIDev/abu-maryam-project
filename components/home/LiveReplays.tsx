@@ -6,7 +6,7 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 export default function LiveReplays() {
   return (
     <section>
-      <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] mb-5">
+      <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] mb-5">
         Direct & Replays
       </h2>
 
@@ -44,11 +44,11 @@ export default function LiveReplays() {
         </Link>
 
         {/* Colonne droite — replays */}
-        <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[9px] p-5">
-          <h3 className="font-[var(--font-hanken)] font-semibold text-[13px] uppercase tracking-widest text-[#6f7363] mb-4">
+        <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
+          <h3 className="font-[var(--font-hanken)] font-semibold text-[13px] uppercase tracking-widest text-[#6f7363] dark:text-[#b7b2a0] mb-4">
             Revoir les directs
           </h3>
-          <ul className="flex flex-col divide-y divide-[#e2dac9]">
+          <ul className="flex flex-col divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
             {replays.map((r) => (
               <li key={r.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                 {/* Miniature */}
@@ -61,10 +61,10 @@ export default function LiveReplays() {
                   </div>
                 </div>
                 <div className="min-w-0">
-                  <p className="font-[var(--font-hanken)] font-medium text-[13.5px] text-[#232a20] leading-snug line-clamp-2">
+                  <p className="font-[var(--font-hanken)] font-medium text-[13.5px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
                     {r.title}
                   </p>
-                  <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mt-0.5">
+                  <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
                     Il y a {r.daysAgo} jours
                   </p>
                 </div>

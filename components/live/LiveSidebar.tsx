@@ -5,7 +5,7 @@ export default function LiveSidebar() {
   return (
     <aside className="space-y-5">
       {/* Programme à venir */}
-      <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[9px] p-5">
+      <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
         <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
           Programme à venir
         </h3>
@@ -13,18 +13,18 @@ export default function LiveSidebar() {
           {schedule.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <div className="text-center shrink-0">
-                <p className="font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase">
+                <p className="font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase">
                   {item.dayShort}
                 </p>
-                <p className="font-[var(--font-hanken)] text-[12.5px] font-bold text-[#3c4a37]">
+                <p className="font-[var(--font-hanken)] text-[12.5px] font-bold text-[#3c4a37] dark:text-[#a9c19a]">
                   {item.time}
                 </p>
               </div>
-              <div className="border-l border-[#e2dac9] pl-3 min-w-0">
-                <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#232a20] leading-snug">
+              <div className="border-l border-[#e2dac9] dark:border-[#3a4132] pl-3 min-w-0">
+                <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#232a20] dark:text-[#f2ede0] leading-snug">
                   {item.title}
                 </p>
-                <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] mt-0.5">
+                <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
                   {item.subtitle}
                 </p>
               </div>
@@ -34,11 +34,11 @@ export default function LiveSidebar() {
       </div>
 
       {/* Revoir les directs */}
-      <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[9px] p-5">
+      <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
         <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
           Revoir les directs
         </h3>
-        <ul className="space-y-3 divide-y divide-[#e2dac9]">
+        <ul className="space-y-3 divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
           {replays.map((r) => (
             <li key={r.id} className="flex items-center gap-3 pt-3 first:pt-0">
               <div className="w-[78px] h-[48px] rounded-[5px] overflow-hidden shrink-0 relative">
@@ -50,10 +50,10 @@ export default function LiveSidebar() {
                 </div>
               </div>
               <div className="min-w-0">
-                <p className="font-[var(--font-hanken)] font-medium text-[13px] text-[#232a20] leading-snug line-clamp-2">
+                <p className="font-[var(--font-hanken)] font-medium text-[13px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
                   {r.title}
                 </p>
-                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mt-0.5">
+                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
                   Il y a {r.daysAgo} jour{r.daysAgo > 1 ? "s" : ""}
                 </p>
               </div>
