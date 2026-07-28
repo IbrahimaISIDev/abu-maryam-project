@@ -54,15 +54,17 @@ export default function AProposPage() {
             <div className="flex flex-col md:grid md:grid-cols-[420px_1fr] gap-8 md:gap-10 items-start">
               {/* Portrait */}
               <div className="w-full md:w-auto">
-                <div className="relative rounded-[16px] overflow-hidden min-h-[280px] md:min-h-[420px]">
+                <div className="relative rounded-[16px] overflow-hidden min-h-[280px] md:min-h-[420px] border border-[#e2dac9] dark:border-[#3a4132]">
                   <Image
                     src="/images/oustaz-niang-mbaye1.jpeg"
                     alt="Portrait d'Oustaz Niang Mbaye (H.A)"
                     fill
                     sizes="(min-width: 768px) 420px, 100vw"
                     className="object-cover"
+                    style={{ filter: "saturate(0.78) sepia(0.08) contrast(1.02)" }}
                     priority
                   />
+                  <div className="absolute inset-0 bg-[#3c4a37] mix-blend-multiply opacity-[0.08]" />
                 </div>
               </div>
 

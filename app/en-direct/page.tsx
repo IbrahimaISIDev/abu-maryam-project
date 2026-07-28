@@ -43,13 +43,14 @@ export default function EnDirectPage() {
 
                 {/* Avatar + info */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-[#e2dac9] dark:border-[#3a4132]">
                     <Image
                       src="/images/oustaz-niang-mbaye1.jpeg"
                       alt={liveStatus.hostName}
                       fill
                       sizes="40px"
                       className="object-cover"
+                      style={{ filter: "saturate(0.78) sepia(0.08) contrast(1.02)" }}
                     />
                   </div>
                   <div>

@@ -13,15 +13,18 @@ export default function Hero() {
         sizes="100vw"
         priority
         className="object-cover"
-        style={{ objectPosition: "75% 15%" }}
+        style={{ objectPosition: "75% 15%", filter: "saturate(0.55) sepia(0.18) contrast(1.05)" }}
       />
 
-      {/* Dégradé sombre */}
+      {/* Voile olive — unifie la photo avec la palette du site */}
+      <div className="absolute inset-0 bg-[#3c4a37] mix-blend-multiply opacity-40" />
+
+      {/* Dégradé sombre pour la lisibilité du texte */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(105deg, rgba(28,34,22,.92) 36%, rgba(28,34,22,.55) 68%, transparent 100%)",
+            "linear-gradient(105deg, rgba(28,34,22,.92) 36%, rgba(28,34,22,.55) 68%, rgba(28,34,22,.25) 100%)",
         }}
       />
 
