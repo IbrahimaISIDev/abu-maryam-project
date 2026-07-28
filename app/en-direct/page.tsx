@@ -17,7 +17,7 @@ import Footer from "@/components/layout/Footer";
 import VideoPlayer from "@/components/live/VideoPlayer";
 import LiveSidebar from "@/components/live/LiveSidebar";
 import { liveStatus } from "@/data/live";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import Image from "next/image";
 
 export default function EnDirectPage() {
   return (
@@ -43,8 +43,14 @@ export default function EnDirectPage() {
 
                 {/* Avatar + info */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
-                    <ImagePlaceholder className="w-full h-full" label="" />
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0">
+                    <Image
+                      src="/images/oustaz-niang-mbaye1.jpeg"
+                      alt={liveStatus.hostName}
+                      fill
+                      sizes="40px"
+                      className="object-cover"
+                    />
                   </div>
                   <div>
                     <p className="font-[var(--font-hanken)] font-semibold text-[14px] text-[#232a20] dark:text-[#f2ede0]">

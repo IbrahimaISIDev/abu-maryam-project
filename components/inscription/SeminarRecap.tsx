@@ -46,10 +46,21 @@ export default function SeminarRecap() {
           <span className="text-[#cda350] text-[16px] mt-0.5">📍</span>
           <div>
             <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3]">
-              Présentiel &amp; en ligne
+              {seminar.location}
             </p>
             <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
-              Suivez où que vous soyez
+              Présentiel · possibilité de suivre en ligne
+            </p>
+          </div>
+        </li>
+        <li className="flex items-start gap-3">
+          <span className="text-[#cda350] text-[16px] mt-0.5">💰</span>
+          <div>
+            <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#fbf9f3]">
+              {seminar.price}
+            </p>
+            <p className="font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.6)]">
+              {seminar.priceNote}
             </p>
           </div>
         </li>
@@ -61,7 +72,7 @@ export default function SeminarRecap() {
       <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[rgba(251,249,243,0.55)] font-semibold mb-3">
         Ce que vous recevrez
       </p>
-      <ul className="space-y-2">
+      <ul className="space-y-2 mb-6">
         {seminar.perks.map((perk, i) => (
           <li key={i} className="flex items-center gap-2.5">
             <span className="text-[#e3c685] font-bold text-[14px]">✓</span>
@@ -70,6 +81,22 @@ export default function SeminarRecap() {
             </span>
           </li>
         ))}
+      </ul>
+
+      <hr className="border-[rgba(251,249,243,0.15)] mb-5" />
+
+      {/* Contact */}
+      <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[rgba(251,249,243,0.55)] font-semibold mb-3">
+        Contact
+      </p>
+      <ul className="space-y-2">
+        <li className="font-[var(--font-hanken)] text-[13px] text-[rgba(251,249,243,0.85)]">
+          📞 {seminar.contactPhone}{" "}
+          <span className="text-[rgba(251,249,243,0.55)]">({seminar.contactPhoneNote})</span>
+        </li>
+        <li className="font-[var(--font-hanken)] text-[13px] text-[rgba(251,249,243,0.85)] break-all">
+          ✉️ {seminar.contactEmail}
+        </li>
       </ul>
     </div>
   );

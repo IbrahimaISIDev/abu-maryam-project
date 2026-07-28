@@ -2,6 +2,7 @@ import type { AgendaItem } from "@/lib/types";
 
 export const seminar = {
   arabicVerse: "كوني لله كما يحب",
+  edition: "4e édition",
   label: "Séminaire de formation des jeunes filles",
   labelShort: "Séminaire jeunes filles",
   title: "Devenez des Femmes vouées à Allah",
@@ -10,7 +11,12 @@ export const seminar = {
   dateStart: "2026-08-08",
   dateEnd: "2026-08-15",
   registrationDeadline: "2026-07-20",
-  location: "Dakar & En ligne",
+  location: "Diender",
+  price: "45 000 F CFA",
+  priceNote: "Paiement possible en 3 tranches",
+  contactPhone: "78 561 70 70",
+  contactPhoneNote: "Wave / Orange Money",
+  contactEmail: "orphelinsdiender@gmail.com",
   totalPlaces: 120,
   remainingPlaces: 37,
   perks: [
@@ -18,7 +24,7 @@ export const seminar = {
     "Supports & replays en ligne",
     "Suivi et accompagnement",
   ],
-  targetAudience: "Réservé aux jeunes filles · 15–30 ans",
+  targetAudience: "Réservé aux jeunes filles · à partir de 14 ans",
 };
 
 export const agendaItems: AgendaItem[] = [
@@ -26,7 +32,7 @@ export const agendaItems: AgendaItem[] = [
     id: "a1",
     type: "séminaire",
     title: "Devenez des Femmes vouées à Allah",
-    location: "Dakar & En ligne",
+    location: "Diender",
     dateStart: "2026-08-08",
     dateEnd: "2026-08-15",
     registrationDeadline: "2026-07-20",

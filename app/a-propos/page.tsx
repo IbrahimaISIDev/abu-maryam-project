@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 import MobileHeader from "@/components/layout/MobileHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import Image from "next/image";
 import Link from "next/link";
 import { teachings } from "@/data/teachings";
 
@@ -55,12 +55,14 @@ export default function AProposPage() {
               {/* Portrait */}
               <div className="w-full md:w-auto">
                 <div className="relative rounded-[16px] overflow-hidden min-h-[280px] md:min-h-[420px]">
-                  <ImagePlaceholder className="w-full h-full absolute inset-0 min-h-[280px] md:min-h-[420px]" label="Portrait de l'Oustaz" />
-                  <div className="absolute bottom-3 right-3 flex gap-1">
-                    <span className="font-[var(--font-hanken)] text-[10px] tracking-widest text-[#9a9483] dark:text-[#d8d4c4] uppercase bg-[rgba(251,249,243,0.7)] dark:bg-[rgba(0,0,0,0.5)] px-2 py-1 rounded">
-                      PORTRAIT · OUSTAZ
-                    </span>
-                  </div>
+                  <Image
+                    src="/images/oustaz-niang-mbaye1.jpeg"
+                    alt="Portrait d'Oustaz Niang Mbaye (H.A)"
+                    fill
+                    sizes="(min-width: 768px) 420px, 100vw"
+                    className="object-cover"
+                    priority
+                  />
                 </div>
               </div>
 

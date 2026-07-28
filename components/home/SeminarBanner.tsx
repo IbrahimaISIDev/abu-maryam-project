@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { seminar } from "@/data/events";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 
 export default function SeminarBanner() {
   return (
@@ -43,6 +43,12 @@ export default function SeminarBanner() {
               20 Juillet 2026
             </p>
           </div>
+          <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">Tarif</p>
+            <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685]">
+              {seminar.price}
+            </p>
+          </div>
         </div>
 
         {/* CTA + compteur */}
@@ -60,8 +66,14 @@ export default function SeminarBanner() {
       </div>
 
       {/* Photo — 42% */}
-      <div className="md:w-[42%] min-h-[200px] md:min-h-0 order-1 md:order-2">
-        <ImagePlaceholder className="w-full h-full min-h-[200px]" label="Photo du séminaire" />
+      <div className="relative md:w-[42%] min-h-[200px] md:min-h-0 order-1 md:order-2">
+        <Image
+          src="/images/seminaire-jeunes-filles.jpeg"
+          alt="Flyer du séminaire — Devenez des femmes vouées à Allah"
+          fill
+          sizes="(min-width: 768px) 42vw, 100vw"
+          className="object-contain p-3"
+        />
       </div>
     </div>
   );

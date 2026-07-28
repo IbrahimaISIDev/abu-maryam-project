@@ -1,12 +1,20 @@
 import Link from "next/link";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import Image from "next/image";
 import LiveDot from "@/components/ui/LiveDot";
 
 export default function Hero() {
   return (
     <section className="relative h-[400px] md:h-[560px] overflow-hidden">
       {/* Image de fond */}
-      <ImagePlaceholder className="absolute inset-0 w-full h-full" label="Photo de l'Oustaz en prêche" />
+      <Image
+        src="/images/oustaz-niang-mbaye1.jpeg"
+        alt="Oustaz Niang Mbaye (H.A) en prêche"
+        fill
+        sizes="100vw"
+        priority
+        className="object-cover"
+        style={{ objectPosition: "75% 15%" }}
+      />
 
       {/* Dégradé sombre */}
       <div
