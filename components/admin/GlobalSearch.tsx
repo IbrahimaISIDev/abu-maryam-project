@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { teachings } from "@/data/teachings";
-import { registrations } from "@/data/registrations";
+import type { Registration } from "@/lib/types";
 
 const THEME_LABELS: Record<string, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -19,7 +19,7 @@ interface Result {
   href: string;
 }
 
-function search(q: string): Result[] {
+function search(q: string, registrations: Registration[]): Result[] {
   if (!q.trim() || q.length < 2) return [];
   const lq = q.toLowerCase();
 
@@ -52,10 +52,30 @@ export default function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const results = useMemo(() => search(query), [query]);
+  const results = useMemo(() => search(query, registrations), [query, registrations]);
+
+  // Recharge les inscriptions réelles à chaque ouverture — la recherche
+  // portait jusqu'ici sur le jeu de données mock, désormais déconnecté
+  // du panneau Inscriptions et des soumissions du formulaire public.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    fetch("/api/inscription")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { registrations: Registration[] }) => {
+        if (!cancelled) setRegistrations(data.registrations);
+      })
+      .catch(() => {
+        // silencieux : la recherche reste utilisable sur les enseignements
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   function handleQueryChange(value: string) {
     setQuery(value);
