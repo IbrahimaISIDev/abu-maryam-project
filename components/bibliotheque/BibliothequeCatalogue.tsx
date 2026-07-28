@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import FilterPanel from "./FilterPanel";
 import SeriesCard from "./SeriesCard";
@@ -11,7 +12,9 @@ import { useProgress } from "@/hooks/useProgress";
 import type { ContentType, Theme, Language } from "@/lib/types";
 
 const PAGE_SIZE = 9;
-const CATALOGUE_TOTAL = 320;
+const CATALOGUE_TOTAL = teachings.length;
+const ALL_THEMES = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence"] as const;
+const ALL_LANGUAGES = ["wolof", "arabe", "français"] as const;
 
 const sortOptions = [
   { value: "recent", label: "Plus récents" },
@@ -22,19 +25,57 @@ type Tab = "cours" | "series";
 
 export default function BibliothequeCatalogue() {
   const { getProgress } = useProgress();
-  const [tab, setTab] = useState<Tab>("cours");
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("recent");
-  const [selectedType, setSelectedType] = useState<ContentType | "all">("all");
-  const [selectedThemes, setSelectedThemes] = useState<Theme[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<Language[]>([]);
-  const [page, setPage] = useState(1);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const [tab, setTab] = useState<Tab>(() => (searchParams.get("tab") === "series" ? "series" : "cours"));
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  const [sort, setSort] = useState(() => (searchParams.get("sort") === "oldest" ? "oldest" : "recent"));
+  const [selectedType, setSelectedType] = useState<ContentType | "all">(() => {
+    const t = searchParams.get("type");
+    return t === "video" || t === "audio" ? t : "all";
+  });
+  const [selectedThemes, setSelectedThemes] = useState<Theme[]>(() => {
+    const raw = searchParams.get("themes")?.split(",") ?? [];
+    return raw.filter((t): t is Theme => (ALL_THEMES as readonly string[]).includes(t));
+  });
+  const [selectedLanguages, setSelectedLanguages] = useState<Language[]>(() => {
+    const raw = searchParams.get("langs")?.split(",") ?? [];
+    return raw.filter((l): l is Language => (ALL_LANGUAGES as readonly string[]).includes(l));
+  });
+  const [page, setPage] = useState(() => {
+    const p = Number(searchParams.get("page"));
+    return Number.isFinite(p) && p > 0 ? p : 1;
+  });
   const [transitioning, setTransitioning] = useState(false);
+
+  // Garde l'URL synchronisée avec les filtres — permet de partager ou recharger une recherche précise
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (tab !== "cours") params.set("tab", tab);
+    if (query.trim()) params.set("q", query.trim());
+    if (sort !== "recent") params.set("sort", sort);
+    if (selectedType !== "all") params.set("type", selectedType);
+    if (selectedThemes.length) params.set("themes", selectedThemes.join(","));
+    if (selectedLanguages.length) params.set("langs", selectedLanguages.join(","));
+    if (page !== 1) params.set("page", String(page));
+    const qs = params.toString();
+    window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
+  }, [tab, query, sort, selectedType, selectedThemes, selectedLanguages, page, pathname]);
 
   function goToPage(p: number) {
     setTransitioning(true);
     setTimeout(() => { setPage(p); setTransitioning(false); }, 180);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function resetFilters() {
+    setQuery("");
+    setSort("recent");
+    setSelectedType("all");
+    setSelectedThemes([]);
+    setSelectedLanguages([]);
+    setPage(1);
   }
 
   const toggleTheme = (t: Theme) =>
@@ -69,6 +110,12 @@ export default function BibliothequeCatalogue() {
     audio: teachings.filter((t) => t.type === "audio").length,
   };
 
+  const themeCounts = useMemo(() => {
+    const map: Partial<Record<Theme, number>> = {};
+    for (const t of teachings) map[t.theme] = (map[t.theme] ?? 0) + 1;
+    return map;
+  }, []);
+
   return (
     <>
       {/* Bandeau entête */}
@@ -81,7 +128,7 @@ export default function BibliothequeCatalogue() {
             Bibliothèque des enseignements
           </h1>
           <p className="font-[var(--font-hanken)] text-[14px] text-[#6f7363] mb-6">
-            {CATALOGUE_TOTAL}+ enseignements · Tafsir, conférences, khoutbas, séries de cours — à suivre à votre rythme.
+            {CATALOGUE_TOTAL} enseignements · Tafsir, conférences, khoutbas, séries de cours — à suivre à votre rythme.
           </p>
 
           {/* Onglets Cours / Séries */}
@@ -96,7 +143,7 @@ export default function BibliothequeCatalogue() {
                     : "text-[#6f7363] hover:text-[#3f463a]"
                 }`}
               >
-                {t === "cours" ? `Cours · ${CATALOGUE_TOTAL}+` : `Séries · ${seriesList.length}`}
+                {t === "cours" ? `Cours · ${CATALOGUE_TOTAL}` : `Séries · ${seriesList.length}`}
               </button>
             ))}
           </div>
@@ -185,6 +232,7 @@ export default function BibliothequeCatalogue() {
                   onThemeToggle={(t) => { toggleTheme(t); setPage(1); }}
                   onLanguageToggle={(l) => { toggleLang(l); setPage(1); }}
                   counts={counts}
+                  themeCounts={themeCounts}
                 />
               </div>
 
@@ -192,9 +240,15 @@ export default function BibliothequeCatalogue() {
               <div className="flex-1 min-w-0">
                 {paginated.length === 0 ? (
                   <div className="py-20 text-center">
-                    <p className="font-[var(--font-cormorant)] text-[24px] text-[#9a9483]">
+                    <p className="font-[var(--font-cormorant)] text-[24px] text-[#9a9483] mb-4">
                       Aucun résultat trouvé
                     </p>
+                    <button
+                      onClick={resetFilters}
+                      className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#b58a3c] hover:text-[#9e7832] transition-colors underline underline-offset-4"
+                    >
+                      Réinitialiser les filtres
+                    </button>
                   </div>
                 ) : (
                   <>
