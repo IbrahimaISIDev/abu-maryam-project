@@ -10,7 +10,7 @@ import { teachings } from "@/data/teachings";
 export const metadata: Metadata = {
   title: "Bibliothèque",
   description:
-    `${teachings.length} enseignements islamiques d'Oustaz Niang Mbaye (H.A) — tafsir, tawhid, khoutbas, conférences et séries de cours en wolof et en français.`,
+    `${teachings.length} enseignements islamiques d'Oustaz Niang Mbaye (H.A) — tafsir, tawhid, khoutbas, conférences et séries de cours en wolof et en arabe.`,
   openGraph: {
     title: "Bibliothèque des enseignements | Abu Maryam TV",
     description:

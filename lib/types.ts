@@ -1,5 +1,5 @@
 export type ContentType = "video" | "audio";
-export type Language = "wolof" | "arabe" | "français";
+export type Language = "wolof" | "arabe";
 export type Theme =
   | "tafsir"
   | "tawhid"

@@ -14,7 +14,7 @@ const THEME_LABELS: Record<Theme, string> = {
   sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
 };
 const THEMES = Object.keys(THEME_LABELS) as Theme[];
-const LANGUAGES: Language[] = ["wolof", "arabe", "français"];
+const LANGUAGES: Language[] = ["wolof", "arabe"];
 const LEVELS: DifficultyLevel[] = ["débutant", "intermédiaire", "avancé"];
 
 type SortKey = "title" | "type" | "theme" | "duration" | "language";

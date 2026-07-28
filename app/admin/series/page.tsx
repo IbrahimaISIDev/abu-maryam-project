@@ -15,7 +15,7 @@ const THEME_LABELS: Record<Theme, string> = {
   sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
 };
 const THEMES = Object.keys(THEME_LABELS) as Theme[];
-const LANGUAGES: Language[] = ["wolof", "arabe", "français"];
+const LANGUAGES: Language[] = ["wolof", "arabe"];
 
 export default function SeriesAdminPage() {
   const toast = useToast();

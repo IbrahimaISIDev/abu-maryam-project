@@ -17,7 +17,7 @@ export const seriesList: Series[] = [
     description:
       "Série d'introduction à la connaissance d'Allah — les noms, attributs et unicité divine selon les textes authentiques.",
     theme: "tawhid",
-    language: "français",
+    language: "arabe",
     totalEpisodes: 3,
     arabicVerse: "قُلْ هُوَ اللَّهُ أَحَدٌ",
   },

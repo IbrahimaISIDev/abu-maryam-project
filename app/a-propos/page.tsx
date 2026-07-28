@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "À propos | Abu Maryam TV",
     description:
-      "La mission d'Abu Maryam TV : rendre le savoir islamique authentique accessible à tous, en wolof et en français.",
+      "La mission d'Abu Maryam TV : rendre le savoir islamique authentique accessible à tous, en wolof et en arabe.",
   },
 };
 import MobileHeader from "@/components/layout/MobileHeader";
@@ -49,7 +49,7 @@ const values = [
   {
     numAr: "٣",
     title: "Accessibilité",
-    desc: "Des cours en wolof, arabe et français, disponibles gratuitement à tout moment.",
+    desc: "Des cours en wolof et en arabe, disponibles gratuitement à tout moment.",
   },
   {
     numAr: "٤",
@@ -108,7 +108,7 @@ export default function AProposPage() {
                   {[
                     { value: String(teachings.length), label: "Enseignements publiés" },
                     { value: "18", sub: "ans", label: "de da'wah" },
-                    { value: "3", label: "Langues d'enseignement" },
+                    { value: "2", label: "Langues d'enseignement" },
                   ].map((stat, i) => (
                     <div key={i} className="text-center md:text-left">
                       <p className="font-[var(--font-cormorant)] font-semibold text-[34px] md:text-[40px] text-[#232a20] dark:text-[#f2ede0] leading-none">

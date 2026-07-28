@@ -27,9 +27,8 @@ const themes: { id: Theme; label: string }[] = [
 ];
 
 const languages: { id: Language; label: string }[] = [
-  { id: "wolof",    label: "Wolof" },
-  { id: "arabe",    label: "Arabe" },
-  { id: "français", label: "Français" },
+  { id: "wolof", label: "Wolof" },
+  { id: "arabe", label: "Arabe" },
 ];
 
 export default function FilterPanel({

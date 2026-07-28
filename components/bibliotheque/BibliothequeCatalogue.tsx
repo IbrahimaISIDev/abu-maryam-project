@@ -14,7 +14,7 @@ import type { ContentType, Theme, Language } from "@/lib/types";
 const PAGE_SIZE = 9;
 const CATALOGUE_TOTAL = teachings.length;
 const ALL_THEMES = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence"] as const;
-const ALL_LANGUAGES = ["wolof", "arabe", "français"] as const;
+const ALL_LANGUAGES = ["wolof", "arabe"] as const;
 
 const sortOptions = [
   { value: "recent", label: "Plus récents" },
