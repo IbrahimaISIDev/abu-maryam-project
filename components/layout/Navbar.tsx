@@ -33,7 +33,7 @@ export default function Navbar() {
               Abu Maryam{" "}
               <span className="text-[#b58a3c] dark:text-[#e3c685]">TV</span>
             </span>
-            <span className="font-[var(--font-hanken)] text-[10px] tracking-[.22em] text-[#9a9483] dark:text-[#8f8973] uppercase">
+            <span className="font-[var(--font-hanken)] text-[10px] tracking-[.22em] text-[#6f7363] dark:text-[#8f8973] uppercase">
               Qur&apos;an &amp; Sunna
             </span>
           </div>
@@ -84,7 +84,7 @@ export default function Navbar() {
           </div>
 
           {/* Bouton recherche */}
-          <button
+          <button type="button"
             onClick={openSearch}
             className="w-[34px] h-[34px] rounded-full border border-[#d8d0bf] dark:border-[#454c3c] flex items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
             aria-label={dict.nav.search}

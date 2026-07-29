@@ -194,6 +194,12 @@ const fr: Dictionary = {
     quickLinks: "Liens rapides",
     followUs: "Suivez-nous",
   },
+  notFound: {
+    badge: "Erreur 404",
+    title: "Cette page n'existe pas",
+    message: "Le lien suivi est peut-être ancien, ou l'adresse a été mal saisie. Vous pouvez retourner à l'accueil ou explorer la bibliothèque des enseignements.",
+    backHome: "Retour à l'accueil",
+  },
 };
 
 export default fr;

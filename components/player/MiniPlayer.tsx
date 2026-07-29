@@ -58,7 +58,7 @@ export default function MiniPlayer() {
           >
             {getTeachingTitle(teaching, lang)}
           </Link>
-          <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">
+          <p className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973]">
             {timeStr} · Oustaz Niang Mbaye (H.A)
           </p>
         </div>
@@ -66,7 +66,7 @@ export default function MiniPlayer() {
         {/* Contrôles */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Reculer 15s */}
-          <button
+          <button type="button"
             onClick={() => seek(Math.max(0, positionSeconds - 15))}
             className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
             aria-label={t.rewind}
@@ -79,7 +79,7 @@ export default function MiniPlayer() {
           </button>
 
           {/* Play / Pause */}
-          <button
+          <button type="button"
             onClick={isPlaying ? pause : resume}
             className="w-9 h-9 rounded-full bg-[#3c4a37] flex items-center justify-center text-[#fbf9f3] hover:bg-[#2e3a2b] transition-colors"
             aria-label={isPlaying ? t.pause : t.play}
@@ -97,7 +97,7 @@ export default function MiniPlayer() {
           </button>
 
           {/* Avancer 30s */}
-          <button
+          <button type="button"
             onClick={() => seek(Math.min(teaching.durationSeconds, positionSeconds + 30))}
             className="hidden sm:flex w-8 h-8 items-center justify-center text-[#6f7363] dark:text-[#b7b2a0] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
             aria-label={t.forward}
@@ -110,9 +110,9 @@ export default function MiniPlayer() {
           </button>
 
           {/* Fermer */}
-          <button
+          <button type="button"
             onClick={close}
-            className="w-8 h-8 flex items-center justify-center text-[#9a9483] dark:text-[#8f8973] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
+            className="w-8 h-8 flex items-center justify-center text-[#6f7363] dark:text-[#8f8973] hover:text-[#3c4a37] dark:hover:text-[#a9c19a] transition-colors"
             aria-label={t.close}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -6,14 +6,16 @@ import Footer from "@/components/layout/Footer";
 import SeminarHero from "@/components/evenements/SeminarHero";
 import AgendaList from "@/components/evenements/AgendaList";
 import { getDictionary } from "@/dictionaries";
-import type { Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
+  const alternates = buildLanguageAlternates(lang, "/evenements");
   if (lang === "ar") {
     return {
       title: "الفعاليات",
       description: "ندوات ومحاضرات وبرامج قادمة للأستاذ نيانغ مباي (حفظه الله) — التسجيل والجدول الكامل.",
+      alternates,
       openGraph: {
         title: "الفعاليات | Abu Maryam TV",
         description: "جدول الندوات والمحاضرات — التواريخ والأماكن والتسجيل.",
@@ -24,6 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
     title: "Événements",
     description:
       "Séminaires, conférences et programmes à venir d'Oustaz Niang Mbaye (H.A) — inscriptions et agenda complet.",
+    alternates,
     openGraph: {
       title: "Événements | Abu Maryam TV",
       description: "Agenda des séminaires et conférences — dates, lieux et inscriptions.",

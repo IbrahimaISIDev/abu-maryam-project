@@ -22,7 +22,7 @@ export default function SeriesProgress({ episodes, variant = "full", lang }: Ser
         <div className="h-[4px] bg-[#e2dac9] dark:bg-[#3a4132] rounded-full overflow-hidden">
           <div className="h-full bg-[#b58a3c] rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
-        <p className="font-[var(--font-hanken)] text-[10.5px] text-[#9a9483] dark:text-[#8f8973] mt-1">
+        <p className="font-[var(--font-hanken)] text-[10.5px] text-[#6f7363] dark:text-[#8f8973] mt-1">
           <span dir="ltr" className="inline-block">{completed} / {episodes.length}</span>{" "}
           {lang === "ar" ? "متابَعة" : "suivis"}
         </p>

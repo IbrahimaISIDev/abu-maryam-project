@@ -17,7 +17,7 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
           {schedule.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <div className="text-center shrink-0">
-                <p className="font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase">
+                <p className="font-[var(--font-hanken)] text-[11px] font-semibold text-[#6f7363] dark:text-[#8f8973] uppercase">
                   {formatDayShort(item.dayShort, lang)}
                 </p>
                 <p className="font-[var(--font-hanken)] text-[12.5px] font-bold text-[#3c4a37] dark:text-[#a9c19a]">
@@ -28,7 +28,7 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
                 <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#232a20] dark:text-[#f2ede0] leading-snug">
                   {getScheduleTitle(item, lang)}
                 </p>
-                <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
+                <p className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
                   {getScheduleSubtitle(item, lang)}
                 </p>
               </div>
@@ -57,7 +57,7 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
                 <p className="font-[var(--font-hanken)] font-medium text-[13px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
                   {getReplayTitle(r, lang)}
                 </p>
-                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
+                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
                   {formatDaysAgo(r.daysAgo, lang)}
                 </p>
               </div>

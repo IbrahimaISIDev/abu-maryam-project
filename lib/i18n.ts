@@ -1,6 +1,7 @@
 export const locales = ["fr", "ar"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "fr";
+export const SITE_URL = "https://abumaryam.tv";
 
 export function isLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);
@@ -21,4 +22,17 @@ export function switchLocalePath(pathname: string, search: string, target: Local
   // segments[0] est toujours "" (le chemin commence par /), segments[1] est la langue actuelle
   segments[1] = target;
   return segments.join("/") + search;
+}
+
+/**
+ * Construit les alternates hreflang d'une page à partir de la langue courante et de son
+ * chemin SANS préfixe de langue (ex. "/bibliotheque", "" pour l'accueil). Utilisé dans
+ * generateMetadata — chaque page connaît son propre chemin statique, ce qui évite de
+ * dépendre de headers()/pathname (qui forcerait un rendu dynamique et casserait la
+ * génération statique du site).
+ */
+export function buildLanguageAlternates(lang: Locale, path: string): { canonical: string; languages: Record<Locale, string> } {
+  const suffix = path ? (path.startsWith("/") ? path : `/${path}`) : "";
+  const languages = Object.fromEntries(locales.map((l) => [l, `/${l}${suffix}`])) as Record<Locale, string>;
+  return { canonical: languages[lang], languages };
 }

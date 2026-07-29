@@ -96,7 +96,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
         {/* Chips info */}
         <div className="flex flex-wrap gap-3 mb-6">
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">
               {dict.datesLabel}
             </p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
@@ -104,7 +104,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">
               {dict.registerBeforeLabel}
             </p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
@@ -112,7 +112,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">
               {dict.placesRemainingLabel}
             </p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">
@@ -120,7 +120,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">
               {dict.locationLabel}
             </p>
             <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685]">
@@ -128,7 +128,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">
               {dict.priceLabel}
             </p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#e3c685] text-left">

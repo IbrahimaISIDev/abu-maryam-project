@@ -36,19 +36,19 @@ export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]
         {/* Dates */}
         <div className="flex flex-wrap gap-3 mb-5">
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarDatesLabel}</p>
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">{dict.seminarDatesLabel}</p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
               {formatSeminarDateRange(seminar.dateStart, seminar.dateEnd, lang)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarClosingLabel}</p>
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">{dict.seminarClosingLabel}</p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
               {formatSeminarSingleDate(seminar.registrationDeadline, lang)}
             </p>
           </div>
           <div className="border border-[rgba(227,198,133,0.4)] rounded-[6px] px-4 py-2">
-            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[#9a9483] mb-0.5">{dict.seminarPriceLabel}</p>
+            <p className="font-[var(--font-hanken)] text-[10px] uppercase tracking-widest text-[rgba(251,249,243,0.65)] mb-0.5">{dict.seminarPriceLabel}</p>
             <p dir="ltr" className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#e3c685] text-left">
               {seminar.price}
             </p>
@@ -63,7 +63,7 @@ export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]
           >
             {dict.seminarRegisterCta}
           </Link>
-          <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483]">
+          <p className="font-[var(--font-hanken)] text-[12.5px] text-[rgba(251,249,243,0.65)]">
             {formatSeminarPlacesRemaining(seminar.remainingPlaces, seminar.totalPlaces, lang)}
           </p>
         </div>

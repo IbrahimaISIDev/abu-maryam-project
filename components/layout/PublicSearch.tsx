@@ -134,7 +134,7 @@ export default function PublicSearch() {
       >
         {/* Input */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#e2dac9] dark:border-[#3a4132]">
-          <svg className="text-[#9a9483] dark:text-[#8f8973] shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="text-[#6f7363] dark:text-[#8f8973] shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
           </svg>
           <input
@@ -143,9 +143,9 @@ export default function PublicSearch() {
             onChange={(e) => handleQueryChange(e.target.value)}
             onKeyDown={handleKey}
             placeholder={dict.search.placeholder}
-            className="flex-1 bg-transparent font-[var(--font-hanken)] text-[15px] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#9a9483] dark:placeholder:text-[#8f8973] outline-none"
+            className="flex-1 bg-transparent font-[var(--font-hanken)] text-[15px] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#6f7363] dark:placeholder:text-[#8f8973] outline-none"
           />
-          <kbd className="hidden sm:flex items-center gap-1 px-2 py-0.5 bg-[#e9e3d4] dark:bg-[#2b3326] rounded text-[11px] font-[var(--font-hanken)] text-[#9a9483] dark:text-[#8f8973]">
+          <kbd className="hidden sm:flex items-center gap-1 px-2 py-0.5 bg-[#e9e3d4] dark:bg-[#2b3326] rounded text-[11px] font-[var(--font-hanken)] text-[#6f7363] dark:text-[#8f8973]">
             Esc
           </kbd>
         </div>
@@ -161,20 +161,20 @@ export default function PublicSearch() {
                 return (
                   <li key={`${r.type}-${r.id}`}>
                     {showGroup && (
-                      <p className="px-5 pt-3 pb-1 font-[var(--font-hanken)] text-[10.5px] uppercase tracking-widest font-semibold text-[#9a9483] dark:text-[#8f8973]">
+                      <p className="px-5 pt-3 pb-1 font-[var(--font-hanken)] text-[10.5px] uppercase tracking-widest font-semibold text-[#6f7363] dark:text-[#8f8973]">
                         {TYPE_LABELS[r.type]}
                       </p>
                     )}
-                    <button
+                    <button type="button"
                       onClick={() => goTo(r.href)}
-                      className={`w-full text-left px-5 py-2.5 flex items-center gap-3 transition-colors ${i === selected ? "bg-[#f0ece3] dark:bg-[rgba(255,255,255,0.05)]" : "hover:bg-[#f5f1e8] dark:hover:bg-[rgba(255,255,255,0.03)]"}`}
+                      className={`w-full rtl:text-right ltr:text-left px-5 py-2.5 flex items-center gap-3 transition-colors ${i === selected ? "bg-[#f0ece3] dark:bg-[rgba(255,255,255,0.05)]" : "hover:bg-[#f5f1e8] dark:hover:bg-[rgba(255,255,255,0.03)]"}`}
                     >
                       <div className="w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 text-[12px] bg-[#3c4a37] text-[#cda350]">
                         {TYPE_ICON[r.type]}
                       </div>
                       <div className="min-w-0">
                         <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#232a20] dark:text-[#f2ede0] truncate">{r.label}</p>
-                        <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] truncate">{r.sub}</p>
+                        <p className="font-[var(--font-hanken)] text-[11.5px] text-[#6f7363] dark:text-[#8f8973] truncate">{r.sub}</p>
                       </div>
                     </button>
                   </li>
@@ -184,20 +184,20 @@ export default function PublicSearch() {
           </ul>
         ) : query.length >= 2 ? (
           <div className="px-5 py-8 text-center">
-            <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483] dark:text-[#8f8973]">{formatNoResultsFor(query, lang)}</p>
+            <p className="font-[var(--font-hanken)] text-[14px] text-[#6f7363] dark:text-[#8f8973]">{formatNoResultsFor(query, lang)}</p>
           </div>
         ) : (
           <div className="px-5 py-5">
-            <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973] text-center">
+            <p className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973] text-center">
               {dict.search.minChars}
             </p>
           </div>
         )}
 
         <div className="px-5 py-3 border-t border-[#e2dac9] dark:border-[#3a4132] flex items-center gap-4">
-          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">↑↓ {dict.search.navigate}</span>
-          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">↵ {dict.search.open}</span>
-          <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">Esc {dict.search.close}</span>
+          <span className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973]">↑↓ {dict.search.navigate}</span>
+          <span className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973]">↵ {dict.search.open}</span>
+          <span className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973]">Esc {dict.search.close}</span>
         </div>
       </div>
     </div>

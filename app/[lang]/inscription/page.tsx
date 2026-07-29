@@ -6,14 +6,16 @@ import Footer from "@/components/layout/Footer";
 import SeminarRecap from "@/components/inscription/SeminarRecap";
 import RegistrationForm from "@/components/inscription/RegistrationForm";
 import { getDictionary } from "@/dictionaries";
-import type { Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
+  const alternates = buildLanguageAlternates(lang, "/inscription");
   if (lang === "ar") {
     return {
       title: "التسجيل في الندوة",
       description: "سجّل في الندوة القادمة للأستاذ نيانغ مباي (حفظه الله) — أماكن محدودة، استمارة إلكترونية آمنة.",
+      alternates,
       openGraph: {
         title: "التسجيل | Abu Maryam TV",
         description: "احجز مكانك في الندوة — استمارة تسجيل إلكترونية.",
@@ -24,6 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
     title: "Inscription au séminaire",
     description:
       "Inscrivez-vous au prochain séminaire d'Oustaz Niang Mbaye (H.A) — places limitées, formulaire en ligne sécurisé.",
+    alternates,
     openGraph: {
       title: "Inscription | Abu Maryam TV",
       description: "Réservez votre place pour le séminaire — formulaire d'inscription en ligne.",

@@ -55,7 +55,7 @@ export default function ShareButtons({ title, url, dict, lang }: ShareButtonsPro
 
   return (
     <div className="flex flex-wrap gap-2">
-      <span className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase tracking-widest self-center">
+      <span className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#6f7363] dark:text-[#8f8973] uppercase tracking-widest self-center">
         {dict.share}
       </span>
       {share.map((s) =>
@@ -72,7 +72,7 @@ export default function ShareButtons({ title, url, dict, lang }: ShareButtonsPro
             {s.label}
           </a>
         ) : (
-          <button
+          <button type="button"
             key={s.label}
             onClick={copyLink}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] font-[var(--font-hanken)] text-[12.5px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"

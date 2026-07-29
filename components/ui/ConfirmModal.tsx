@@ -39,13 +39,13 @@ export default function ConfirmModal({
           {message}
         </p>
         <div className="flex gap-3 justify-end">
-          <button
+          <button type="button"
             onClick={onCancel}
             className="px-4 py-2 rounded-[9px] font-[var(--font-hanken)] text-[13px] font-medium text-[#6f7363] dark:text-[#b7b2a0] border border-[#e2dac9] dark:border-[#3a4132] hover:bg-[#f0ece3] dark:hover:bg-[rgba(255,255,255,0.05)] transition-colors"
           >
             Annuler
           </button>
-          <button
+          <button type="button"
             onClick={onConfirm}
             className={`px-4 py-2 rounded-[9px] font-[var(--font-hanken)] text-[13px] font-semibold text-[#fbf9f3] transition-colors ${
               danger ? "bg-[#8a2f29] hover:bg-[#6e2520]" : "bg-[#3c4a37] hover:bg-[#2d3829]"

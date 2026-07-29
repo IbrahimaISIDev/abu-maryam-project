@@ -19,7 +19,7 @@ export default function TranscriptSection({ teaching, dict }: { teaching: Teachi
         <h2 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20] dark:text-[#f2ede0] mb-1.5">
           {dict.transcriptTitle}
         </h2>
-        <p className="font-[var(--font-hanken)] text-[13.5px] text-[#9a9483] dark:text-[#8f8973] italic">
+        <p className="font-[var(--font-hanken)] text-[13.5px] text-[#6f7363] dark:text-[#8f8973] italic">
           {dict.transcriptSoon}
         </p>
       </div>

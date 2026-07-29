@@ -191,4 +191,10 @@ export interface Dictionary {
     quickLinks: string;
     followUs: string;
   };
+  notFound: {
+    badge: string;
+    title: string;
+    message: string;
+    backHome: string;
+  };
 }

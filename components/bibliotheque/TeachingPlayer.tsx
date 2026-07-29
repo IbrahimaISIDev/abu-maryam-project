@@ -99,7 +99,7 @@ export default function TeachingPlayer({ teaching, dict, lang }: TeachingPlayerP
         )}
 
         {/* Bouton play */}
-        <button
+        <button type="button"
           onClick={handlePlayPause}
           className="relative z-10 w-[74px] h-[74px] rounded-full bg-[rgba(251,249,243,0.15)] border-2 border-[rgba(251,249,243,0.4)] flex items-center justify-center text-[#fbf9f3] hover:bg-[rgba(251,249,243,0.25)] transition-colors"
           aria-label={isThisPlaying ? dict.common.pause : dict.live.launchPlayback}
@@ -157,7 +157,7 @@ export default function TeachingPlayer({ teaching, dict, lang }: TeachingPlayerP
         {teaching.chapters && teaching.chapters.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" aria-label={dict.library.chaptersAria}>
             {teaching.chapters.map((ch, i) => (
-              <button
+              <button type="button"
                 key={i}
                 onClick={() => handleChapterClick(ch.timeSeconds)}
                 dir="ltr"
@@ -175,7 +175,7 @@ export default function TeachingPlayer({ teaching, dict, lang }: TeachingPlayerP
 
         {/* Contrôles + temps */}
         <div className="flex items-center gap-3">
-          <button
+          <button type="button"
             onClick={() => { seek(Math.max(0, localPos - 15)); setLocalPos((p) => Math.max(0, p - 15)); }}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
             aria-label={dict.live.rewindAria}
@@ -184,7 +184,7 @@ export default function TeachingPlayer({ teaching, dict, lang }: TeachingPlayerP
             −15s
           </button>
 
-          <button
+          <button type="button"
             onClick={handlePlayPause}
             className="w-9 h-9 rounded-full bg-[#b58a3c] flex items-center justify-center text-[#fbf9f3] hover:bg-[#9e7832] transition-colors"
             aria-label={isThisPlaying ? dict.common.pause : dict.common.play}
@@ -201,7 +201,7 @@ export default function TeachingPlayer({ teaching, dict, lang }: TeachingPlayerP
             )}
           </button>
 
-          <button
+          <button type="button"
             onClick={() => { seek(Math.min(teaching.durationSeconds, localPos + 30)); setLocalPos((p) => Math.min(teaching.durationSeconds, p + 30)); }}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
             aria-label={dict.live.forwardAria}

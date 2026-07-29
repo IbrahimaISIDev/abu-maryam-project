@@ -10,14 +10,16 @@ import Image from "next/image";
 import { getDictionary } from "@/dictionaries";
 import { formatStartedAgo } from "@/lib/format";
 import { getLiveStatusTitle, getLiveStatusDescription } from "@/lib/content-i18n";
-import type { Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
+  const alternates = buildLanguageAlternates(lang, "/en-direct");
   if (lang === "ar") {
     return {
       title: "البث المباشر",
       description: "تابع البث المباشر للأستاذ نيانغ مباي (حفظه الله) — دروس وخطب ومحاضرات لحظة بلحظة.",
+      alternates,
       openGraph: {
         title: "البث المباشر | Abu Maryam TV",
         description: "بث مباشر — دروس إسلامية وخطب ومحاضرات.",
@@ -29,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
     title: "En direct",
     description:
       "Suivez les transmissions en direct d'Oustaz Niang Mbaye (H.A) — cours, khoutbas et conférences en temps réel.",
+    alternates,
     openGraph: {
       title: "En direct | Abu Maryam TV",
       description: "Diffusion en direct — cours islamiques, khoutbas et conférences.",
@@ -78,7 +81,7 @@ export default async function EnDirectPage({ params }: { params: Promise<{ lang:
                     <p className="font-[var(--font-hanken)] font-semibold text-[14px] text-[#232a20] dark:text-[#f2ede0]">
                       {liveStatus.hostName}
                     </p>
-                    <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973]">
+                    <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] dark:text-[#8f8973]">
                       {formatStartedAgo(32, lang)}
                     </p>
                   </div>
@@ -86,10 +89,10 @@ export default async function EnDirectPage({ params }: { params: Promise<{ lang:
 
                 {/* Boutons action */}
                 <div className="flex gap-3 mb-5">
-                  <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
+                  <button type="button" className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
                     ↗ {dict.common.share}
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
+                  <button type="button" className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
                     🔔 {dict.live.notify}
                   </button>
                 </div>

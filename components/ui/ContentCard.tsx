@@ -70,7 +70,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
           {getTeachingTitle(teaching, lang)}
         </h3>
         {size === "default" && (
-          <p className="mt-1 text-[11px] text-[#9a9483] dark:text-[#8f8973] font-[var(--font-hanken)]">
+          <p className="mt-1 text-[11px] text-[#6f7363] dark:text-[#8f8973] font-[var(--font-hanken)]">
             {formatThemeLabel(teaching.theme, lang)}
           </p>
         )}

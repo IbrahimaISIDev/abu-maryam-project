@@ -41,7 +41,7 @@ export default function FilterPanel({
 
       {/* TYPE */}
       <div className="mb-6">
-        <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#9a9483] dark:text-[#8f8973] mb-3">
+        <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#6f7363] dark:text-[#8f8973] mb-3">
           {dict.filterTypeLabel}
         </p>
         <ul className="space-y-2">
@@ -77,7 +77,7 @@ export default function FilterPanel({
                     {label}
                   </span>
                 </span>
-                <span className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
+                <span className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973]">
                   {count}
                 </span>
               </label>
@@ -88,7 +88,7 @@ export default function FilterPanel({
 
       {/* THÈMES */}
       <div className="mb-6">
-        <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#9a9483] dark:text-[#8f8973] mb-3">
+        <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#6f7363] dark:text-[#8f8973] mb-3">
           {dict.filterThemesLabel}
         </p>
         <ul className="space-y-2">
@@ -126,11 +126,11 @@ export default function FilterPanel({
                   <GlossaryTerm
                     term={id}
                     lang={lang}
-                    className="w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-[var(--font-hanken)] font-bold text-[#9a9483] dark:text-[#8f8973] hover:text-[#b58a3c] hover:border-[#b58a3c]"
+                    className="w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-[var(--font-hanken)] font-bold text-[#6f7363] dark:text-[#8f8973] hover:text-[#b58a3c] hover:border-[#b58a3c]"
                   >
                     ?
                   </GlossaryTerm>
-                  <span className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
+                  <span className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973]">
                     {count}
                   </span>
                 </span>
@@ -142,14 +142,14 @@ export default function FilterPanel({
 
       {/* LANGUE */}
       <div>
-        <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#9a9483] dark:text-[#8f8973] mb-3">
+        <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#6f7363] dark:text-[#8f8973] mb-3">
           {dict.filterLanguageLabel}
         </p>
         <div className="flex flex-wrap gap-2">
           {languages.map(({ id, label }) => {
             const active = selectedLanguages.includes(id);
             return (
-              <button
+              <button type="button"
                 key={id}
                 onClick={() => onLanguageToggle(id)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-[var(--font-hanken)] font-medium transition-colors border ${

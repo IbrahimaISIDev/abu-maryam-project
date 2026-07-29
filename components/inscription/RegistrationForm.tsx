@@ -29,7 +29,7 @@ function validate(form: FormState, dict: Dictionary["inscription"]["form"]): Par
   return errors;
 }
 
-const fieldClass = "w-full bg-[#fbf9f3] dark:bg-[#20261b] border border-[#d8d0bf] dark:border-[#454c3c] rounded-[9px] px-4 py-3 font-[var(--font-hanken)] text-[14px] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#9a9483] dark:placeholder:text-[#8f8973] focus:outline-none focus:border-[#3c4a37] focus:ring-1 focus:ring-[#3c4a37] transition-colors";
+const fieldClass = "w-full bg-[#fbf9f3] dark:bg-[#20261b] border border-[#d8d0bf] dark:border-[#454c3c] rounded-[9px] px-4 py-3 font-[var(--font-hanken)] text-[14px] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#6f7363] dark:placeholder:text-[#8f8973] focus:outline-none focus:border-[#3c4a37] focus:ring-1 focus:ring-[#3c4a37] transition-colors";
 const labelClass = "block font-[var(--font-hanken)] text-[13px] font-semibold text-[#3f463a] dark:text-[#d8d4c4] mb-1.5";
 const errorClass = "font-[var(--font-hanken)] text-[11.5px] text-[#8a2f29] dark:text-[#e08b81] mt-1";
 
@@ -86,15 +86,15 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
             {dict.success.message}
           </p>
         </div>
-        <div className="w-full max-w-[360px] bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[10px] p-4 text-left space-y-2">
-          <p className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] dark:text-[#8f8973] uppercase tracking-wider">{dict.success.recap}</p>
+        <div className="w-full max-w-[360px] bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[10px] p-4 rtl:text-right ltr:text-left space-y-2">
+          <p className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#6f7363] dark:text-[#8f8973] uppercase tracking-wider">{dict.success.recap}</p>
           <p className="font-[var(--font-hanken)] text-[13.5px] text-[#232a20] dark:text-[#f2ede0] font-semibold">{form.firstName} {form.lastName}</p>
           <p className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#b7b2a0]">{form.phone}{form.city ? ` · ${form.city}` : ""}</p>
           <p className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#b7b2a0]">
             {form.mode === "presentiel" ? dict.onsiteMode : dict.onlineMode} · {form.ageRange}
           </p>
         </div>
-        <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
+        <p className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973]">
           {dict.success.checkMessages}
         </p>
       </div>
@@ -114,20 +114,22 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
         {/* Prénom + Nom */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="reg-firstName" className={labelClass}>
               {dict.firstName} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <input
+              id="reg-firstName"
               type="text" value={form.firstName} onChange={(e) => set("firstName", e.target.value)}
               placeholder={dict.firstNamePlaceholder} className={fieldClass} autoComplete="given-name"
             />
             {errors.firstName && <p className={errorClass}>{errors.firstName}</p>}
           </div>
           <div>
-            <label className={labelClass}>
+            <label htmlFor="reg-lastName" className={labelClass}>
               {dict.lastName} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <input
+              id="reg-lastName"
               type="text" value={form.lastName} onChange={(e) => set("lastName", e.target.value)}
               placeholder={dict.lastNamePlaceholder} className={fieldClass} autoComplete="family-name"
             />
@@ -138,18 +140,20 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
         {/* Téléphone + Email */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="reg-phone" className={labelClass}>
               {dict.phone} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <input
+              id="reg-phone"
               type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)}
               placeholder={dict.phonePlaceholder} className={fieldClass} autoComplete="tel" dir="ltr"
             />
             {errors.phone && <p className={errorClass}>{errors.phone}</p>}
           </div>
           <div>
-            <label className={labelClass}>{dict.email}</label>
+            <label htmlFor="reg-email" className={labelClass}>{dict.email}</label>
             <input
+              id="reg-email"
               type="email" value={form.email} onChange={(e) => set("email", e.target.value)}
               placeholder={dict.emailPlaceholder} className={fieldClass} autoComplete="email" dir="ltr"
             />
@@ -160,17 +164,19 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
         {/* Ville + Tranche d'âge */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className={labelClass}>{dict.city}</label>
+            <label htmlFor="reg-city" className={labelClass}>{dict.city}</label>
             <input
+              id="reg-city"
               type="text" value={form.city} onChange={(e) => set("city", e.target.value)}
               placeholder={dict.cityPlaceholder} className={fieldClass} autoComplete="address-level2"
             />
           </div>
           <div>
-            <label className={labelClass}>
+            <label htmlFor="reg-ageRange" className={labelClass}>
               {dict.ageRange} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
             </label>
             <select
+              id="reg-ageRange"
               value={form.ageRange} onChange={(e) => set("ageRange", e.target.value)}
               className={`${fieldClass} appearance-none cursor-pointer`}
             >
@@ -184,20 +190,21 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
         </div>
 
         {/* Mode de participation */}
-        <div className="mb-4">
-          <label className={labelClass}>
+        <fieldset className="mb-4 border-0 p-0 m-0">
+          <legend className={labelClass}>
             {dict.mode} <span className="text-[#8a2f29] dark:text-[#e08b81]">*</span>
-          </label>
+          </legend>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {(["presentiel", "ligne"] as const).map((m) => {
               const active = form.mode === m;
               return (
                 <button
                   key={m} type="button" onClick={() => set("mode", m)}
-                  className={`flex items-center gap-3 px-4 py-3.5 rounded-[9px] border-2 transition-colors text-left ${
+                  aria-pressed={active}
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-[9px] border-2 transition-colors rtl:text-right ltr:text-left ${
                     active
                       ? "border-[#3c4a37] bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]"
-                      : "border-[#d8d0bf] dark:border-[#454c3c] bg-[#fbf9f3] dark:bg-[#20261b] hover:border-[#9a9483]"
+                      : "border-[#d8d0bf] dark:border-[#454c3c] bg-[#fbf9f3] dark:bg-[#20261b] hover:border-[#6f7363]"
                   }`}
                 >
                   <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${active ? "border-[#3c4a37]" : "border-[#d8d0bf] dark:border-[#454c3c]"}`}>
@@ -210,12 +217,13 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
               );
             })}
           </div>
-        </div>
+        </fieldset>
 
         {/* Message */}
         <div className="mb-5">
-          <label className={labelClass}>{dict.message}</label>
+          <label htmlFor="reg-message" className={labelClass}>{dict.message}</label>
           <textarea
+            id="reg-message"
             value={form.message} onChange={(e) => set("message", e.target.value)}
             placeholder={dict.messagePlaceholder}
             rows={3} className={`${fieldClass} resize-none`}
@@ -256,7 +264,7 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
           </p>
         )}
 
-        <p className="mt-3 text-center font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
+        <p className="mt-3 text-center font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973]">
           {dict.privacyNote}
         </p>
       </form>

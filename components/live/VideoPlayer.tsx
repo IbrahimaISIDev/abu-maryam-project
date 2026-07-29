@@ -40,7 +40,7 @@ export default function VideoPlayer({ dict, lang }: { dict: Dictionary; lang: Lo
 
           {/* Bouton play central */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <button
+            <button type="button"
               className="w-[74px] h-[74px] rounded-full bg-[rgba(251,249,243,0.18)] border-2 border-[rgba(251,249,243,0.55)] flex items-center justify-center text-[#fbf9f3] text-3xl hover:bg-[rgba(251,249,243,0.28)] transition-colors"
               aria-label={dict.live.launchPlayback}
             >
@@ -50,7 +50,7 @@ export default function VideoPlayer({ dict, lang }: { dict: Dictionary; lang: Lo
 
           {/* Barre de contrôle bas */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[rgba(28,34,22,.9)] to-transparent px-4 py-3 flex items-center gap-3">
-            <button className="text-[#fbf9f3] text-[18px] leading-none" aria-label={dict.common.pause}>⏸</button>
+            <button type="button" className="text-[#fbf9f3] text-[18px] leading-none" aria-label={dict.common.pause}>⏸</button>
             {/* Barre de progression */}
             <div className="flex-1 h-[3px] bg-[rgba(251,249,243,0.3)] rounded-full">
               <div className="h-full w-[40%] bg-[#fbf9f3] rounded-full" />

@@ -28,7 +28,7 @@ export default function ThemeGrid({ dict, lang }: { dict: Dictionary["home"]; la
             <span className="font-[var(--font-hanken)] font-semibold text-[13px] text-[#232a20] dark:text-[#f2ede0] text-center">
               {formatThemeLabel(theme.id, lang)}
             </span>
-            <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">
+            <span className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973]">
               {formatCoursesCount(theme.count, lang)}
             </span>
           </Link>

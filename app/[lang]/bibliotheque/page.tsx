@@ -7,14 +7,16 @@ import Footer from "@/components/layout/Footer";
 import BibliothequeCatalogue from "@/components/bibliotheque/BibliothequeCatalogue";
 import { teachings } from "@/data/teachings";
 import { getDictionary } from "@/dictionaries";
-import type { Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
+  const alternates = buildLanguageAlternates(lang, "/bibliotheque");
   if (lang === "ar") {
     return {
       title: "المكتبة",
       description: `${teachings.length} درسًا إسلاميًا للأستاذ نيانغ مباي (حفظه الله) — تفسير وتوحيد وخطب ومحاضرات وسلاسل دروس بالولوف والعربية.`,
+      alternates,
       openGraph: {
         title: "مكتبة الدروس | Abu Maryam TV",
         description: "دروس إسلامية وخطب ومحاضرات — مصنّفة حسب الموضوع، لمتابعتها بالوتيرة التي تناسبك.",
@@ -25,6 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
     title: "Bibliothèque",
     description:
       `${teachings.length} enseignements islamiques d'Oustaz Niang Mbaye (H.A) — tafsir, tawhid, khoutbas, conférences et séries de cours en wolof et en arabe.`,
+    alternates,
     openGraph: {
       title: "Bibliothèque des enseignements | Abu Maryam TV",
       description:

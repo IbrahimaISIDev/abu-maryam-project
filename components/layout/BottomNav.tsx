@@ -71,7 +71,7 @@ export default function BottomNav() {
               <Link
                 href={href}
                 className={`flex flex-col items-center gap-1 min-w-[48px] py-1 ${
-                  isActive ? "text-[#3c4a37] dark:text-[#a9c19a]" : "text-[#9a9483] dark:text-[#8f8973]"
+                  isActive ? "text-[#3c4a37] dark:text-[#a9c19a]" : "text-[#6f7363] dark:text-[#8f8973]"
                 }`}
                 aria-current={isActive ? "page" : undefined}
               >

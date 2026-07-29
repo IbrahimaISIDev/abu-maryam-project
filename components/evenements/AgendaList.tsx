@@ -28,7 +28,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
           {dict.agendaTitle}
         </h2>
         <div className="flex gap-1 p-1 bg-[#e9e3d4] dark:bg-[#242b1e] rounded-full">
-          <button
+          <button type="button"
             onClick={() => setTab("upcoming")}
             className={`px-4 py-2 rounded-full font-[var(--font-hanken)] text-[13px] font-medium transition-colors ${
               tab === "upcoming"
@@ -38,7 +38,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
           >
             {dict.tabUpcoming}
           </button>
-          <button
+          <button type="button"
             onClick={() => setTab("past")}
             className={`px-4 py-2 rounded-full font-[var(--font-hanken)] text-[13px] font-medium transition-colors ${
               tab === "past"
@@ -64,13 +64,13 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
             >
               {/* Bloc date */}
               <div className="text-center shrink-0 sm:w-[80px]">
-                <p className="font-[var(--font-hanken)] text-[11px] font-semibold uppercase text-[#9a9483] dark:text-[#8f8973]">
+                <p className="font-[var(--font-hanken)] text-[11px] font-semibold uppercase text-[#6f7363] dark:text-[#8f8973]">
                   {d.month}
                 </p>
                 <p className="font-[var(--font-cormorant)] font-semibold text-[38px] text-[#232a20] dark:text-[#f2ede0] leading-none">
                   {d.day}
                 </p>
-                <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973]">
+                <p className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973]">
                   {d.year}
                 </p>
               </div>
@@ -86,7 +86,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
                 <h3 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] dark:text-[#f2ede0] leading-tight">
                   {getAgendaItemTitle(item.id, item.title, lang)}
                 </h3>
-                <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973] mt-1">
+                <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] dark:text-[#8f8973] mt-1">
                   📍 {formatLocation(item.location, lang)}
                   {item.dateEnd && ` · ${formatUntilDate(parseDate(item.dateEnd).day, parseDate(item.dateEnd).month, lang)}`}
                 </p>

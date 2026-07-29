@@ -152,7 +152,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
           {/* Onglets Cours / Séries */}
           <div className="flex items-center gap-1 bg-[#ddd8cc] dark:bg-[#2b3326] rounded-full p-1 w-fit mb-6">
             {(["cours", "series"] as Tab[]).map((t) => (
-              <button
+              <button type="button"
                 key={t}
                 onClick={() => setTab(t)}
                 className={`px-5 py-2 rounded-full font-[var(--font-hanken)] text-[13.5px] font-semibold transition-colors ${
@@ -171,7 +171,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <svg
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9a9483] dark:text-[#8f8973]"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6f7363] dark:text-[#8f8973]"
                   width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" strokeWidth="2"
                 >
@@ -183,7 +183,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setPage(1); }}
                   placeholder={dict.searchPlaceholder}
-                  className="w-full pl-10 pr-4 py-3 bg-[#fbf9f3] dark:bg-[#20261b] border border-[#d8d0bf] dark:border-[#454c3c] rounded-full text-[14px] font-[var(--font-hanken)] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#9a9483] dark:placeholder:text-[#8f8973] focus:outline-none focus:border-[#b58a3c] focus:ring-1 focus:ring-[#b58a3c]"
+                  className="w-full pl-10 pr-4 py-3 bg-[#fbf9f3] dark:bg-[#20261b] border border-[#d8d0bf] dark:border-[#454c3c] rounded-full text-[14px] font-[var(--font-hanken)] text-[#232a20] dark:text-[#f2ede0] placeholder:text-[#6f7363] dark:placeholder:text-[#8f8973] focus:outline-none focus:border-[#b58a3c] focus:ring-1 focus:ring-[#b58a3c]"
                 />
               </div>
               <select
@@ -208,7 +208,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
         {/* ——— ONGLET SÉRIES ——— */}
         {tab === "series" && (
           <div>
-            <p className="font-[var(--font-hanken)] text-[13px] text-[#9a9483] dark:text-[#8f8973] mb-6">
+            <p className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#8f8973] mb-6">
               {dict.seriesIntro}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
@@ -225,7 +225,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
             {/* Mobile : pills de filtre rapide */}
             <div className="md:hidden flex gap-2 overflow-x-auto pb-3 mb-4 -mx-5 px-5">
               {(["all", "video", "audio"] as const).map((type) => (
-                <button
+                <button type="button"
                   key={type}
                   onClick={() => { setSelectedType(type); setPage(1); }}
                   className={`shrink-0 px-3 py-1.5 rounded-full text-[13px] font-[var(--font-hanken)] font-medium border transition-colors ${
@@ -260,10 +260,10 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
               <div className="flex-1 min-w-0">
                 {paginated.length === 0 ? (
                   <div className="py-20 text-center">
-                    <p className="font-[var(--font-cormorant)] text-[24px] text-[#9a9483] dark:text-[#8f8973] mb-4">
+                    <p className="font-[var(--font-cormorant)] text-[24px] text-[#6f7363] dark:text-[#8f8973] mb-4">
                       {dict.noResults}
                     </p>
-                    <button
+                    <button type="button"
                       onClick={resetFilters}
                       className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#b58a3c] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] transition-colors underline underline-offset-4"
                     >
@@ -272,7 +272,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
                   </div>
                 ) : (
                   <>
-                    <p className="font-[var(--font-hanken)] text-[13px] text-[#9a9483] dark:text-[#8f8973] mb-4">
+                    <p className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#8f8973] mb-4">
                       {formatResultsCount(filtered.length, lang)}
                     </p>
                     <div
@@ -304,7 +304,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
 
                     {totalPages > 1 && (
                       <nav className="flex items-center justify-center gap-2 mt-8" aria-label="Pagination">
-                        <button
+                        <button type="button"
                           onClick={() => page > 1 && goToPage(page - 1)}
                           disabled={page === 1}
                           className="w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] text-[#6f7363] dark:text-[#b7b2a0] hover:border-[#b58a3c] hover:text-[#b58a3c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -313,7 +313,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
                           ‹
                         </button>
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                          <button
+                          <button type="button"
                             key={p}
                             onClick={() => goToPage(p)}
                             className={`w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium transition-colors ${
@@ -327,7 +327,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
                             {p}
                           </button>
                         ))}
-                        <button
+                        <button type="button"
                           onClick={() => page < totalPages && goToPage(page + 1)}
                           disabled={page === totalPages}
                           className="w-[34px] h-[34px] rounded-full flex items-center justify-center font-[var(--font-hanken)] text-[13px] font-medium border border-[#e2dac9] dark:border-[#3a4132] bg-[#fbf9f3] dark:bg-[#20261b] text-[#6f7363] dark:text-[#b7b2a0] hover:border-[#b58a3c] hover:text-[#b58a3c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"

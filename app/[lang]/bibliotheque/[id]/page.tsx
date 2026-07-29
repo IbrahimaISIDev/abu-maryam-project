@@ -18,7 +18,7 @@ import type { Theme } from "@/lib/types";
 import { getDictionary } from "@/dictionaries";
 import { formatSeriesLabel, formatContentLanguage, formatLevel, formatThemeLabel } from "@/lib/format";
 import { getTeachingTitle, getTeachingDescription, getSeriesTitle } from "@/lib/content-i18n";
-import type { Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 const levelColor: Record<string, string> = {
   débutant: "text-[#5f7050] bg-[#eef0e6]",
@@ -46,6 +46,7 @@ export async function generateMetadata({
     description:
       description ??
       `Enseignement de type ${teaching.type} sur le thème ${formatThemeLabel(teaching.theme, lang)} — Oustaz Niang Mbaye (H.A)`,
+    alternates: buildLanguageAlternates(lang, `/bibliotheque/${id}`),
     openGraph: {
       title: `${title} | Abu Maryam TV`,
       description,
@@ -107,7 +108,7 @@ export default async function TeachingDetailPage({
       <main id="main-content" className="pb-24 md:pb-0 dark:bg-[#1b211a]">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-6 md:py-8">
           {/* Fil d'Ariane */}
-          <nav className="flex items-center gap-2 font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] dark:text-[#8f8973] mb-6">
+          <nav className="flex items-center gap-2 font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] dark:text-[#8f8973] mb-6">
             <Link href="/" className="hover:text-[#b58a3c] transition-colors">{dict.nav.home}</Link>
             <span>›</span>
             <Link href="/bibliotheque" className="hover:text-[#b58a3c] transition-colors">{dict.nav.library}</Link>
@@ -129,7 +130,7 @@ export default async function TeachingDetailPage({
                   <GlossaryTerm
                     term={teaching.theme}
                     lang={lang}
-                    className="w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-[var(--font-hanken)] font-bold text-[#9a9483] hover:text-[#b58a3c]"
+                    className="w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-[var(--font-hanken)] font-bold text-[#6f7363] hover:text-[#b58a3c]"
                   >
                     ?
                   </GlossaryTerm>
@@ -139,7 +140,7 @@ export default async function TeachingDetailPage({
                     </span>
                   )}
                   {series && teaching.episodeNumber && (
-                    <span className="text-[11px] font-medium text-[#9a9483] dark:text-[#8f8973] font-[var(--font-hanken)]">
+                    <span className="text-[11px] font-medium text-[#6f7363] dark:text-[#8f8973] font-[var(--font-hanken)]">
                       {lang === "ar" ? "الحلقة" : "Épisode"}{" "}
                       <span dir="ltr" className="inline-block">{teaching.episodeNumber} / {series.totalEpisodes}</span>
                     </span>
@@ -159,7 +160,7 @@ export default async function TeachingDetailPage({
                     <p className="font-[var(--font-hanken)] font-semibold text-[13.5px] text-[#232a20] dark:text-[#f2ede0]">
                       Oustaz Niang Mbaye (H.A)
                     </p>
-                    <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973]">
+                    <p className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973]">
                       {publishedDate} · {teaching.duration} ·{" "}
                       {formatContentLanguage(teaching.language, lang)}
                     </p>
@@ -260,7 +261,7 @@ export default async function TeachingDetailPage({
                               <p className={`font-[var(--font-hanken)] text-[13px] font-medium leading-snug line-clamp-2 ${isCurrent ? "text-[#232a20] dark:text-[#f2ede0]" : "text-[#6f7363] dark:text-[#b7b2a0]"}`}>
                                 {getTeachingTitle(ep, lang)}
                               </p>
-                              <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
+                              <p className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
                                 {ep.duration}
                               </p>
                             </div>
@@ -303,14 +304,14 @@ export default async function TeachingDetailPage({
                     {related.slice(0, 3).map((t) => (
                       <li key={t.id} className="pt-3 first:pt-0">
                         <Link href={`/bibliotheque/${t.id}`} className="group flex gap-3 items-start">
-                          <div className="w-[60px] h-[38px] rounded-[5px] overflow-hidden shrink-0 bg-[#e2dac9] dark:bg-[#3a4132] flex items-center justify-center text-[#9a9483] dark:text-[#8f8973] text-[10px]">
+                          <div className="w-[60px] h-[38px] rounded-[5px] overflow-hidden shrink-0 bg-[#e2dac9] dark:bg-[#3a4132] flex items-center justify-center text-[#6f7363] dark:text-[#8f8973] text-[10px]">
                             {t.type === "video" ? "▶" : "♪"}
                           </div>
                           <div className="min-w-0">
                             <p className="font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] group-hover:text-[#b58a3c] leading-snug line-clamp-2 transition-colors">
                               {getTeachingTitle(t, lang)}
                             </p>
-                            <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
+                            <p className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
                               {t.duration}
                             </p>
                           </div>

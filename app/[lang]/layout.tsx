@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { fontVariables } from "@/lib/fonts";
-import { locales, isLocale, localeDir, type Locale } from "@/lib/i18n";
+import { locales, isLocale, localeDir, buildLanguageAlternates, SITE_URL, type Locale } from "@/lib/i18n";
 import { getDictionary } from "@/dictionaries";
 import { PlayerProvider } from "@/contexts/PlayerContext";
 import { SearchProvider } from "@/contexts/SearchContext";
@@ -38,6 +38,7 @@ export async function generateMetadata({
       : "Cours, conférences, khoutbas et séminaires d'Oustaz Niang Mbaye (H.A) — le savoir islamique authentique, accessible à tous.";
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: {
       default: siteTitle,
       template: "%s | Abu Maryam TV",
@@ -45,6 +46,7 @@ export async function generateMetadata({
     description,
     keywords,
     authors: [{ name: "Oustaz Niang Mbaye (H.A)" }],
+    alternates: isLocale(lang) ? buildLanguageAlternates(lang, "") : undefined,
     openGraph: {
       type: "website",
       locale: ogLocale,

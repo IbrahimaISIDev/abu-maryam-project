@@ -10,15 +10,17 @@ import { teachings } from "@/data/teachings";
 import { socialLinks } from "@/data/socials";
 import { getDictionary } from "@/dictionaries";
 import { formatAboutCtaParagraph, formatSocialLabel } from "@/lib/format";
-import type { Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
+  const alternates = buildLanguageAlternates(lang, "/a-propos");
   if (lang === "ar") {
     return {
       title: "من نحن",
       description:
         "تعرّف على الأستاذ نيانغ مباي (حفظه الله) ورسالة Abu Maryam TV: نشر العلم الشرعي الأصيل وفق فهم السلف الصالح.",
+      alternates,
       openGraph: {
         title: "من نحن | Abu Maryam TV",
         description: "رسالة Abu Maryam TV: جعل العلم الشرعي الأصيل في متناول الجميع، بالولوف والعربية.",
@@ -29,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
     title: "À propos",
     description:
       "Découvrez Oustaz Niang Mbaye (H.A) et la mission d'Abu Maryam TV : diffuser le savoir islamique authentique selon la compréhension des Salaf.",
+    alternates,
     openGraph: {
       title: "À propos | Abu Maryam TV",
       description:
@@ -140,7 +143,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
                     { value: "18", sub: dict.about.statYearsSuffix, label: dict.about.statYearsLabel },
                     { value: "2", label: dict.about.statLanguages },
                   ].map((stat, i) => (
-                    <div key={i} className="text-center md:text-left">
+                    <div key={i} className="text-center md:rtl:text-right md:ltr:text-left">
                       <p className="font-[var(--font-cormorant)] font-semibold text-[34px] md:text-[40px] text-[#232a20] dark:text-[#f2ede0] leading-none">
                         {stat.value}
                         {stat.sub && (
@@ -149,7 +152,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
                           </span>
                         )}
                       </p>
-                      <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973] mt-1">
+                      <p className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973] mt-1">
                         {stat.label}
                       </p>
                     </div>
@@ -163,7 +166,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 space-y-12 md:space-y-14 py-10 md:py-14">
           {/* Mission */}
           <section className="text-center max-w-[780px] mx-auto">
-            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3">
+            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#6f7363] dark:text-[#8f8973] font-semibold mb-3">
               {dict.about.mission}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[36px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-5">
@@ -178,7 +181,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
 
           {/* Domaines d'intervention */}
           <section>
-            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3 text-center">
+            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#6f7363] dark:text-[#8f8973] font-semibold mb-3 text-center">
               {dict.about.domains}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] md:text-[30px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-8 text-center max-w-[780px] mx-auto">
@@ -205,7 +208,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
 
           {/* Réseaux sociaux */}
           <section className="text-center">
-            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] font-semibold mb-3">
+            <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#6f7363] dark:text-[#8f8973] font-semibold mb-3">
               {dict.about.followTitle}
             </p>
             <h2 className="font-[var(--font-cormorant)] font-semibold text-[24px] md:text-[30px] text-[#232a20] dark:text-[#f2ede0] leading-tight mb-8">

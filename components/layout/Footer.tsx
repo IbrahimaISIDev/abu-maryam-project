@@ -23,7 +23,7 @@ export default function Footer() {
       <div className="max-w-[1280px] mx-auto px-6 md:px-10 py-12">
         <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-10 mb-10">
           {/* Marque + tagline */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          <div className="flex flex-col items-center md:items-start text-center md:rtl:text-right md:ltr:text-left">
             <Link href="/" className="flex items-center gap-2.5 mb-3">
               <BrandMark size={30} />
               <span className="font-[var(--font-cormorant)] font-bold text-[18px] text-[#232a20] dark:text-[#f2ede0]">
@@ -36,8 +36,8 @@ export default function Footer() {
           </div>
 
           {/* Liens rapides */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h3 className="font-[var(--font-hanken)] text-[11px] font-semibold uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] mb-4">
+          <div className="flex flex-col items-center md:items-start text-center md:rtl:text-right md:ltr:text-left">
+            <h3 className="font-[var(--font-hanken)] text-[11px] font-semibold uppercase tracking-widest text-[#6f7363] dark:text-[#8f8973] mb-4">
               {dict.footer.quickLinks}
             </h3>
             <ul className="space-y-2.5">
@@ -55,8 +55,8 @@ export default function Footer() {
           </div>
 
           {/* Réseaux sociaux */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h3 className="font-[var(--font-hanken)] text-[11px] font-semibold uppercase tracking-widest text-[#9a9483] dark:text-[#8f8973] mb-4">
+          <div className="flex flex-col items-center md:items-start text-center md:rtl:text-right md:ltr:text-left">
+            <h3 className="font-[var(--font-hanken)] text-[11px] font-semibold uppercase tracking-widest text-[#6f7363] dark:text-[#8f8973] mb-4">
               {dict.footer.followUs}
             </h3>
             <ul className="space-y-2.5">
@@ -79,7 +79,7 @@ export default function Footer() {
 
         {/* Barre inférieure */}
         <div className="pt-6 border-t border-[#e2dac9] dark:border-[#3a4132] flex justify-center md:justify-start">
-          <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] dark:text-[#8f8973] text-center md:text-left">
+          <p className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973] text-center md:rtl:text-right md:ltr:text-left">
             Al-Qur&apos;an ak Sunna si Déginou Sahaaba yi · © 2026 Abu Maryam TV
           </p>
         </div>

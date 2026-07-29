@@ -76,7 +76,7 @@ export default function LiveReplays({
                   <p className="font-[var(--font-hanken)] font-medium text-[13.5px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
                     {getReplayTitle(r, lang)}
                   </p>
-                  <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] dark:text-[#8f8973] mt-0.5">
+                  <p className="font-[var(--font-hanken)] text-[11.5px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
                     {formatDaysAgo(r.daysAgo, lang)}
                   </p>
                 </div>
