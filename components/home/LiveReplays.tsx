@@ -1,5 +1,5 @@
 import Link from "@/components/ui/LocalizedLink";
-import { liveStatus, replays } from "@/data/live";
+import { getLiveStatus, getReplays } from "@/lib/db/queries";
 import Badge from "@/components/ui/Badge";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Dictionary } from "@/dictionaries/types";
@@ -7,7 +7,7 @@ import type { Locale } from "@/lib/i18n";
 import { formatDaysAgo } from "@/lib/format";
 import { getLiveStatusTitle, getReplayTitle } from "@/lib/content-i18n";
 
-export default function LiveReplays({
+export default async function LiveReplays({
   dict,
   lang,
   liveLabel,
@@ -16,6 +16,8 @@ export default function LiveReplays({
   lang: Locale;
   liveLabel: string;
 }) {
+  const [liveStatus, replays] = await Promise.all([getLiveStatus(), getReplays()]);
+
   return (
     <section>
       <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] mb-5">

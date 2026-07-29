@@ -1,11 +1,19 @@
-import { liveStatus } from "@/data/live";
 import Badge from "@/components/ui/Badge";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
+import type { LiveStatus } from "@/lib/types";
 import { getLiveStatusTitle } from "@/lib/content-i18n";
 
-export default function VideoPlayer({ dict, lang }: { dict: Dictionary; lang: Locale }) {
+export default function VideoPlayer({
+  dict,
+  lang,
+  liveStatus,
+}: {
+  dict: Dictionary;
+  lang: Locale;
+  liveStatus: LiveStatus;
+}) {
   // Si youtubeChannelId est renseigné, on embed YouTube Live
   // Sinon, on affiche un placeholder avec message
   const ytId = liveStatus.youtubeChannelId;

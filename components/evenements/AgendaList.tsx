@@ -2,18 +2,28 @@
 
 import { useState } from "react";
 import Link from "@/components/ui/LocalizedLink";
-import { agendaItems } from "@/data/events";
+import type { AgendaItem } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatUntilDate, formatEventCta, formatLocation } from "@/lib/format";
 import { getAgendaItemTitle } from "@/lib/content-i18n";
+import { computeAgendaStatus } from "@/lib/activities";
 
-export default function AgendaList({ dict, lang }: { dict: Dictionary["events"]; lang: Locale }) {
+export default function AgendaList({
+  dict,
+  lang,
+  agendaItems,
+}: {
+  dict: Dictionary["events"];
+  lang: Locale;
+  agendaItems: AgendaItem[];
+}) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
 
-  const filtered = agendaItems.filter((e) =>
-    tab === "upcoming" ? e.isUpcoming : !e.isUpcoming
-  );
+  const filtered = agendaItems.filter((e) => {
+    const status = computeAgendaStatus(e);
+    return tab === "upcoming" ? status !== "past" : status === "past";
+  });
 
   const parseDate = (d: string) => {
     const [y, m, day] = d.split("-").map(Number);
@@ -93,7 +103,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
               </div>
 
               {/* Bouton action */}
-              {item.ctaLabel && item.isUpcoming && (
+              {item.ctaLabel && computeAgendaStatus(item) !== "past" && (
                 <div className="shrink-0">
                   <Link
                     href={item.type === "séminaire" ? "/inscription" : "/en-direct"}

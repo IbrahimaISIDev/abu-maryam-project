@@ -1,10 +1,11 @@
 import Link from "@/components/ui/LocalizedLink";
-import { liveStatus } from "@/data/live";
+import { getLiveStatus } from "@/lib/db/queries";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { getLiveStatusTitle } from "@/lib/content-i18n";
 
-export default function LiveBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+export default async function LiveBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+  const liveStatus = await getLiveStatus();
   if (!liveStatus.isLive) return null;
 
   return (

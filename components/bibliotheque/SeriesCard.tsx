@@ -1,7 +1,6 @@
 import Link from "@/components/ui/LocalizedLink";
-import type { Series } from "@/lib/types";
+import type { Series, Teaching } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
-import { getSeriesEpisodes } from "@/data/teachings";
 import { formatContentLanguage, formatThemeLabel } from "@/lib/format";
 import { getSeriesTitle, getSeriesDescription } from "@/lib/content-i18n";
 import SeriesProgress from "./SeriesProgress";
@@ -20,11 +19,11 @@ const themeColor: Record<string, { bg: string; text: string }> = {
 
 interface SeriesCardProps {
   series: Series;
+  episodes: Teaching[];
   lang: Locale;
 }
 
-export default function SeriesCard({ series, lang }: SeriesCardProps) {
-  const episodes = getSeriesEpisodes(series.id);
+export default function SeriesCard({ series, episodes, lang }: SeriesCardProps) {
   const firstEp = episodes[0];
   const href = firstEp ? `/bibliotheque/${firstEp.id}` : "/bibliotheque";
   const colors = themeColor[series.theme] ?? { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" };

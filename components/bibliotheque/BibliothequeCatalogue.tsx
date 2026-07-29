@@ -6,10 +6,8 @@ import Link from "@/components/ui/LocalizedLink";
 import FilterPanel from "./FilterPanel";
 import SeriesCard from "./SeriesCard";
 import ContentCard from "@/components/ui/ContentCard";
-import { teachings } from "@/data/teachings";
-import { seriesList } from "@/data/series";
 import { useProgress } from "@/hooks/useProgress";
-import type { ContentType, Theme, Language } from "@/lib/types";
+import type { ContentType, Theme, Language, Teaching, Series } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import {
@@ -24,14 +22,24 @@ import {
 import { getTeachingTitle } from "@/lib/content-i18n";
 
 const PAGE_SIZE = 9;
-const CATALOGUE_TOTAL = teachings.length;
 const ALL_THEMES = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence"] as const;
 const ALL_LANGUAGES = ["wolof", "arabe"] as const;
 
 type Tab = "cours" | "series";
 
-export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary["library"]; lang: Locale }) {
+export default function BibliothequeCatalogue({
+  dict,
+  lang,
+  teachings,
+  seriesList,
+}: {
+  dict: Dictionary["library"];
+  lang: Locale;
+  teachings: Teaching[];
+  seriesList: Series[];
+}) {
   const { getProgress } = useProgress();
+  const CATALOGUE_TOTAL = teachings.length;
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -117,7 +125,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
     }
     if (sort === "oldest") return [...list].reverse();
     return list;
-  }, [selectedType, selectedThemes, selectedLanguages, query, sort, lang]);
+  }, [teachings, selectedType, selectedThemes, selectedLanguages, query, sort, lang]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -132,7 +140,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
     const map: Partial<Record<Theme, number>> = {};
     for (const t of teachings) map[t.theme] = (map[t.theme] ?? 0) + 1;
     return map;
-  }, []);
+  }, [teachings]);
 
   return (
     <>
@@ -213,7 +221,14 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
               {seriesList.map((s) => (
-                <SeriesCard key={s.id} series={s} lang={lang} />
+                <SeriesCard
+                  key={s.id}
+                  series={s}
+                  episodes={teachings
+                    .filter((t) => t.seriesId === s.id)
+                    .sort((a, b) => (a.episodeNumber ?? 0) - (b.episodeNumber ?? 0))}
+                  lang={lang}
+                />
               ))}
             </div>
           </div>

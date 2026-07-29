@@ -6,14 +6,12 @@ import MobileHeader from "@/components/layout/MobileHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import TeachingPlayer from "@/components/bibliotheque/TeachingPlayer";
-import TranscriptSection from "@/components/bibliotheque/TranscriptSection";
 import SeriesProgress from "@/components/bibliotheque/SeriesProgress";
 import ShareButtons from "@/components/bibliotheque/ShareButtons";
 import ContentCard from "@/components/ui/ContentCard";
 import Badge from "@/components/ui/Badge";
 import GlossaryTerm from "@/components/ui/GlossaryTerm";
-import { getTeachingById, getSeriesEpisodes, getRelatedTeachings } from "@/data/teachings";
-import { getSeriesById } from "@/data/series";
+import { getTeachingById, getSeriesEpisodes, getRelatedTeachings, getSeriesById, getAllTeachings } from "@/lib/db/queries";
 import type { Theme } from "@/lib/types";
 import { getDictionary } from "@/dictionaries";
 import { formatSeriesLabel, formatContentLanguage, formatLevel, formatThemeLabel } from "@/lib/format";
@@ -27,7 +25,7 @@ const levelColor: Record<string, string> = {
 };
 
 export async function generateStaticParams() {
-  const { teachings } = await import("@/data/teachings");
+  const teachings = await getAllTeachings();
   return teachings.map((t) => ({ id: t.id }));
 }
 
@@ -37,7 +35,7 @@ export async function generateMetadata({
   params: Promise<{ lang: Locale; id: string }>;
 }): Promise<Metadata> {
   const { lang, id } = await params;
-  const teaching = getTeachingById(id);
+  const teaching = await getTeachingById(id);
   if (!teaching) return { title: "Cours introuvable" };
   const title = getTeachingTitle(teaching, lang);
   const description = getTeachingDescription(teaching, lang);
@@ -61,13 +59,13 @@ export default async function TeachingDetailPage({
   params: Promise<{ lang: Locale; id: string }>;
 }) {
   const { lang, id } = await params;
-  const teaching = getTeachingById(id);
+  const teaching = await getTeachingById(id);
   if (!teaching) notFound();
 
   const dict = await getDictionary(lang);
-  const series = teaching.seriesId ? getSeriesById(teaching.seriesId) : null;
-  const seriesEpisodes = series ? getSeriesEpisodes(series.id) : [];
-  const related = getRelatedTeachings(teaching, 4);
+  const series = teaching.seriesId ? await getSeriesById(teaching.seriesId) : null;
+  const seriesEpisodes = series ? await getSeriesEpisodes(series.id) : [];
+  const related = await getRelatedTeachings(teaching, 4);
   const publishedDate = new Date(teaching.publishedAt).toLocaleDateString(lang === "ar" ? "ar-EG" : "fr-FR", {
     day: "numeric", month: "long", year: "numeric",
   });
@@ -177,9 +175,9 @@ export default async function TeachingDetailPage({
                 )}
 
                 {/* Téléchargement audio */}
-                {teaching.type === "audio" && teaching.mediaUrl && (
+                {teaching.type === "audio" && teaching.audioUrl && (
                   <a
-                    href={teaching.mediaUrl}
+                    href={teaching.audioUrl}
                     download
                     className="inline-flex items-center gap-2 mb-4 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
                   >
@@ -200,9 +198,6 @@ export default async function TeachingDetailPage({
                   lang={lang}
                 />
               </div>
-
-              {/* Transcription écrite */}
-              <TranscriptSection teaching={teaching} dict={dict.library} />
 
               {/* Cours liés (si pas de série) */}
               {!series && related.length > 0 && (

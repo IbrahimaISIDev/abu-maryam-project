@@ -1,12 +1,15 @@
 import Link from "@/components/ui/LocalizedLink";
 import Image from "next/image";
-import { seminar } from "@/data/events";
+import { getSeminar } from "@/lib/db/queries";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatSeminarPlacesRemaining, formatSeminarDateRange, formatSeminarSingleDate } from "@/lib/format";
 import { getSeminarField } from "@/lib/content-i18n";
 
-export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+export default async function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+  const seminar = await getSeminar();
+  if (!seminar) return null;
+
   return (
     <div className="rounded-[8px] overflow-hidden bg-[#3c4a37] min-h-[300px] flex flex-col md:flex-row">
       {/* Texte — 58% */}
@@ -25,12 +28,12 @@ export default function SeminarBanner({ dict, lang }: { dict: Dictionary["home"]
 
         {/* Label */}
         <p className="font-[var(--font-hanken)] text-[12.5px] uppercase tracking-widest text-[#cda350] font-semibold mb-2">
-          {getSeminarField("label", lang)}
+          {getSeminarField(seminar, "label", lang)}
         </p>
 
         {/* Titre */}
         <h3 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[38px] text-[#fbf9f3] leading-tight mb-5">
-          {getSeminarField("title", lang)}
+          {getSeminarField(seminar, "title", lang)}
         </h3>
 
         {/* Dates */}

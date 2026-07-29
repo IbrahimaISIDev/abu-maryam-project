@@ -10,6 +10,7 @@ import { DictionaryProvider } from "@/contexts/DictionaryContext";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import PublicSearch from "@/components/layout/PublicSearch";
 import PWARegister from "@/components/PWARegister";
+import { getAllTeachings, getAllSeries, getAgendaItems } from "@/lib/db/queries";
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -77,6 +78,11 @@ export default async function LangLayout({
   if (!isLocale(lang)) notFound();
 
   const dict = await getDictionary(lang as Locale);
+  const [teachings, seriesList, agendaItems] = await Promise.all([
+    getAllTeachings(),
+    getAllSeries(),
+    getAgendaItems(),
+  ]);
 
   return (
     <html lang={lang} dir={localeDir[lang as Locale]} className={fontVariables}>
@@ -93,7 +99,7 @@ export default async function LangLayout({
               {children}
               <MiniPlayer />
             </PlayerProvider>
-            <PublicSearch />
+            <PublicSearch teachings={teachings} seriesList={seriesList} agendaItems={agendaItems} />
           </SearchProvider>
         </DictionaryProvider>
         <PWARegister />

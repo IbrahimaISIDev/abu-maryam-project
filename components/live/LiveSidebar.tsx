@@ -1,11 +1,13 @@
-import { schedule, replays } from "@/data/live";
+import { schedule } from "@/data/live";
+import { getReplays } from "@/lib/db/queries";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatDaysAgo, formatDayShort } from "@/lib/format";
 import { getScheduleTitle, getScheduleSubtitle, getReplayTitle } from "@/lib/content-i18n";
 
-export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
+export default async function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
+  const replays = await getReplays();
   return (
     <aside className="space-y-5">
       {/* Programme à venir */}

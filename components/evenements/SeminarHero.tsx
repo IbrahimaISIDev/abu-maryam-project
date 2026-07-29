@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "@/components/ui/LocalizedLink";
 import Image from "next/image";
-import { seminar } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
+import type { Seminar } from "@/lib/types";
 import { formatPlacesFraction, formatSeminarDateRange, formatSeminarSingleDate, formatLocation } from "@/lib/format";
 import { getSeminarField } from "@/lib/content-i18n";
 
@@ -42,7 +42,15 @@ function CountUnit({ value, label }: { value: number; label: string }) {
   );
 }
 
-export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]; lang: Locale }) {
+export default function SeminarHero({
+  dict,
+  lang,
+  seminar,
+}: {
+  dict: Dictionary["events"];
+  lang: Locale;
+  seminar: Seminar;
+}) {
   const { days, hours, minutes, seconds, started } = useCountdown(seminar.dateStart + "T00:00:00");
 
   return (
@@ -63,16 +71,16 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
 
         {/* Label */}
         <p className="font-[var(--font-hanken)] text-[12px] uppercase tracking-widest text-[#cda350] font-semibold mb-2">
-          {getSeminarField("label", lang)}
+          {getSeminarField(seminar, "label", lang)}
         </p>
 
         {/* Titre */}
         <h1 className="font-[var(--font-cormorant)] font-semibold text-[30px] md:text-[42px] text-[#fbf9f3] leading-tight mb-4">
-          {getSeminarField("title", lang)}
+          {getSeminarField(seminar, "title", lang)}
         </h1>
 
         <p className="font-[var(--font-hanken)] text-[14.5px] text-[rgba(251,249,243,0.8)] mb-5 max-w-[480px] leading-relaxed">
-          {getSeminarField("description", lang)}
+          {getSeminarField(seminar, "description", lang)}
         </p>
 
         {/* Countdown */}
@@ -158,7 +166,7 @@ export default function SeminarHero({ dict, lang }: { dict: Dictionary["events"]
           </a>
         </div>
         <p className="mt-2 font-[var(--font-hanken)] text-[12px] text-[rgba(251,249,243,0.55)]">
-          {getSeminarField("targetAudience", lang)}
+          {getSeminarField(seminar, "targetAudience", lang)}
         </p>
       </div>
 

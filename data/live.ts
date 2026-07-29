@@ -1,39 +1,7 @@
-import type { LiveStatus, Replay, ScheduleItem } from "@/lib/types";
+import type { ScheduleItem } from "@/lib/types";
 
-export const liveStatus: LiveStatus = {
-  isLive: true,
-  title: "Dars du soir — La place d'Allah dans nos cœurs",
-  arabicVerse: "مكانة الله في قلوبنا",
-  viewers: 1248,
-  streamUrl: null,
-  youtubeChannelId: "UCiMv6OE5QEAZsGVaqJUuhYg", // Oustaz Niang Mbaye TV officiel
-  startedAt: "2026-07-15T20:30:00",
-  hostName: "Oustaz Niang Mbaye (H.A)",
-  description:
-    "Une leçon du soir sur la nécessité d'ancrer l'amour d'Allah au cœur de nos vies, en s'appuyant sur le Qur'an et les enseignements authentiques de la Sunna.",
-};
-
-export const replays: Replay[] = [
-  {
-    id: "r1",
-    title: "Tafsir Sourate Qâf",
-    thumbnail: null,
-    daysAgo: 2,
-  },
-  {
-    id: "r2",
-    title: "L'appel au Tawhîd pur",
-    thumbnail: null,
-    daysAgo: 5,
-  },
-  {
-    id: "r3",
-    title: "La persévérance dans la Sunna",
-    thumbnail: null,
-    daysAgo: 7,
-  },
-];
-
+// Programme hebdomadaire récurrent — reste statique (pas de table dédiée,
+// contrairement au statut live et aux replays qui vivent en base).
 export const schedule: ScheduleItem[] = [
   {
     dayShort: "Ven",

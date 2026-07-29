@@ -1,10 +1,11 @@
 import Link from "@/components/ui/LocalizedLink";
-import { teachings } from "@/data/teachings";
+import { getTeachingsCount } from "@/lib/db/queries";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatCtaParagraph } from "@/lib/format";
 
-export default function HomeCTA({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+export default async function HomeCTA({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+  const count = await getTeachingsCount();
   return (
     <section className="rounded-[10px] bg-[#3c4a37] px-6 py-10 md:px-12 md:py-12 text-center">
       <p className="arabic text-[#cda350] text-[22px] mb-4">
@@ -14,7 +15,7 @@ export default function HomeCTA({ dict, lang }: { dict: Dictionary["home"]; lang
         {dict.ctaTitle}
       </h2>
       <p className="font-[var(--font-hanken)] text-[14.5px] text-[rgba(251,249,243,0.75)] max-w-[480px] mx-auto mb-7 leading-relaxed">
-        {formatCtaParagraph(teachings.length, lang)}
+        {formatCtaParagraph(count, lang)}
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link

@@ -6,11 +6,9 @@ import { useSearch } from "@/contexts/SearchContext";
 import { useDictionary } from "@/contexts/DictionaryContext";
 import { formatNoResultsFor, formatThemeLabel, formatSeriesLabel } from "@/lib/format";
 import { getTeachingTitle, getSeriesTitle, getAgendaItemTitle } from "@/lib/content-i18n";
-import { teachings } from "@/data/teachings";
-import { seriesList } from "@/data/series";
-import { agendaItems } from "@/data/events";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
+import type { Teaching, Series, AgendaItem } from "@/lib/types";
 
 type ResultType = "enseignement" | "serie" | "evenement";
 
@@ -28,7 +26,14 @@ const TYPE_ICON: Record<ResultType, string> = {
   evenement: "📅",
 };
 
-function search(q: string, lang: Locale, common: Dictionary["common"]): Result[] {
+function search(
+  q: string,
+  lang: Locale,
+  common: Dictionary["common"],
+  teachings: Teaching[],
+  seriesList: Series[],
+  agendaItems: AgendaItem[]
+): Result[] {
   if (!q.trim() || q.length < 2) return [];
   const lq = q.toLowerCase();
 
@@ -68,13 +73,24 @@ function search(q: string, lang: Locale, common: Dictionary["common"]): Result[]
   return [...teachingResults, ...seriesResults, ...eventResults];
 }
 
-export default function PublicSearch() {
+export default function PublicSearch({
+  teachings,
+  seriesList,
+  agendaItems,
+}: {
+  teachings: Teaching[];
+  seriesList: Series[];
+  agendaItems: AgendaItem[];
+}) {
   const { isOpen, query, setQuery, selected, setSelected, closeSearch, toggleSearch } = useSearch();
   const { dict, lang } = useDictionary();
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const results = useMemo(() => search(query, lang, dict.common), [query, lang, dict.common]);
+  const results = useMemo(
+    () => search(query, lang, dict.common, teachings, seriesList, agendaItems),
+    [query, lang, dict.common, teachings, seriesList, agendaItems]
+  );
 
   const TYPE_LABELS: Record<ResultType, string> = {
     enseignement: dict.search.groups.teachings,

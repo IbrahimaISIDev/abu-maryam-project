@@ -1,6 +1,5 @@
 import type { Locale } from "@/lib/i18n";
-import type { Teaching, Series, LiveStatus, Replay, ScheduleItem } from "@/lib/types";
-import { seminar } from "@/data/events";
+import type { Teaching, Series, LiveStatus, Replay, ScheduleItem, Seminar } from "@/lib/types";
 
 interface TeachingAr {
   title: string;
@@ -171,12 +170,12 @@ export function getScheduleSubtitle(item: ScheduleItem, lang: Locale): string {
 
 type SeminarStringField = "label" | "labelShort" | "title" | "description" | "priceNote" | "targetAudience";
 
-export function getSeminarField(field: SeminarStringField, lang: Locale): string {
-  return lang === "ar" ? seminarAr[field] : seminar[field];
+export function getSeminarField(seminar: Seminar, field: SeminarStringField, lang: Locale): string {
+  return lang === "ar" ? seminarAr[field] : (seminar[field] ?? "");
 }
 
-export function getSeminarPerks(lang: Locale): string[] {
-  return lang === "ar" ? seminarAr.perks : seminar.perks;
+export function getSeminarPerks(seminar: Seminar, lang: Locale): string[] {
+  return lang === "ar" ? seminarAr.perks : seminar.perks ?? [];
 }
 
 export function getAgendaItemTitle(id: string, title: string, lang: Locale): string {

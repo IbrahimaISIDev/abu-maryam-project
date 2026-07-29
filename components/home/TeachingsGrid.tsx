@@ -1,10 +1,11 @@
 import Link from "@/components/ui/LocalizedLink";
-import { teachings } from "@/data/teachings";
+import { getAllTeachings } from "@/lib/db/queries";
 import ContentCard from "@/components/ui/ContentCard";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 
-export default function TeachingsGrid({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+export default async function TeachingsGrid({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+  const teachings = await getAllTeachings();
   const latest = teachings.slice(0, 4);
 
   return (

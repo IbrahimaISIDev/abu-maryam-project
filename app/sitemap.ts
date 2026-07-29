@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
-import { teachings } from "@/data/teachings";
+import { getAllTeachings } from "@/lib/db/queries";
 import { locales } from "@/lib/i18n";
 
 const BASE_URL = "https://abumaryam.tv";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = [];
+  const teachings = await getAllTeachings();
 
   for (const lang of locales) {
     const base = `${BASE_URL}/${lang}`;

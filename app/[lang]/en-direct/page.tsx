@@ -5,7 +5,7 @@ import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import VideoPlayer from "@/components/live/VideoPlayer";
 import LiveSidebar from "@/components/live/LiveSidebar";
-import { liveStatus } from "@/data/live";
+import { getLiveStatus } from "@/lib/db/queries";
 import Image from "next/image";
 import { getDictionary } from "@/dictionaries";
 import { formatStartedAgo } from "@/lib/format";
@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
 export default async function EnDirectPage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
+  const liveStatus = await getLiveStatus();
 
   return (
     <>
@@ -54,7 +55,7 @@ export default async function EnDirectPage({ params }: { params: Promise<{ lang:
           <div className="flex flex-col md:grid md:grid-cols-[1fr_340px] gap-6">
             {/* Colonne principale */}
             <div>
-              <VideoPlayer dict={dict} lang={lang} />
+              <VideoPlayer dict={dict} lang={lang} liveStatus={liveStatus} />
 
               {/* Infos sous le lecteur */}
               <div className="mt-5">

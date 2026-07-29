@@ -6,7 +6,7 @@ import Footer from "@/components/layout/Footer";
 import Image from "next/image";
 import Link from "@/components/ui/LocalizedLink";
 import SocialIcon from "@/components/ui/SocialIcon";
-import { teachings } from "@/data/teachings";
+import { getTeachingsCount } from "@/lib/db/queries";
 import { socialLinks } from "@/data/socials";
 import { getDictionary } from "@/dictionaries";
 import { formatAboutCtaParagraph, formatSocialLabel } from "@/lib/format";
@@ -91,6 +91,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
   const dict = await getDictionary(lang);
   const topics = topicsByLang[lang];
   const values = valuesByLang[lang];
+  const teachingsCount = await getTeachingsCount();
 
   return (
     <>
@@ -139,7 +140,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { value: String(teachings.length), label: dict.about.statTeachings },
+                    { value: String(teachingsCount), label: dict.about.statTeachings },
                     { value: "18", sub: dict.about.statYearsSuffix, label: dict.about.statYearsLabel },
                     { value: "2", label: dict.about.statLanguages },
                   ].map((stat, i) => (
@@ -256,7 +257,7 @@ export default async function AProposPage({ params }: { params: Promise<{ lang: 
               {dict.about.ctaTitle}
             </h2>
             <p className="font-[var(--font-hanken)] text-[14px] text-[rgba(251,249,243,0.75)] max-w-[440px] mx-auto mb-7 leading-relaxed">
-              {formatAboutCtaParagraph(teachings.length, lang)}
+              {formatAboutCtaParagraph(teachingsCount, lang)}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link

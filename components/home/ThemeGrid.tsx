@@ -1,10 +1,13 @@
 import Link from "@/components/ui/LocalizedLink";
 import { themes } from "@/data/themes";
+import { getThemeCounts } from "@/lib/db/queries";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatCoursesCount, formatThemeLabel } from "@/lib/format";
 
-export default function ThemeGrid({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+export default async function ThemeGrid({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+  const counts = await getThemeCounts();
+
   return (
     <section>
       <h2 className="font-[var(--font-cormorant)] font-semibold text-[28px] md:text-[34px] text-[#232a20] dark:text-[#f2ede0] mb-5 text-center">
@@ -29,7 +32,7 @@ export default function ThemeGrid({ dict, lang }: { dict: Dictionary["home"]; la
               {formatThemeLabel(theme.id, lang)}
             </span>
             <span className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973]">
-              {formatCoursesCount(theme.count, lang)}
+              {formatCoursesCount(counts[theme.id] ?? 0, lang)}
             </span>
           </Link>
         ))}

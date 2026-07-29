@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import Link from "@/components/ui/LocalizedLink";
 import ContentCard from "@/components/ui/ContentCard";
 import { useProgress } from "@/hooks/useProgress";
-import { getTeachingById } from "@/data/teachings";
 import type { Teaching, TeachingProgress } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
 
@@ -12,21 +11,23 @@ export default function ContinueListening({
   title,
   viewAll,
   lang,
+  teachings,
 }: {
   title: string;
   viewAll: string;
   lang: Locale;
+  teachings: Teaching[];
 }) {
   const { getInProgress } = useProgress();
   const items = useMemo(
     () =>
       getInProgress()
         .map((p) => {
-          const t = getTeachingById(p.teachingId);
+          const t = teachings.find((x) => x.id === p.teachingId);
           return t ? { teaching: t, prog: p } : null;
         })
         .filter((x): x is { teaching: Teaching; prog: TeachingProgress } => x !== null),
-    [getInProgress]
+    [getInProgress, teachings]
   );
 
   if (items.length === 0) return null;
