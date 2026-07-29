@@ -189,6 +189,11 @@ const fr: Dictionary = {
     seekAria: "Position de lecture",
     chaptersAria: "Chapitres",
   },
+  footer: {
+    tagline: "Le savoir islamique authentique, accessible à tous, en wolof et en arabe.",
+    quickLinks: "Liens rapides",
+    followUs: "Suivez-nous",
+  },
 };
 
 export default fr;

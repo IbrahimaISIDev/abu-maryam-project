@@ -186,4 +186,9 @@ export interface Dictionary {
     seekAria: string;
     chaptersAria: string;
   };
+  footer: {
+    tagline: string;
+    quickLinks: string;
+    followUs: string;
+  };
 }

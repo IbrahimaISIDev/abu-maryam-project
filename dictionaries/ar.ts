@@ -189,6 +189,11 @@ const ar: Dictionary = {
     seekAria: "موضع التشغيل",
     chaptersAria: "الفصول",
   },
+  footer: {
+    tagline: "العلم الشرعي الأصيل، في متناول الجميع، بالولوف والعربية.",
+    quickLinks: "روابط سريعة",
+    followUs: "تابعونا",
+  },
 };
 
 export default ar;
