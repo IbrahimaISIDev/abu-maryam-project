@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { teachings as initialTeachings } from "@/data/teachings";
 import type { Teaching, Theme, ContentType, Language, DifficultyLevel } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
@@ -21,7 +20,7 @@ type SortKey = "title" | "type" | "theme" | "duration" | "language";
 
 const EMPTY_TEACHING: Omit<Teaching, "id"> = {
   title: "", type: "video", theme: "tafsir", language: "wolof",
-  duration: "", durationSeconds: 0, thumbnail: null, mediaUrl: null,
+  duration: "", durationSeconds: 0, thumbnail: null, youtubeId: null, audioUrl: null,
   publishedAt: new Date().toISOString().slice(0, 10),
 };
 
@@ -43,7 +42,8 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 export default function EnseignementsPage() {
   const toast = useToast();
-  const [items, setItems] = useState<Teaching[]>(initialTeachings);
+  const [items, setItems] = useState<Teaching[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | ContentType>("all");
   const [themeFilter, setThemeFilter] = useState<Theme | "all">("all");
@@ -54,6 +54,24 @@ export default function EnseignementsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<Teaching | null>(null);
   const [isNew, setIsNew] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/admin/teachings")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { teachings: Teaching[] }) => {
+        if (!cancelled) setItems(data.teachings);
+      })
+      .catch(() => {
+        if (!cancelled) toast("Impossible de charger les enseignements", "error");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [toast]);
 
   function handleSort(key: SortKey) {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -89,23 +107,49 @@ export default function EnseignementsPage() {
       })
     : filtered;
 
-  function handleDelete() {
-    setItems((prev) => prev.filter((t) => t.id !== deleteId));
+  async function handleDelete() {
+    const id = deleteId;
+    if (!id) return;
+    try {
+      const res = await fetch(`/api/admin/teachings/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setItems((prev) => prev.filter((t) => t.id !== id));
+      toast("Enseignement supprimé", "success");
+    } catch {
+      toast("Échec de la suppression", "error");
+    }
     setDeleteId(null);
-    toast("Enseignement supprimé", "success");
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!editItem) return;
-    if (isNew) {
-      setItems((prev) => [...prev, { ...editItem, id: String(Date.now()) }]);
-      toast("Enseignement ajouté", "success");
-    } else {
-      setItems((prev) => prev.map((t) => (t.id === editItem.id ? editItem : t)));
-      toast("Enseignement mis à jour", "success");
+    try {
+      if (isNew) {
+        const res = await fetch("/api/admin/teachings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editItem),
+        });
+        if (!res.ok) throw new Error();
+        const { teaching } = await res.json();
+        setItems((prev) => [...prev, teaching]);
+        toast("Enseignement ajouté", "success");
+      } else {
+        const res = await fetch(`/api/admin/teachings/${editItem.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editItem),
+        });
+        if (!res.ok) throw new Error();
+        const { teaching } = await res.json();
+        setItems((prev) => prev.map((t) => (t.id === teaching.id ? teaching : t)));
+        toast("Enseignement mis à jour", "success");
+      }
+      setEditItem(null);
+      setIsNew(false);
+    } catch {
+      toast("Échec de l'enregistrement", "error");
     }
-    setEditItem(null);
-    setIsNew(false);
   }
 
   const counts = {
@@ -204,7 +248,13 @@ export default function EnseignementsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-[#f0ece3]">
-            {sorted.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="px-5 py-14 text-center">
+                  <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Chargement…</p>
+                </td>
+              </tr>
+            ) : sorted.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-5 py-14 text-center">
                   <div className="flex flex-col items-center gap-2">

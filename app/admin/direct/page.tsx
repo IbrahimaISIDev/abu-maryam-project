@@ -1,48 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { liveStatus } from "@/data/live";
+import type { LiveStatus } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
-
-const STORAGE_KEY = "abu-maryam-tv-direct-config";
-
-interface DirectConfig {
-  isLive: boolean;
-  liveTitle: string;
-  channelId: string;
-}
-
-function readStoredConfig(): DirectConfig | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : null;
-  } catch {
-    return null;
-  }
-}
 
 export default function DirectAdminPage() {
   const toast = useToast();
-  const [isLive, setIsLive] = useState(() => readStoredConfig()?.isLive ?? liveStatus.isLive);
-  const [liveTitle, setLiveTitle] = useState(() => readStoredConfig()?.liveTitle ?? liveStatus.title ?? "");
-  const [channelId, setChannelId] = useState(() => readStoredConfig()?.channelId ?? liveStatus.youtubeChannelId ?? "");
+  const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+  const [liveTitle, setLiveTitle] = useState("");
+  const [channelId, setChannelId] = useState("");
   const [isDirty, setIsDirty] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/admin/live")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { liveStatus: LiveStatus | null }) => {
+        if (cancelled || !data.liveStatus) return;
+        setIsLive(data.liveStatus.isLive);
+        setLiveTitle(data.liveStatus.title ?? "");
+        setChannelId(data.liveStatus.youtubeChannelId ?? "");
+      })
+      .catch(() => {
+        if (!cancelled) toast("Impossible de charger le statut du direct", "error");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [toast]);
 
   function markDirty() {
     setIsDirty(true);
   }
 
-  function handleSave() {
-    const config: DirectConfig = { isLive, liveTitle, channelId };
+  async function handleSave() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      const res = await fetch("/api/admin/live", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isLive, title: liveTitle, youtubeChannelId: channelId || null }),
+      });
+      if (!res.ok) throw new Error();
+      setIsDirty(false);
+      toast("Configuration du direct enregistrée", "success");
     } catch {
-      // ignore write errors
+      toast("Échec de l'enregistrement", "error");
     }
-    setIsDirty(false);
-    toast("Configuration du direct enregistrée", "success");
   }
 
   return (
@@ -125,19 +133,15 @@ export default function DirectAdminPage() {
         {/* Bouton sauvegarder */}
         <button
           onClick={handleSave}
-          disabled={!isDirty}
+          disabled={!isDirty || loading}
           className={`w-full py-3 rounded-[10px] font-[var(--font-hanken)] text-[14px] font-semibold transition-all ${
-            isDirty
+            isDirty && !loading
               ? "bg-[#3c4a37] hover:bg-[#2d3829] text-[#fbf9f3]"
               : "bg-[#e9e3d4] text-[#9a9483] cursor-not-allowed"
           }`}
         >
-          {isDirty ? "Enregistrer les modifications" : "Aucune modification en attente"}
+          {loading ? "Chargement…" : isDirty ? "Enregistrer les modifications" : "Aucune modification en attente"}
         </button>
-
-        <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] text-center">
-          Sauvegardé localement — persisté via l&apos;API NestJS une fois le backend connecté.
-        </p>
       </div>
     </div>
   );

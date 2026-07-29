@@ -115,15 +115,25 @@ export default function InscriptionsPage() {
     cancelled: items.filter((r) => r.status === "cancelled").length,
   };
 
-  function setStatus(id: string, status: Registration["status"]) {
-    setItems((prev) => prev.map((r) => r.id === id ? { ...r, status } : r));
-    if (detailItem?.id === id) setDetailItem((prev) => prev ? { ...prev, status } : prev);
+  async function setStatus(id: string, status: Registration["status"]) {
     const labels: Record<string, string> = {
       confirmed: "Inscription confirmée",
       cancelled: "Inscription annulée",
       pending: "Inscription remise en attente",
     };
-    toast(labels[status] ?? "Statut mis à jour", status === "confirmed" ? "success" : status === "cancelled" ? "error" : "info");
+    try {
+      const res = await fetch(`/api/admin/registrations/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error();
+      setItems((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+      if (detailItem?.id === id) setDetailItem((prev) => (prev ? { ...prev, status } : prev));
+      toast(labels[status] ?? "Statut mis à jour", status === "confirmed" ? "success" : status === "cancelled" ? "error" : "info");
+    } catch {
+      toast("Échec de la mise à jour du statut", "error");
+    }
   }
 
   function toggleSelect(id: string) {
@@ -142,14 +152,28 @@ export default function InscriptionsPage() {
     }
   }
 
-  function bulkSetStatus(status: Registration["status"]) {
-    setItems((prev) => prev.map((r) => selected.has(r.id) ? { ...r, status } : r));
-    const count = selected.size;
+  async function bulkSetStatus(status: Registration["status"]) {
+    const ids = Array.from(selected);
+    const count = ids.length;
     const labels: Record<string, string> = {
       confirmed: `${count} inscription${count > 1 ? "s" : ""} confirmée${count > 1 ? "s" : ""}`,
       cancelled: `${count} inscription${count > 1 ? "s" : ""} annulée${count > 1 ? "s" : ""}`,
     };
-    toast(labels[status] ?? "Statut mis à jour", status === "confirmed" ? "success" : "error");
+    try {
+      await Promise.all(
+        ids.map((id) =>
+          fetch(`/api/admin/registrations/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status }),
+          })
+        )
+      );
+      setItems((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, status } : r)));
+      toast(labels[status] ?? "Statut mis à jour", status === "confirmed" ? "success" : "error");
+    } catch {
+      toast("Échec de la mise à jour groupée", "error");
+    }
     setSelected(new Set());
   }
 

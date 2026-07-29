@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { seriesList as initialList } from "@/data/series";
-import { getSeriesEpisodes } from "@/data/teachings";
-import type { Series, Theme, Language } from "@/lib/types";
+import type { Series, Teaching, Theme, Language } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Modal from "@/components/ui/Modal";
@@ -19,33 +17,87 @@ const LANGUAGES: Language[] = ["wolof", "arabe"];
 
 export default function SeriesAdminPage() {
   const toast = useToast();
-  const [items, setItems] = useState<Series[]>(initialList);
+  const [items, setItems] = useState<Series[]>([]);
+  const [teachings, setTeachings] = useState<Teaching[]>([]);
+  const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<Series | null>(null);
   const [isNew, setIsNew] = useState(false);
 
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      fetch("/api/admin/series").then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch("/api/admin/teachings").then((res) => (res.ok ? res.json() : Promise.reject())),
+    ])
+      .then(([seriesData, teachingsData]: [{ series: Series[] }, { teachings: Teaching[] }]) => {
+        if (cancelled) return;
+        setItems(seriesData.series);
+        setTeachings(teachingsData.teachings);
+      })
+      .catch(() => {
+        if (!cancelled) toast("Impossible de charger les séries", "error");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [toast]);
+
+  function getSeriesEpisodes(seriesId: string) {
+    return teachings.filter((t) => t.seriesId === seriesId);
+  }
+
   function openNew() {
-    setEditItem({ id: String(Date.now()), title: "", description: "", theme: "tafsir", language: "wolof", totalEpisodes: 1 });
+    setEditItem({ id: "", title: "", description: "", theme: "tafsir", language: "wolof", totalEpisodes: 1 });
     setIsNew(true);
   }
 
-  function handleDelete() {
-    setItems((prev) => prev.filter((s) => s.id !== deleteId));
+  async function handleDelete() {
+    const id = deleteId;
+    if (!id) return;
+    try {
+      const res = await fetch(`/api/admin/series/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setItems((prev) => prev.filter((s) => s.id !== id));
+      toast("Série supprimée", "success");
+    } catch {
+      toast("Échec de la suppression", "error");
+    }
     setDeleteId(null);
-    toast("Série supprimée", "success");
   }
 
-  function handleSaveEdit() {
+  async function handleSaveEdit() {
     if (!editItem) return;
-    if (isNew) {
-      setItems((prev) => [...prev, editItem]);
-      toast("Série ajoutée", "success");
-    } else {
-      setItems((prev) => prev.map((s) => (s.id === editItem.id ? editItem : s)));
-      toast("Série mise à jour", "success");
+    try {
+      if (isNew) {
+        const res = await fetch("/api/admin/series", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editItem),
+        });
+        if (!res.ok) throw new Error();
+        const { series } = await res.json();
+        setItems((prev) => [...prev, series]);
+        toast("Série ajoutée", "success");
+      } else {
+        const res = await fetch(`/api/admin/series/${editItem.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editItem),
+        });
+        if (!res.ok) throw new Error();
+        const { series } = await res.json();
+        setItems((prev) => prev.map((s) => (s.id === series.id ? series : s)));
+        toast("Série mise à jour", "success");
+      }
+      setEditItem(null);
+      setIsNew(false);
+    } catch {
+      toast("Échec de l'enregistrement", "error");
     }
-    setEditItem(null);
-    setIsNew(false);
   }
 
   return (
@@ -66,7 +118,9 @@ export default function SeriesAdminPage() {
         </button>
       </div>
 
-      {items.length === 0 ? (
+      {loading ? (
+        <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483] py-20 text-center">Chargement…</p>
+      ) : items.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d8d0bf" strokeWidth="1.5">
             <rect x="3" y="3" width="18" height="4" rx="1" />

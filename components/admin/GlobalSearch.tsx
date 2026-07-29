@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { teachings } from "@/data/teachings";
-import type { Registration } from "@/lib/types";
+import type { Registration, Teaching } from "@/lib/types";
 
 const THEME_LABELS: Record<string, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -19,7 +18,7 @@ interface Result {
   href: string;
 }
 
-function search(q: string, registrations: Registration[]): Result[] {
+function search(q: string, registrations: Registration[], teachings: Teaching[]): Result[] {
   if (!q.trim() || q.length < 2) return [];
   const lq = q.toLowerCase();
 
@@ -53,14 +52,15 @@ export default function GlobalSearch() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [teachings, setTeachings] = useState<Teaching[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const results = useMemo(() => search(query, registrations), [query, registrations]);
+  const results = useMemo(() => search(query, registrations, teachings), [query, registrations, teachings]);
 
-  // Recharge les inscriptions réelles à chaque ouverture — la recherche
-  // portait jusqu'ici sur le jeu de données mock, désormais déconnecté
-  // du panneau Inscriptions et des soumissions du formulaire public.
+  // Recharge inscriptions + enseignements réels à chaque ouverture — la
+  // recherche portait jusqu'ici sur des jeux de données mock, désormais
+  // déconnectés des vraies tables.
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
@@ -71,6 +71,14 @@ export default function GlobalSearch() {
       })
       .catch(() => {
         // silencieux : la recherche reste utilisable sur les enseignements
+      });
+    fetch("/api/admin/teachings")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { teachings: Teaching[] }) => {
+        if (!cancelled) setTeachings(data.teachings);
+      })
+      .catch(() => {
+        // silencieux : la recherche reste utilisable sur les inscriptions
       });
     return () => {
       cancelled = true;

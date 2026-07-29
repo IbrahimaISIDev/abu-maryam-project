@@ -1,76 +1,78 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { teachings } from "@/data/teachings";
-import { seriesList } from "@/data/series";
-import { registrations } from "@/data/registrations";
-import { seminar } from "@/data/events";
-import { liveStatus } from "@/data/live";
+import { getAllTeachingsAdmin, getAllSeries, getRegistrations, getSeminar, getLiveStatus } from "@/lib/db/queries";
+import { daysUntil } from "@/lib/activities";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
-const statCards = [
-  {
-    label: "Enseignements",
-    value: teachings.length,
-    sub: `${teachings.filter((t) => t.type === "video").length} vidéos · ${teachings.filter((t) => t.type === "audio").length} audios`,
-    href: "/admin/enseignements",
-    color: "#3c4a37",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <polygon points="6 3 20 12 6 21 6 3" />
-      </svg>
-    ),
-  },
-  {
-    label: "Séries",
-    value: seriesList.length,
-    sub: `${seriesList.reduce((s, r) => s + r.totalEpisodes, 0)} épisodes au total`,
-    href: "/admin/series",
-    color: "#b58a3c",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="3" y="3" width="18" height="4" rx="1" />
-        <rect x="3" y="10" width="18" height="4" rx="1" />
-        <rect x="3" y="17" width="18" height="4" rx="1" />
-      </svg>
-    ),
-  },
-  {
-    label: "Inscriptions",
-    value: registrations.length,
-    sub: `${registrations.filter((r) => r.status === "confirmed").length} confirmées · ${registrations.filter((r) => r.status === "pending").length} en attente`,
-    href: "/admin/inscriptions",
-    color: "#5f7050",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-  },
-  {
-    label: "Prochain séminaire",
-    value: new Date(seminar.dateStart).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
-    sub: seminar.location,
-    href: "/admin/evenements",
-    color: "#8a2f29",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <rect x="3" y="4" width="18" height="18" rx="2" />
-        <path d="M16 2v4M8 2v4M3 10h18" />
-      </svg>
-    ),
-  },
-];
+export default async function DashboardPage() {
+  const [teachings, seriesList, registrations, seminar, liveStatus] = await Promise.all([
+    getAllTeachingsAdmin(),
+    getAllSeries(),
+    getRegistrations(),
+    getSeminar(),
+    getLiveStatus(),
+  ]);
 
-// Calcul jours avant séminaire
-const daysUntilSeminar = Math.ceil(
-  (new Date(seminar.dateStart).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-);
-const seminarImminent = daysUntilSeminar >= 0 && daysUntilSeminar <= 14;
+  const statCards = [
+    {
+      label: "Enseignements",
+      value: teachings.length,
+      sub: `${teachings.filter((t) => t.type === "video").length} vidéos · ${teachings.filter((t) => t.type === "audio").length} audios`,
+      href: "/admin/enseignements",
+      color: "#3c4a37",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <polygon points="6 3 20 12 6 21 6 3" />
+        </svg>
+      ),
+    },
+    {
+      label: "Séries",
+      value: seriesList.length,
+      sub: `${seriesList.reduce((s, r) => s + r.totalEpisodes, 0)} épisodes au total`,
+      href: "/admin/series",
+      color: "#b58a3c",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <rect x="3" y="3" width="18" height="4" rx="1" />
+          <rect x="3" y="10" width="18" height="4" rx="1" />
+          <rect x="3" y="17" width="18" height="4" rx="1" />
+        </svg>
+      ),
+    },
+    {
+      label: "Inscriptions",
+      value: registrations.length,
+      sub: `${registrations.filter((r) => r.status === "confirmed").length} confirmées · ${registrations.filter((r) => r.status === "pending").length} en attente`,
+      href: "/admin/inscriptions",
+      color: "#5f7050",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      ),
+    },
+    {
+      label: "Prochain séminaire",
+      value: seminar ? new Date(seminar.dateStart).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "—",
+      sub: seminar?.location ?? "Aucun séminaire configuré",
+      href: "/admin/evenements",
+      color: "#8a2f29",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <path d="M16 2v4M8 2v4M3 10h18" />
+        </svg>
+      ),
+    },
+  ];
 
-export default function DashboardPage() {
+  const daysUntilSeminar = seminar ? daysUntil(seminar.dateStart) : null;
+  const seminarImminent = daysUntilSeminar !== null && daysUntilSeminar >= 0 && daysUntilSeminar <= 14;
+
   const recent = [...registrations]
     .sort((a, b) => new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime())
     .slice(0, 5);
@@ -80,7 +82,7 @@ export default function DashboardPage() {
   return (
     <div className="p-8">
       {/* Alerte séminaire imminent */}
-      {seminarImminent && (
+      {seminarImminent && seminar && (
         <div className="mb-6 flex items-center gap-3 bg-[rgba(138,47,41,0.07)] border border-[rgba(138,47,41,0.25)] rounded-[12px] px-5 py-4">
           <div className="w-8 h-8 rounded-full bg-[rgba(138,47,41,0.12)] flex items-center justify-center shrink-0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a2f29" strokeWidth="2">
