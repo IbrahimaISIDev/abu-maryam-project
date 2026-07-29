@@ -1,16 +1,5 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
-
-export const metadata: Metadata = {
-  title: "En direct",
-  description:
-    "Suivez les transmissions en direct d'Oustaz Niang Mbaye (H.A) — cours, khoutbas et conférences en temps réel.",
-  openGraph: {
-    title: "En direct | Abu Maryam TV",
-    description: "Diffusion en direct — cours islamiques, khoutbas et conférences.",
-    type: "video.other",
-  },
-};
 import MobileHeader from "@/components/layout/MobileHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
@@ -22,6 +11,31 @@ import { getDictionary } from "@/dictionaries";
 import { formatStartedAgo } from "@/lib/format";
 import { getLiveStatusTitle, getLiveStatusDescription } from "@/lib/content-i18n";
 import type { Locale } from "@/lib/i18n";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (lang === "ar") {
+    return {
+      title: "البث المباشر",
+      description: "تابع البث المباشر للأستاذ نيانغ مباي (حفظه الله) — دروس وخطب ومحاضرات لحظة بلحظة.",
+      openGraph: {
+        title: "البث المباشر | Abu Maryam TV",
+        description: "بث مباشر — دروس إسلامية وخطب ومحاضرات.",
+        type: "video.other",
+      },
+    };
+  }
+  return {
+    title: "En direct",
+    description:
+      "Suivez les transmissions en direct d'Oustaz Niang Mbaye (H.A) — cours, khoutbas et conférences en temps réel.",
+    openGraph: {
+      title: "En direct | Abu Maryam TV",
+      description: "Diffusion en direct — cours islamiques, khoutbas et conférences.",
+      type: "video.other",
+    },
+  };
+}
 
 export default async function EnDirectPage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;

@@ -24,7 +24,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
     <div className="group bg-[#fbf9f3] dark:bg-[#20261b] rounded-[9px] overflow-hidden border border-[#e2dac9] dark:border-[#3a4132] hover:border-[#d8d0bf] dark:hover:border-[#454c3c] transition-colors cursor-pointer">
       {/* Miniature */}
       <div className={`relative ${thumbH} overflow-hidden`}>
-        <ImagePlaceholder className="w-full h-full" />
+        <ImagePlaceholder className="w-full h-full" theme={teaching.theme} />
 
         {/* Badge thème haut-gauche */}
         <div className="absolute top-2 left-2">

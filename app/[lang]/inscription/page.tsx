@@ -1,15 +1,5 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
-
-export const metadata: Metadata = {
-  title: "Inscription au séminaire",
-  description:
-    "Inscrivez-vous au prochain séminaire d'Oustaz Niang Mbaye (H.A) — places limitées, formulaire en ligne sécurisé.",
-  openGraph: {
-    title: "Inscription | Abu Maryam TV",
-    description: "Réservez votre place pour le séminaire — formulaire d'inscription en ligne.",
-  },
-};
 import MobileHeader from "@/components/layout/MobileHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
@@ -17,6 +7,29 @@ import SeminarRecap from "@/components/inscription/SeminarRecap";
 import RegistrationForm from "@/components/inscription/RegistrationForm";
 import { getDictionary } from "@/dictionaries";
 import type { Locale } from "@/lib/i18n";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (lang === "ar") {
+    return {
+      title: "التسجيل في الندوة",
+      description: "سجّل في الندوة القادمة للأستاذ نيانغ مباي (حفظه الله) — أماكن محدودة، استمارة إلكترونية آمنة.",
+      openGraph: {
+        title: "التسجيل | Abu Maryam TV",
+        description: "احجز مكانك في الندوة — استمارة تسجيل إلكترونية.",
+      },
+    };
+  }
+  return {
+    title: "Inscription au séminaire",
+    description:
+      "Inscrivez-vous au prochain séminaire d'Oustaz Niang Mbaye (H.A) — places limitées, formulaire en ligne sécurisé.",
+    openGraph: {
+      title: "Inscription | Abu Maryam TV",
+      description: "Réservez votre place pour le séminaire — formulaire d'inscription en ligne.",
+    },
+  };
+}
 
 export default async function InscriptionPage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;

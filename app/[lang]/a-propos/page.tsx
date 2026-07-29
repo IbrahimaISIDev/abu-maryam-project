@@ -1,16 +1,5 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
-
-export const metadata: Metadata = {
-  title: "À propos",
-  description:
-    "Découvrez Oustaz Niang Mbaye (H.A) et la mission d'Abu Maryam TV : diffuser le savoir islamique authentique selon la compréhension des Salaf.",
-  openGraph: {
-    title: "À propos | Abu Maryam TV",
-    description:
-      "La mission d'Abu Maryam TV : rendre le savoir islamique authentique accessible à tous, en wolof et en arabe.",
-  },
-};
 import MobileHeader from "@/components/layout/MobileHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
@@ -22,6 +11,31 @@ import { socialLinks } from "@/data/socials";
 import { getDictionary } from "@/dictionaries";
 import { formatAboutCtaParagraph, formatSocialLabel } from "@/lib/format";
 import type { Locale } from "@/lib/i18n";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (lang === "ar") {
+    return {
+      title: "من نحن",
+      description:
+        "تعرّف على الأستاذ نيانغ مباي (حفظه الله) ورسالة Abu Maryam TV: نشر العلم الشرعي الأصيل وفق فهم السلف الصالح.",
+      openGraph: {
+        title: "من نحن | Abu Maryam TV",
+        description: "رسالة Abu Maryam TV: جعل العلم الشرعي الأصيل في متناول الجميع، بالولوف والعربية.",
+      },
+    };
+  }
+  return {
+    title: "À propos",
+    description:
+      "Découvrez Oustaz Niang Mbaye (H.A) et la mission d'Abu Maryam TV : diffuser le savoir islamique authentique selon la compréhension des Salaf.",
+    openGraph: {
+      title: "À propos | Abu Maryam TV",
+      description:
+        "La mission d'Abu Maryam TV : rendre le savoir islamique authentique accessible à tous, en wolof et en arabe.",
+    },
+  };
+}
 
 const topicsByLang = {
   fr: [

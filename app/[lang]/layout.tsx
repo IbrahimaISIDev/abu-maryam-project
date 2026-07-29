@@ -23,29 +23,38 @@ export async function generateMetadata({
   const { lang } = await params;
   const ogLocale = lang === "ar" ? "ar_SA" : "fr_FR";
 
+  const siteTitle = lang === "ar" ? "Abu Maryam TV — القرآن والسنة" : "Abu Maryam TV — Qur'an & Sunna";
+  const description =
+    lang === "ar"
+      ? "منصة تعليمية إسلامية للأستاذ نيانغ مباي (حفظه الله) — دروس ومحاضرات وخطب وندوات وفق فهم السلف الصالح."
+      : "Plateforme éducative islamique d'Oustaz Niang Mbaye (H.A) — cours, conférences, khoutbas et séminaires selon la compréhension des Salaf.";
+  const keywords =
+    lang === "ar"
+      ? ["الإسلام", "القرآن", "السنة", "تفسير", "توحيد", "الأستاذ نيانغ مباي", "دروس إسلامية", "خطبة", "دعوة", "الولوف", "السلف"]
+      : ["Islam", "Qur'an", "Sunna", "Tafsir", "Tawhid", "Oustaz Niang Mbaye", "cours islamiques", "khoutba", "da'wah", "Wolof", "Salaf"];
+  const ogDescription =
+    lang === "ar"
+      ? "دروس ومحاضرات وخطب وندوات للأستاذ نيانغ مباي (حفظه الله) — العلم الشرعي الأصيل، في متناول الجميع."
+      : "Cours, conférences, khoutbas et séminaires d'Oustaz Niang Mbaye (H.A) — le savoir islamique authentique, accessible à tous.";
+
   return {
     title: {
-      default: "Abu Maryam TV — Qur'an & Sunna",
+      default: siteTitle,
       template: "%s | Abu Maryam TV",
     },
-    description:
-      "Plateforme éducative islamique d'Oustaz Niang Mbaye (H.A) — cours, conférences, khoutbas et séminaires selon la compréhension des Salaf.",
-    keywords: [
-      "Islam", "Qur'an", "Sunna", "Tafsir", "Tawhid", "Oustaz Niang Mbaye",
-      "cours islamiques", "khoutba", "da'wah", "Wolof", "Salaf",
-    ],
+    description,
+    keywords,
     authors: [{ name: "Oustaz Niang Mbaye (H.A)" }],
     openGraph: {
       type: "website",
       locale: ogLocale,
       siteName: "Abu Maryam TV",
-      title: "Abu Maryam TV — Qur'an & Sunna",
-      description:
-        "Cours, conférences, khoutbas et séminaires d'Oustaz Niang Mbaye (H.A) — le savoir islamique authentique, accessible à tous.",
+      title: siteTitle,
+      description: ogDescription,
     },
     twitter: {
       card: "summary_large_image",
-      title: "Abu Maryam TV — Qur'an & Sunna",
+      title: siteTitle,
     },
     manifest: "/manifest.json",
   };

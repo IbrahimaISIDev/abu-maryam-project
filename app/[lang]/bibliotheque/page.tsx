@@ -9,16 +9,29 @@ import { teachings } from "@/data/teachings";
 import { getDictionary } from "@/dictionaries";
 import type { Locale } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Bibliothèque",
-  description:
-    `${teachings.length} enseignements islamiques d'Oustaz Niang Mbaye (H.A) — tafsir, tawhid, khoutbas, conférences et séries de cours en wolof et en arabe.`,
-  openGraph: {
-    title: "Bibliothèque des enseignements | Abu Maryam TV",
+export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (lang === "ar") {
+    return {
+      title: "المكتبة",
+      description: `${teachings.length} درسًا إسلاميًا للأستاذ نيانغ مباي (حفظه الله) — تفسير وتوحيد وخطب ومحاضرات وسلاسل دروس بالولوف والعربية.`,
+      openGraph: {
+        title: "مكتبة الدروس | Abu Maryam TV",
+        description: "دروس إسلامية وخطب ومحاضرات — مصنّفة حسب الموضوع، لمتابعتها بالوتيرة التي تناسبك.",
+      },
+    };
+  }
+  return {
+    title: "Bibliothèque",
     description:
-      "Cours islamiques, khoutbas et conférences — classés par thème, à écouter à votre rythme.",
-  },
-};
+      `${teachings.length} enseignements islamiques d'Oustaz Niang Mbaye (H.A) — tafsir, tawhid, khoutbas, conférences et séries de cours en wolof et en arabe.`,
+    openGraph: {
+      title: "Bibliothèque des enseignements | Abu Maryam TV",
+      description:
+        "Cours islamiques, khoutbas et conférences — classés par thème, à écouter à votre rythme.",
+    },
+  };
+}
 
 export default async function BibliothequePage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
