@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { registrations as seedRegistrations } from "@/data/registrations";
-import type { Registration } from "@/lib/types";
-import { ADMIN_COOKIE_NAME, verifySessionToken } from "@/lib/adminAuth";
+import { desc } from "drizzle-orm";
+import { db } from "@/lib/db/client";
+import { registrations } from "@/lib/db/schema";
+import { hasValidAdminSession } from "@/lib/adminAuth";
 
 interface InscriptionPayload {
   firstName: string;
@@ -15,10 +15,6 @@ interface InscriptionPayload {
   message?: string;
   consent: boolean;
 }
-
-// Store en mémoire — persiste pendant la durée du processus Node.js
-// Sera remplacé par un appel NestJS une fois le backend connecté
-const store: Registration[] = [...seedRegistrations];
 
 function validate(data: Partial<InscriptionPayload>): string | null {
   if (!data.firstName?.trim()) return "Prénom requis";
@@ -46,31 +42,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error }, { status: 422 });
   }
 
-  const registration: Registration = {
-    id: `reg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+  const id = `reg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  await db.insert(registrations).values({
+    id,
     fullName: `${body.firstName!.trim()} ${body.lastName!.trim()}`,
     email: body.email?.trim() || "",
     phone: body.phone!.trim(),
     city: body.city?.trim() || "",
-    ageRange: body.ageRange!,
-    mode: body.mode!,
+    ageRange: body.ageRange,
+    mode: body.mode,
     message: body.message?.trim() || undefined,
     status: "pending",
     paymentStatus: "unpaid",
-    registeredAt: new Date().toISOString(),
-  };
+  });
 
-  store.push(registration);
-
-  return NextResponse.json({ ok: true, id: registration.id }, { status: 201 });
+  return NextResponse.json({ ok: true, id }, { status: 201 });
 }
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get(ADMIN_COOKIE_NAME);
-  if (!verifySessionToken(session?.value)) {
+  if (!(await hasValidAdminSession())) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
-  return NextResponse.json({ total: store.length, registrations: store });
+  const items = await db.select().from(registrations).orderBy(desc(registrations.registeredAt));
+  return NextResponse.json({ total: items.length, registrations: items });
 }
