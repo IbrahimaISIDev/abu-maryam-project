@@ -32,16 +32,16 @@ export interface Teaching {
   duration: string;          // "1:12:04"
   durationSeconds: number;   // pour la progression
   thumbnail: string | null;
-  mediaUrl: string | null;   // YouTube video ID ou URL directe
+  youtubeId: string | null;  // pour type "video"
+  audioUrl: string | null;   // pour type "audio"
   publishedAt: string;       // ISO date string
   published?: boolean;       // true = visible public, false = brouillon
   description?: string;
-  seriesId?: string;
-  episodeNumber?: number;
-  level?: DifficultyLevel;
-  arabicVerse?: string;
-  chapters?: Chapter[];
-  transcript?: string;
+  seriesId?: string | null;
+  episodeNumber?: number | null;
+  level?: DifficultyLevel | null;
+  arabicVerse?: string | null;
+  chapters?: Chapter[] | null;
 }
 
 export interface Chapter {
@@ -75,26 +75,50 @@ export interface ScheduleItem {
   subtitle: string;
 }
 
+export type AgendaStatus = "upcoming" | "live" | "past";
+
 export interface AgendaItem {
   id: string;
   type: "séminaire" | "conférence" | "khoutba" | "cours" | "tafsir";
   title: string;
   location: string;
   dateStart: string;
-  dateEnd?: string;
-  registrationDeadline?: string;
-  totalPlaces?: number;
-  remainingPlaces?: number;
-  isUpcoming: boolean;
+  dateEnd?: string | null;
+  registrationDeadline?: string | null;
+  totalPlaces?: number | null;
+  remainingPlaces?: number | null;
   isFeatured: boolean;
-  ctaLabel?: string;
+  ctaLabel?: string | null;
+  replayId?: string | null;
+}
+
+export interface Seminar {
+  id: string;
+  arabicVerse: string;
+  edition: string;
+  label: string;
+  labelShort: string;
+  title: string;
+  description: string;
+  dateStart: string;
+  dateEnd: string;
+  registrationDeadline: string;
+  location: string;
+  price: string;
+  priceNote?: string | null;
+  contactPhone?: string | null;
+  contactPhoneNote?: string | null;
+  contactEmail?: string | null;
+  totalPlaces: number;
+  remainingPlaces: number;
+  perks?: string[] | null;
+  targetAudience?: string | null;
 }
 
 export interface ThemeItem {
   id: Theme;
   arabicLetter: string;
   labelFr: string;
-  count: number;
 }
 
 export interface FormState {

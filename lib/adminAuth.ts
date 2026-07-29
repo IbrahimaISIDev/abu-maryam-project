@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { cookies } from "next/headers";
 
 export const ADMIN_COOKIE_NAME = "admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 8; // 8h
@@ -45,3 +46,9 @@ export function verifySessionToken(token: string | undefined | null): boolean {
 }
 
 export const ADMIN_SESSION_MAX_AGE = SESSION_TTL_SECONDS;
+
+/** Vrai si la requête courante porte un cookie de session admin valide. */
+export async function hasValidAdminSession(): Promise<boolean> {
+  const cookieStore = await cookies();
+  return verifySessionToken(cookieStore.get(ADMIN_COOKIE_NAME)?.value);
+}

@@ -1,0 +1,170 @@
+import {
+  pgTable,
+  pgEnum,
+  text,
+  integer,
+  boolean,
+  timestamp,
+  jsonb,
+} from "drizzle-orm/pg-core";
+
+export const contentTypeEnum = pgEnum("content_type", ["video", "audio"]);
+export const languageEnum = pgEnum("language", ["wolof", "arabe"]);
+export const themeEnum = pgEnum("theme", [
+  "tafsir",
+  "tawhid",
+  "akhlaq",
+  "salat",
+  "famille",
+  "sunna",
+  "sahaba",
+  "khoutba",
+  "conférence",
+]);
+export const difficultyLevelEnum = pgEnum("difficulty_level", [
+  "débutant",
+  "intermédiaire",
+  "avancé",
+]);
+export const agendaTypeEnum = pgEnum("agenda_type", [
+  "séminaire",
+  "conférence",
+  "khoutba",
+  "cours",
+  "tafsir",
+]);
+export const registrationStatusEnum = pgEnum("registration_status", [
+  "confirmed",
+  "pending",
+  "cancelled",
+]);
+export const paymentStatusEnum = pgEnum("payment_status", ["paid", "unpaid", "free"]);
+export const registrationModeEnum = pgEnum("registration_mode", ["presentiel", "ligne"]);
+
+export const series = pgTable("series", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  theme: themeEnum("theme").notNull(),
+  language: languageEnum("language").notNull(),
+  totalEpisodes: integer("total_episodes").notNull().default(0),
+  arabicVerse: text("arabic_verse"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Chapitres stockés en jsonb (tableau {label, timeSeconds}) — pas de table
+// enfant : aucun besoin de requêter les chapitres indépendamment d'un teaching.
+export interface ChapterJson {
+  label: string;
+  timeSeconds: number;
+}
+
+export const teachings = pgTable("teachings", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  type: contentTypeEnum("type").notNull(),
+  theme: themeEnum("theme").notNull(),
+  language: languageEnum("language").notNull(),
+  duration: text("duration").notNull(),
+  durationSeconds: integer("duration_seconds").notNull().default(0),
+  thumbnail: text("thumbnail"),
+  // Exactement un des deux selon `type` — remplace l'ancien `mediaUrl` ambigu.
+  youtubeId: text("youtube_id"),
+  audioUrl: text("audio_url"),
+  publishedAt: timestamp("published_at").notNull().defaultNow(),
+  published: boolean("published").notNull().default(true),
+  description: text("description"),
+  seriesId: text("series_id").references((): typeof series.id => series.id, {
+    onDelete: "set null",
+  }),
+  episodeNumber: integer("episode_number"),
+  level: difficultyLevelEnum("level"),
+  arabicVerse: text("arabic_verse"),
+  chapters: jsonb("chapters").$type<ChapterJson[]>(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const replays = pgTable("replays", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  thumbnail: text("thumbnail"),
+  youtubeId: text("youtube_id"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const agendaItems = pgTable("agenda_items", {
+  id: text("id").primaryKey(),
+  type: agendaTypeEnum("type").notNull(),
+  title: text("title").notNull(),
+  location: text("location").notNull(),
+  dateStart: timestamp("date_start").notNull(),
+  dateEnd: timestamp("date_end"),
+  registrationDeadline: timestamp("registration_deadline"),
+  totalPlaces: integer("total_places"),
+  remainingPlaces: integer("remaining_places"),
+  isFeatured: boolean("is_featured").notNull().default(false),
+  ctaLabel: text("cta_label"),
+  // Préparé pour la Phase E : relie un item passé à son replay pour un lien "Voir le replay".
+  replayId: text("replay_id").references((): typeof replays.id => replays.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Table singleton (une seule ligne, id fixe "singleton") — pas de pattern
+// clé-valeur générique nécessaire pour une seule config.
+export const liveStatus = pgTable("live_status", {
+  id: text("id").primaryKey().default("singleton"),
+  isLive: boolean("is_live").notNull().default(false),
+  title: text("title").notNull().default(""),
+  arabicVerse: text("arabic_verse").notNull().default(""),
+  viewers: integer("viewers").notNull().default(0),
+  streamUrl: text("stream_url"),
+  youtubeChannelId: text("youtube_channel_id"),
+  startedAt: timestamp("started_at"),
+  hostName: text("host_name").notNull().default(""),
+  description: text("description").notNull().default(""),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const seminars = pgTable("seminars", {
+  id: text("id").primaryKey(),
+  arabicVerse: text("arabic_verse").notNull(),
+  edition: text("edition").notNull(),
+  label: text("label").notNull(),
+  labelShort: text("label_short").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  dateStart: timestamp("date_start").notNull(),
+  dateEnd: timestamp("date_end").notNull(),
+  registrationDeadline: timestamp("registration_deadline").notNull(),
+  location: text("location").notNull(),
+  price: text("price").notNull(),
+  priceNote: text("price_note"),
+  contactPhone: text("contact_phone"),
+  contactPhoneNote: text("contact_phone_note"),
+  contactEmail: text("contact_email"),
+  totalPlaces: integer("total_places").notNull().default(0),
+  remainingPlaces: integer("remaining_places").notNull().default(0),
+  perks: jsonb("perks").$type<string[]>(),
+  targetAudience: text("target_audience"),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const registrations = pgTable("registrations", {
+  id: text("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull().default(""),
+  phone: text("phone").notNull(),
+  city: text("city").notNull().default(""),
+  registeredAt: timestamp("registered_at").notNull().defaultNow(),
+  status: registrationStatusEnum("status").notNull().default("pending"),
+  paymentStatus: paymentStatusEnum("payment_status").notNull().default("unpaid"),
+  notes: text("notes"),
+  ageRange: text("age_range"),
+  mode: registrationModeEnum("mode"),
+  message: text("message"),
+});
