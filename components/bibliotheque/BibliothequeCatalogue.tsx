@@ -265,7 +265,7 @@ export default function BibliothequeCatalogue({ dict, lang }: { dict: Dictionary
                     </p>
                     <button type="button"
                       onClick={resetFilters}
-                      className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#b58a3c] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] transition-colors underline underline-offset-4"
+                      className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#7d5f26] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] transition-colors underline underline-offset-4"
                     >
                       {dict.resetFilters}
                     </button>

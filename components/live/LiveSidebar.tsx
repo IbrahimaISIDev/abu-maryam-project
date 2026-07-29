@@ -10,7 +10,7 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
     <aside className="space-y-5">
       {/* Programme à venir */}
       <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
-        <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
+        <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#7d5f26] dark:text-[#e3c685] mb-4">
           {dict.live.upcomingProgram}
         </h3>
         <ul className="space-y-4">
@@ -39,7 +39,7 @@ export default function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Lo
 
       {/* Revoir les directs */}
       <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[9px] p-5">
-        <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#b58a3c] mb-4">
+        <h3 className="font-[var(--font-hanken)] font-semibold text-[11px] tracking-widest uppercase text-[#7d5f26] dark:text-[#e3c685] mb-4">
           {dict.live.rewatchLives}
         </h3>
         <ul className="space-y-3 divide-y divide-[#e2dac9] dark:divide-[#3a4132]">

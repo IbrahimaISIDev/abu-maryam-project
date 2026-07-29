@@ -39,7 +39,7 @@ export default function ContinueListening({
         </h2>
         <Link
           href="/bibliotheque"
-          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] hover:text-[#9e7832] transition-colors"
+          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#7d5f26] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] transition-colors"
         >
           {viewAll}
         </Link>

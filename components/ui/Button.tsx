@@ -16,9 +16,9 @@ const variants: Record<Variant, string> = {
   solid:
     "bg-[#b58a3c] text-[#fbf9f3] hover:bg-[#9e7832] active:scale-[0.98]",
   outline:
-    "border-2 border-[#b58a3c] text-[#b58a3c] bg-transparent hover:bg-[rgba(181,138,60,0.08)] active:scale-[0.98]",
+    "border-2 border-[#7d5f26] dark:border-[#e3c685] text-[#7d5f26] dark:text-[#e3c685] bg-transparent hover:bg-[rgba(181,138,60,0.08)] active:scale-[0.98]",
   ghost:
-    "text-[#b58a3c] underline underline-offset-4 bg-transparent hover:text-[#9e7832]",
+    "text-[#7d5f26] dark:text-[#e3c685] underline underline-offset-4 bg-transparent hover:text-[#9e7832] dark:hover:text-[#cda350]",
   "outline-light":
     "border-2 border-[#fbf9f3] text-[#fbf9f3] bg-transparent hover:bg-[rgba(251,249,243,0.12)] active:scale-[0.98]",
 };

@@ -22,7 +22,7 @@ import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 const levelColor: Record<string, string> = {
   débutant: "text-[#5f7050] bg-[#eef0e6]",
-  intermédiaire: "text-[#b58a3c] bg-[rgba(181,138,60,0.1)]",
+  intermédiaire: "text-[#7d5f26] bg-[rgba(181,138,60,0.1)]",
   avancé: "text-[#8a2f29] bg-[rgba(138,47,41,0.08)]",
 };
 
@@ -254,7 +254,7 @@ export default async function TeachingDetailPage({
                                 : "hover:bg-[#f5f0e8] dark:hover:bg-[rgba(255,255,255,0.04)]"
                             }`}
                           >
-                            <span className={`font-[var(--font-cormorant)] text-[22px] font-semibold shrink-0 ${isCurrent ? "text-[#b58a3c]" : "text-[#d8d0bf] dark:text-[#4a5240]"}`}>
+                            <span className={`font-[var(--font-cormorant)] text-[22px] font-semibold shrink-0 ${isCurrent ? "text-[#7d5f26] dark:text-[#e3c685]" : "text-[#d8d0bf] dark:text-[#4a5240]"}`}>
                               {ep.episodeNumber}
                             </span>
                             <div className="min-w-0">
@@ -285,8 +285,8 @@ export default async function TeachingDetailPage({
                   if (!next) return null;
                   return (
                     <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[13px] p-5">
-                      <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#b58a3c] font-semibold mb-3">
-                        {dict.library.nextEpisode}
+                      <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#7d5f26] dark:text-[#e3c685] font-semibold mb-3">
+    {dict.library.nextEpisode}
                       </p>
                       <ContentCard teaching={next} size="compact" lang={lang} />
                     </div>
@@ -297,8 +297,8 @@ export default async function TeachingDetailPage({
               {/* Cours liés (sidebar si série) */}
               {related.length > 0 && (
                 <div className="bg-[#fbf9f3] dark:bg-[#20261b] border border-[#e2dac9] dark:border-[#3a4132] rounded-[13px] p-5">
-                  <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#b58a3c] font-semibold mb-3">
-                    {dict.library.sameThemeSidebar}
+                  <p className="font-[var(--font-hanken)] text-[11px] uppercase tracking-widest text-[#7d5f26] dark:text-[#e3c685] font-semibold mb-3">
+    {dict.library.sameThemeSidebar}
                   </p>
                   <ul className="space-y-3 divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
                     {related.slice(0, 3).map((t) => (

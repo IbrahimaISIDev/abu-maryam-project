@@ -15,7 +15,7 @@ export default function TeachingsGrid({ dict, lang }: { dict: Dictionary["home"]
         </h2>
         <Link
           href="/bibliotheque"
-          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] underline underline-offset-4 transition-colors hidden md:inline"
+          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#7d5f26] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] underline underline-offset-4 transition-colors hidden md:inline"
         >
           {dict.viewAll}
         </Link>
@@ -32,7 +32,7 @@ export default function TeachingsGrid({ dict, lang }: { dict: Dictionary["home"]
       <div className="mt-4 md:hidden text-center">
         <Link
           href="/bibliotheque"
-          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#b58a3c] dark:text-[#e3c685] underline underline-offset-4"
+          className="font-[var(--font-hanken)] text-[13px] font-medium text-[#7d5f26] dark:text-[#e3c685] underline underline-offset-4"
         >
           {dict.viewAll}
         </Link>

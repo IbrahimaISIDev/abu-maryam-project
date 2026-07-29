@@ -63,7 +63,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
 
       {/* Méta */}
       <div className="p-3">
-        <p className="text-[11.5px] font-medium text-[#b58a3c] dark:text-[#e3c685] font-[var(--font-hanken)] mb-1">
+        <p className="text-[11.5px] font-medium text-[#7d5f26] dark:text-[#e3c685] font-[var(--font-hanken)] mb-1">
           {typeIcon[teaching.type]} {typeLabel[teaching.type]} · {formatContentLanguage(teaching.language, lang)}
         </p>
         <h3 className="text-[19px] font-semibold text-[#232a20] dark:text-[#f2ede0] leading-tight font-[var(--font-cormorant)] line-clamp-2">

@@ -80,7 +80,7 @@ export default function AgendaList({ dict, lang }: { dict: Dictionary["events"];
 
               {/* Texte */}
               <div className="flex-1 min-w-0">
-                <p className="font-[var(--font-hanken)] text-[11.5px] font-semibold uppercase tracking-widest text-[#b58a3c] dark:text-[#e3c685] mb-1">
+                <p className="font-[var(--font-hanken)] text-[11.5px] font-semibold uppercase tracking-widest text-[#7d5f26] dark:text-[#e3c685] mb-1">
                   {dict.typeLabels[item.type as keyof typeof dict.typeLabels] ?? item.type}
                 </p>
                 <h3 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] dark:text-[#f2ede0] leading-tight">

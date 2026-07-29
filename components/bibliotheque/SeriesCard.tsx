@@ -8,13 +8,13 @@ import SeriesProgress from "./SeriesProgress";
 
 const themeColor: Record<string, { bg: string; text: string }> = {
   tafsir:   { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
-  tawhid:   { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#b58a3c] dark:text-[#e3c685]" },
+  tawhid:   { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#7d5f26] dark:text-[#e3c685]" },
   sahaba:   { bg: "bg-[rgba(138,47,41,0.08)] dark:bg-[rgba(224,139,129,0.18)]", text: "text-[#8a2f29] dark:text-[#e08b81]" },
   akhlaq:   { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
-  sunna:    { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#b58a3c] dark:text-[#e3c685]" },
+  sunna:    { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#7d5f26] dark:text-[#e3c685]" },
   famille:  { bg: "bg-[rgba(138,47,41,0.08)] dark:bg-[rgba(224,139,129,0.18)]", text: "text-[#8a2f29] dark:text-[#e08b81]" },
   salat:    { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
-  khoutba:  { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#b58a3c] dark:text-[#e3c685]" },
+  khoutba:  { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#7d5f26] dark:text-[#e3c685]" },
   conférence: { bg: "bg-[rgba(138,47,41,0.08)] dark:bg-[rgba(224,139,129,0.18)]", text: "text-[#8a2f29] dark:text-[#e08b81]" },
 };
 
@@ -77,7 +77,7 @@ export default function SeriesCard({ series, lang }: SeriesCardProps) {
             <span className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973] uppercase tracking-wider">
               {formatContentLanguage(series.language, lang)}
             </span>
-            <span className="font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] dark:text-[#e3c685] group-hover:text-[#9e7832] dark:group-hover:text-[#cda350] transition-colors">
+            <span className="font-[var(--font-hanken)] text-[12px] font-medium text-[#7d5f26] dark:text-[#e3c685] group-hover:text-[#9e7832] dark:group-hover:text-[#cda350] transition-colors">
               {lang === "ar" ? "← ابدأ" : "Commencer →"}
             </span>
           </div>
