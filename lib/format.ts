@@ -150,6 +150,7 @@ export function formatEventCta(label: string, lang: Locale): string {
 
 export function formatSocialLabel(id: string, label: string, lang: Locale): string {
   if (lang === "ar" && id === "telegram-group") return "مجموعة تيليجرام";
+  if (lang === "ar" && id === "whatsapp") return "مجموعة واتساب";
   return label;
 }
 

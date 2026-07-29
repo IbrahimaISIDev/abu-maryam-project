@@ -5,7 +5,7 @@ export interface SocialLink {
 }
 
 // Liens réels fournis par l'équipe — ne pas inventer d'URL ici.
-// WhatsApp et TikTok restent à renseigner.
+// TikTok reste à renseigner.
 export const socialLinks: SocialLink[] = [
   {
     id: "telegram",
@@ -16,6 +16,11 @@ export const socialLinks: SocialLink[] = [
     id: "telegram-group",
     label: "Groupe Telegram",
     href: "https://t.me/+UBSZClauopToLcuv",
+  },
+  {
+    id: "whatsapp",
+    label: "Groupe WhatsApp",
+    href: "https://chat.whatsapp.com/KDMULSBRdgpJftucxu4mKj?s=sh&p=a&mlu=0&ilr=0",
   },
   {
     id: "facebook",
