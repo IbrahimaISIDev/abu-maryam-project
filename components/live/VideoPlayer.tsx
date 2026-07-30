@@ -4,6 +4,7 @@ import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import type { LiveStatus } from "@/lib/types";
 import { getLiveStatusTitle } from "@/lib/content-i18n";
+import { buildYoutubeLiveEmbedUrl } from "@/lib/youtube";
 
 export default function VideoPlayer({
   dict,
@@ -23,7 +24,7 @@ export default function VideoPlayer({
       {ytId ? (
         <iframe
           className="w-full h-full"
-          src={`https://www.youtube.com/embed/live_stream?channel=${ytId}&autoplay=1`}
+          src={buildYoutubeLiveEmbedUrl(ytId)}
           title={getLiveStatusTitle(liveStatus, lang)}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

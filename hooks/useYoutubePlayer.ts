@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { YOUTUBE_IFRAME_API_SRC } from "@/lib/youtube";
 
 interface YTPlayerInstance {
   seekTo(seconds: number, allowSeekAhead: boolean): void;
@@ -68,7 +69,7 @@ function loadYoutubeIframeApi(): Promise<void> {
       resolve();
     };
     const script = document.createElement("script");
-    script.src = "https://www.youtube.com/iframe_api";
+    script.src = YOUTUBE_IFRAME_API_SRC;
     document.head.appendChild(script);
   });
   return apiPromise;

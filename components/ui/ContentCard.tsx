@@ -3,6 +3,7 @@ import type { Teaching } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
 import { formatContentLanguage, formatThemeLabel } from "@/lib/format";
 import { getTeachingTitle } from "@/lib/content-i18n";
+import { buildYoutubeThumbnailUrl } from "@/lib/youtube";
 import Badge from "./Badge";
 import ImagePlaceholder from "./ImagePlaceholder";
 
@@ -23,7 +24,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
   const thumbnailSrc =
     teaching.thumbnail ??
     (teaching.type === "video" && teaching.youtubeId
-      ? `https://img.youtube.com/vi/${teaching.youtubeId}/hqdefault.jpg`
+      ? buildYoutubeThumbnailUrl(teaching.youtubeId)
       : null);
 
   return (

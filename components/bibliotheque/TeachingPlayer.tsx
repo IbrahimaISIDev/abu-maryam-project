@@ -11,6 +11,7 @@ import type { Teaching } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { getChapterLabel } from "@/lib/content-i18n";
+import { buildYoutubeWatchUrl } from "@/lib/youtube";
 
 interface TeachingPlayerProps {
   teaching: Teaching;
@@ -581,7 +582,7 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
             <VolumeControl volume={volume} muted={muted} onVolumeChange={setVolume} onToggleMute={toggleMute} dict={dict} />
             <CopyTimestampButton positionSeconds={positionSeconds} lang={lang} />
             <a
-              href={`https://www.youtube.com/watch?v=${teaching.youtubeId}`}
+              href={buildYoutubeWatchUrl(teaching.youtubeId)}
               target="_blank"
               rel="noopener noreferrer"
               className="shrink-0 font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] hover:text-[#cda350] transition-colors whitespace-nowrap"
