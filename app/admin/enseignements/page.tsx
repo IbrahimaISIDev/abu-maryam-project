@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import type { Teaching, Theme, ContentType, Language, DifficultyLevel } from "@/lib/types";
+import type { Teaching, Theme, ContentType, Series } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
-import Modal from "@/components/ui/Modal";
+import TeachingFormModal from "@/components/admin/TeachingFormModal";
+import { apiRoutes } from "@/lib/api-routes";
 
 const THEME_LABELS: Record<Theme, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -13,8 +14,6 @@ const THEME_LABELS: Record<Theme, string> = {
   sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
 };
 const THEMES = Object.keys(THEME_LABELS) as Theme[];
-const LANGUAGES: Language[] = ["wolof", "arabe"];
-const LEVELS: DifficultyLevel[] = ["débutant", "intermédiaire", "avancé"];
 
 type SortKey = "title" | "type" | "theme" | "duration" | "language";
 
@@ -32,17 +31,10 @@ function SortIcon({ active, dir }: { active: boolean; dir: "asc" | "desc" }) {
   );
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">
-      {children}
-    </label>
-  );
-}
-
 export default function EnseignementsPage() {
   const toast = useToast();
   const [items, setItems] = useState<Teaching[]>([]);
+  const [seriesList, setSeriesList] = useState<Series[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | ContentType>("all");
@@ -57,10 +49,14 @@ export default function EnseignementsPage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/admin/teachings")
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data: { teachings: Teaching[] }) => {
-        if (!cancelled) setItems(data.teachings);
+    Promise.all([
+      fetch(apiRoutes.teachings()).then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.series()).then((res) => (res.ok ? res.json() : Promise.reject())),
+    ])
+      .then(([teachingsData, seriesData]: [{ teachings: Teaching[] }, { series: Series[] }]) => {
+        if (cancelled) return;
+        setItems(teachingsData.teachings);
+        setSeriesList(seriesData.series);
       })
       .catch(() => {
         if (!cancelled) toast("Impossible de charger les enseignements", "error");
@@ -111,7 +107,7 @@ export default function EnseignementsPage() {
     const id = deleteId;
     if (!id) return;
     try {
-      const res = await fetch(`/api/admin/teachings/${id}`, { method: "DELETE" });
+      const res = await fetch(apiRoutes.teaching(id), { method: "DELETE" });
       if (!res.ok) throw new Error();
       setItems((prev) => prev.filter((t) => t.id !== id));
       toast("Enseignement supprimé", "success");
@@ -125,7 +121,7 @@ export default function EnseignementsPage() {
     if (!editItem) return;
     try {
       if (isNew) {
-        const res = await fetch("/api/admin/teachings", {
+        const res = await fetch(apiRoutes.teachings(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(editItem),
@@ -135,7 +131,7 @@ export default function EnseignementsPage() {
         setItems((prev) => [...prev, teaching]);
         toast("Enseignement ajouté", "success");
       } else {
-        const res = await fetch(`/api/admin/teachings/${editItem.id}`, {
+        const res = await fetch(apiRoutes.teaching(editItem.id), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(editItem),
@@ -332,96 +328,15 @@ export default function EnseignementsPage() {
       />
 
       {/* Modal création / édition */}
-      <Modal isOpen={!!editItem} title={isNew ? "Nouvel enseignement" : "Modifier l'enseignement"} onClose={() => { setEditItem(null); setIsNew(false); }}>
-        {editItem && (
-          <div className="p-6 space-y-4">
-            <div>
-              <FieldLabel>Titre</FieldLabel>
-              <input value={editItem.title} onChange={(e) => setEditItem({ ...editItem, title: e.target.value })}
-                placeholder="Titre de l'enseignement"
-                className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c]"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <FieldLabel>Type</FieldLabel>
-                <select value={editItem.type} onChange={(e) => setEditItem({ ...editItem, type: e.target.value as ContentType })}
-                  className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]">
-                  <option value="video">Vidéo</option>
-                  <option value="audio">Audio</option>
-                </select>
-              </div>
-              <div>
-                <FieldLabel>Langue</FieldLabel>
-                <select value={editItem.language} onChange={(e) => setEditItem({ ...editItem, language: e.target.value as Language })}
-                  className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]">
-                  {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <FieldLabel>Thème</FieldLabel>
-                <select value={editItem.theme} onChange={(e) => setEditItem({ ...editItem, theme: e.target.value as Theme })}
-                  className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]">
-                  {THEMES.map((t) => <option key={t} value={t}>{THEME_LABELS[t]}</option>)}
-                </select>
-              </div>
-              <div>
-                <FieldLabel>Niveau</FieldLabel>
-                <select value={editItem.level ?? ""} onChange={(e) => setEditItem({ ...editItem, level: e.target.value as DifficultyLevel || undefined })}
-                  className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]">
-                  <option value="">—</option>
-                  {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-            </div>
-            <div>
-              <FieldLabel>Durée (ex : 1:12:04)</FieldLabel>
-              <input value={editItem.duration} onChange={(e) => setEditItem({ ...editItem, duration: e.target.value })}
-                placeholder="0:00:00"
-                className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c]"
-              />
-            </div>
-            <div>
-              <FieldLabel>Description</FieldLabel>
-              <textarea value={editItem.description ?? ""} onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                rows={3} placeholder="Résumé de l'enseignement…"
-                className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c] resize-none"
-              />
-            </div>
-            {/* Toggle publié / brouillon */}
-            <label className="flex items-center justify-between cursor-pointer bg-[#f5f1e8] rounded-[9px] px-4 py-3">
-              <div>
-                <p className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#232a20]">
-                  {editItem.published === false ? "Brouillon" : "Publié"}
-                </p>
-                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483]">
-                  {editItem.published === false ? "Visible uniquement en back-office" : "Visible sur le site public"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setEditItem({ ...editItem, published: editItem.published === false ? true : false })}
-                className={`relative w-10 h-6 rounded-full transition-colors ${editItem.published === false ? "bg-[#d8d0bf]" : "bg-[#3c4a37]"}`}
-              >
-                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${editItem.published === false ? "left-0.5" : "left-4"}`} />
-              </button>
-            </label>
-
-            <div className="flex gap-3 pt-2">
-              <button onClick={() => { setEditItem(null); setIsNew(false); }}
-                className="flex-1 py-2.5 border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] font-medium text-[#6f7363] hover:bg-[#f0ece3] transition-colors">
-                Annuler
-              </button>
-              <button onClick={handleSave}
-                className="flex-1 py-2.5 bg-[#3c4a37] hover:bg-[#2d3829] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#fbf9f3] transition-colors">
-                {isNew ? "Ajouter" : "Enregistrer"}
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      <TeachingFormModal
+        isOpen={!!editItem}
+        isNew={isNew}
+        editItem={editItem}
+        seriesList={seriesList}
+        onChange={setEditItem}
+        onSave={handleSave}
+        onClose={() => { setEditItem(null); setIsNew(false); }}
+      />
     </div>
   );
 }

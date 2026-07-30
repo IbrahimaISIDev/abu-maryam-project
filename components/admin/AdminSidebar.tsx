@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import GlobalSearch from "./GlobalSearch";
+import { apiRoutes } from "@/lib/api-routes";
 
 const navItems = [
   {
@@ -85,7 +86,7 @@ export default function AdminSidebar() {
   const router = useRouter();
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
+    await fetch(apiRoutes.adminLogout(), { method: "POST" });
     router.push("/admin/login");
     router.refresh();
   }

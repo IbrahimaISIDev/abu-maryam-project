@@ -6,6 +6,7 @@ import type { Series, Teaching, Theme, Language } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Modal from "@/components/ui/Modal";
+import { apiRoutes } from "@/lib/api-routes";
 
 const THEME_LABELS: Record<Theme, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -27,8 +28,8 @@ export default function SeriesAdminPage() {
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      fetch("/api/admin/series").then((res) => (res.ok ? res.json() : Promise.reject())),
-      fetch("/api/admin/teachings").then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.series()).then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.teachings()).then((res) => (res.ok ? res.json() : Promise.reject())),
     ])
       .then(([seriesData, teachingsData]: [{ series: Series[] }, { teachings: Teaching[] }]) => {
         if (cancelled) return;
@@ -59,7 +60,7 @@ export default function SeriesAdminPage() {
     const id = deleteId;
     if (!id) return;
     try {
-      const res = await fetch(`/api/admin/series/${id}`, { method: "DELETE" });
+      const res = await fetch(apiRoutes.seriesItem(id), { method: "DELETE" });
       if (!res.ok) throw new Error();
       setItems((prev) => prev.filter((s) => s.id !== id));
       toast("Série supprimée", "success");
@@ -73,7 +74,7 @@ export default function SeriesAdminPage() {
     if (!editItem) return;
     try {
       if (isNew) {
-        const res = await fetch("/api/admin/series", {
+        const res = await fetch(apiRoutes.series(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(editItem),
@@ -83,7 +84,7 @@ export default function SeriesAdminPage() {
         setItems((prev) => [...prev, series]);
         toast("Série ajoutée", "success");
       } else {
-        const res = await fetch(`/api/admin/series/${editItem.id}`, {
+        const res = await fetch(apiRoutes.seriesItem(editItem.id), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(editItem),

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { Registration, Teaching } from "@/lib/types";
+import { apiRoutes } from "@/lib/api-routes";
 
 const THEME_LABELS: Record<string, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -64,7 +65,7 @@ export default function GlobalSearch() {
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    fetch("/api/inscription")
+    fetch(apiRoutes.inscription())
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data: { registrations: Registration[] }) => {
         if (!cancelled) setRegistrations(data.registrations);
@@ -72,7 +73,7 @@ export default function GlobalSearch() {
       .catch(() => {
         // silencieux : la recherche reste utilisable sur les enseignements
       });
-    fetch("/api/admin/teachings")
+    fetch(apiRoutes.teachings())
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data: { teachings: Teaching[] }) => {
         if (!cancelled) setTeachings(data.teachings);

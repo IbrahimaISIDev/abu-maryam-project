@@ -7,6 +7,7 @@ import { useToast } from "@/contexts/ToastContext";
 import { computeAgendaStatus } from "@/lib/activities";
 import Modal from "@/components/ui/Modal";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { apiRoutes } from "@/lib/api-routes";
 
 const AGENDA_TYPES: AgendaItem["type"][] = ["séminaire", "conférence", "khoutba", "cours", "tafsir"];
 
@@ -24,9 +25,9 @@ export default function EvenementsAdminPage() {
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      fetch("/api/admin/seminar").then((res) => (res.ok ? res.json() : Promise.reject())),
-      fetch("/api/admin/agenda").then((res) => (res.ok ? res.json() : Promise.reject())),
-      fetch("/api/inscription").then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.seminar()).then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.agenda()).then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.inscription()).then((res) => (res.ok ? res.json() : Promise.reject())),
     ])
       .then(
         ([seminarData, agendaData, regData]: [
@@ -58,7 +59,7 @@ export default function EvenementsAdminPage() {
   async function saveSeminar() {
     if (!semEdit) return;
     try {
-      const res = await fetch("/api/admin/seminar", {
+      const res = await fetch(apiRoutes.seminar(), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(semEdit),
@@ -76,7 +77,7 @@ export default function EvenementsAdminPage() {
   async function saveAgendaEdit() {
     if (!editAgenda) return;
     try {
-      const res = await fetch(`/api/admin/agenda/${editAgenda.id}`, {
+      const res = await fetch(apiRoutes.agendaItem(editAgenda.id), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editAgenda),
@@ -94,7 +95,7 @@ export default function EvenementsAdminPage() {
   async function addAgendaItem() {
     if (!editAgenda) return;
     try {
-      const res = await fetch("/api/admin/agenda", {
+      const res = await fetch(apiRoutes.agenda(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editAgenda),
@@ -114,7 +115,7 @@ export default function EvenementsAdminPage() {
     const id = deleteAgendaId;
     if (!id) return;
     try {
-      const res = await fetch(`/api/admin/agenda/${id}`, { method: "DELETE" });
+      const res = await fetch(apiRoutes.agendaItem(id), { method: "DELETE" });
       if (!res.ok) throw new Error();
       setAgenda((prev) => prev.filter((a) => a.id !== id));
       toast("Créneau supprimé", "success");

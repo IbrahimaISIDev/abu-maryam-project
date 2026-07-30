@@ -6,6 +6,8 @@ import type { Registration } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Modal from "@/components/ui/Modal";
+import { apiRoutes } from "@/lib/api-routes";
+import { buildWhatsAppContactLink } from "@/lib/whatsapp";
 
 const statusMap: Record<string, { label: string; cls: string }> = {
   confirmed: { label: "Confirmé",   cls: "bg-[#eef4e8] text-[#5f7050]" },
@@ -49,11 +51,6 @@ function exportCSV(data: Registration[]) {
   URL.revokeObjectURL(url);
 }
 
-function whatsappLink(phone: string) {
-  const cleaned = phone.replace(/[\s\-()]/g, "").replace(/^\+/, "");
-  return `https://wa.me/${cleaned}`;
-}
-
 export default function InscriptionsPage() {
   const toast = useToast();
   const [items, setItems] = useState<Registration[]>([]);
@@ -68,7 +65,7 @@ export default function InscriptionsPage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/inscription")
+    fetch(apiRoutes.inscription())
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data: { registrations: Registration[] }) => {
         if (!cancelled) setItems(data.registrations);
@@ -122,7 +119,7 @@ export default function InscriptionsPage() {
       pending: "Inscription remise en attente",
     };
     try {
-      const res = await fetch(`/api/admin/registrations/${id}`, {
+      const res = await fetch(apiRoutes.registration(id), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -162,7 +159,7 @@ export default function InscriptionsPage() {
     try {
       await Promise.all(
         ids.map((id) =>
-          fetch(`/api/admin/registrations/${id}`, {
+          fetch(apiRoutes.registration(id), {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status }),
@@ -328,7 +325,7 @@ export default function InscriptionsPage() {
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <a
-                        href={whatsappLink(r.phone)}
+                        href={buildWhatsAppContactLink(r.phone)}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
@@ -478,7 +475,7 @@ export default function InscriptionsPage() {
               {/* Actions */}
               <div className="flex flex-col gap-2 pt-1">
                 <a
-                  href={whatsappLink(detailItem.phone)}
+                  href={buildWhatsAppContactLink(detailItem.phone)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] hover:bg-[#1ea853] text-white font-[var(--font-hanken)] font-semibold text-[14px] rounded-[10px] transition-colors"

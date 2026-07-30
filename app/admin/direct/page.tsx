@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { LiveStatus } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
+import { apiRoutes } from "@/lib/api-routes";
 
 export default function DirectAdminPage() {
   const toast = useToast();
@@ -15,7 +16,7 @@ export default function DirectAdminPage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/admin/live")
+    fetch(apiRoutes.live())
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data: { liveStatus: LiveStatus | null }) => {
         if (cancelled || !data.liveStatus) return;
@@ -40,7 +41,7 @@ export default function DirectAdminPage() {
 
   async function handleSave() {
     try {
-      const res = await fetch("/api/admin/live", {
+      const res = await fetch(apiRoutes.live(), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isLive, title: liveTitle, youtubeChannelId: channelId || null }),

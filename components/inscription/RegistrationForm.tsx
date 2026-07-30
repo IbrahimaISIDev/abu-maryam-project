@@ -5,6 +5,7 @@ import type { FormState, SubmitStatus } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import Button from "@/components/ui/Button";
+import { apiRoutes } from "@/lib/api-routes";
 
 const initialForm: FormState = {
   firstName: "", lastName: "", phone: "", email: "",
@@ -50,7 +51,7 @@ export default function RegistrationForm({ dict, lang }: { dict: Dictionary["ins
 
     setStatus("loading");
     try {
-      const res = await fetch("/api/inscription", {
+      const res = await fetch(apiRoutes.inscription(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
