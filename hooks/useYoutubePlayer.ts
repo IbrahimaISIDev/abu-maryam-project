@@ -104,7 +104,7 @@ export function useYoutubePlayer({ videoId, onStateChange, onError, onReady }: U
       if (destroyed || !containerRef.current || !window.YT) return;
       player = new window.YT.Player(containerRef.current, {
         videoId,
-        playerVars: { rel: 0 },
+        playerVars: { rel: 0, controls: 0, disablekb: 1 },
         events: {
           onReady: () => {
             if (destroyed) return;

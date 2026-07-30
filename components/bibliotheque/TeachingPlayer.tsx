@@ -516,6 +516,7 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
               </div>
             )}
             <YoutubePlayer
+              ref={playerRef}
               videoId={teaching.youtubeId}
               onStateChange={handleStateChange}
               onError={() => setHasError(true)}
