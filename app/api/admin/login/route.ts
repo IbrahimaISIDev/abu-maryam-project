@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   const { email, password } = await req.json();
 
-  if (!checkAdminCredentials(email, password)) {
+  if (!(await checkAdminCredentials(email, password))) {
     recordFailedAttempt(ip);
     return NextResponse.json({ error: "Identifiants incorrects" }, { status: 401 });
   }

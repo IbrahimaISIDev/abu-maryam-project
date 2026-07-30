@@ -168,3 +168,23 @@ export const registrations = pgTable("registrations", {
   mode: registrationModeEnum("mode"),
   message: text("message"),
 });
+
+export const adminUsers = pgTable("admin_users", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  displayName: text("display_name").notNull().default("Administrateur"),
+  // Format "salt:hash" (scrypt, node:crypto) — voir lib/passwordHash.ts.
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Table singleton (une seule ligne, id fixe "singleton"), même pattern que live_status.
+export const siteSettings = pgTable("site_settings", {
+  id: text("id").primaryKey().default("singleton"),
+  siteName: text("site_name").notNull().default("Abu Maryam TV"),
+  siteDescription: text("site_description").notNull().default(""),
+  notifyByEmail: boolean("notify_by_email").notNull().default(true),
+  notifyByWhatsapp: boolean("notify_by_whatsapp").notNull().default(false),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

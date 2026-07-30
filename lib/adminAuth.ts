@@ -1,5 +1,9 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { eq } from "drizzle-orm";
+import { db } from "@/lib/db/client";
+import { adminUsers } from "@/lib/db/schema";
+import { verifyPassword } from "@/lib/passwordHash";
 
 export const ADMIN_COOKIE_NAME = "admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 8; // 8h
@@ -16,13 +20,11 @@ function sign(payload: string): string {
   return createHmac("sha256", getSecret()).update(payload).digest("base64url");
 }
 
-export function checkAdminCredentials(email: string, password: string): boolean {
-  const validEmail = process.env.ADMIN_EMAIL;
-  const validPassword = process.env.ADMIN_PASSWORD;
-  if (!validEmail || !validPassword) {
-    throw new Error("ADMIN_EMAIL / ADMIN_PASSWORD ne sont pas définis (voir .env.example)");
-  }
-  return email === validEmail && password === validPassword;
+/** Vérifie les identifiants contre le compte admin stocké en base (table admin_users). */
+export async function checkAdminCredentials(email: string, password: string): Promise<boolean> {
+  const [admin] = await db.select().from(adminUsers).where(eq(adminUsers.email, email));
+  if (!admin) return false;
+  return verifyPassword(password, admin.passwordHash);
 }
 
 /** Jeton `exp.signature` — la signature HMAC empêche de forger le cookie sans connaître le secret serveur. */
