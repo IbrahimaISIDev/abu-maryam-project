@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "@/components/ui/LocalizedLink";
 import { usePlayer } from "@/contexts/PlayerContext";
 import { useDictionary } from "@/contexts/DictionaryContext";
@@ -13,20 +12,11 @@ const i18n = {
 };
 
 export default function MiniPlayer() {
-  const { state, pause, resume, close, seek, audioRef } = usePlayer();
+  const { state, pause, resume, close, seek } = usePlayer();
   const { lang } = useDictionary();
   const t = i18n[lang];
   const { teaching, isPlaying, positionSeconds } = state;
   const progress = teaching ? (positionSeconds / teaching.durationSeconds) * 100 : 0;
-
-  // Tick de progression simulé (pour les placeholders sans vrai audio)
-  useEffect(() => {
-    if (!isPlaying || !teaching) return;
-    const interval = setInterval(() => {
-      seek(Math.min(positionSeconds + 1, teaching.durationSeconds));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, teaching, positionSeconds, seek]);
 
   if (!teaching) return null;
 
@@ -121,9 +111,6 @@ export default function MiniPlayer() {
           </button>
         </div>
       </div>
-
-      {/* Audio element caché (pour support futur vraie URL) */}
-      <audio ref={audioRef} className="hidden" />
     </div>
   );
 }

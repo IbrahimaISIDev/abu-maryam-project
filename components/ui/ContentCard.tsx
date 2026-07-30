@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Teaching } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
 import { formatContentLanguage, formatThemeLabel } from "@/lib/format";
@@ -19,12 +20,27 @@ export default function ContentCard({ teaching, size = "default", progressPercen
   const typeLabel = lang === "ar" ? { video: "فيديو", audio: "صوت" } : { video: "Vidéo", audio: "Audio" };
   const watchedLabel = lang === "ar" ? "تمت المشاهدة" : "Vu";
   const thumbH = size === "compact" ? "h-[110px]" : "h-[148px]";
+  const thumbnailSrc =
+    teaching.thumbnail ??
+    (teaching.type === "video" && teaching.youtubeId
+      ? `https://img.youtube.com/vi/${teaching.youtubeId}/hqdefault.jpg`
+      : null);
 
   return (
     <div className="group bg-[#fbf9f3] dark:bg-[#20261b] rounded-[9px] overflow-hidden border border-[#e2dac9] dark:border-[#3a4132] hover:border-[#d8d0bf] dark:hover:border-[#454c3c] transition-colors cursor-pointer">
       {/* Miniature */}
       <div className={`relative ${thumbH} overflow-hidden`}>
-        <ImagePlaceholder className="w-full h-full" theme={teaching.theme} />
+        {thumbnailSrc ? (
+          <Image
+            src={thumbnailSrc}
+            alt=""
+            fill
+            sizes="(min-width: 768px) 25vw, 50vw"
+            className="object-cover"
+          />
+        ) : (
+          <ImagePlaceholder className="w-full h-full" theme={teaching.theme} />
+        )}
 
         {/* Badge thème haut-gauche */}
         <div className="absolute top-2 left-2">
