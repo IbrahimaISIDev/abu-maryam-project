@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllTeachingsAdmin, getAllSeries, getRegistrations, getSeminar, getLiveStatus } from "@/lib/db/queries";
 import { daysUntil } from "@/lib/activities";
+import { buildWhatsAppContactLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
@@ -180,7 +181,6 @@ export default async function DashboardPage() {
           </div>
           <ul className="divide-y divide-[#f0ece3]">
             {recent.map((r) => {
-              const cleaned = r.phone.replace(/[\s\-()]/g, "").replace(/^\+/, "");
               return (
                 <li key={r.id} className="flex items-center gap-3 px-5 py-3 group">
                   <div className="w-8 h-8 rounded-full bg-[#e9e3d4] flex items-center justify-center shrink-0 font-[var(--font-cormorant)] font-semibold text-[15px] text-[#6f7363]">
@@ -191,7 +191,7 @@ export default async function DashboardPage() {
                     <p className="font-[var(--font-hanken)] text-[11px] text-[#9a9483]">{r.city}</p>
                   </div>
                   <a
-                    href={`https://wa.me/${cleaned}`}
+                    href={buildWhatsAppContactLink(r.phone)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="opacity-0 group-hover:opacity-100 p-1 rounded-[5px] text-[#25D366] hover:bg-[rgba(37,211,102,0.1)] transition-all"

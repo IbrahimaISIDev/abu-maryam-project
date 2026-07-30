@@ -17,7 +17,7 @@ import type { Theme } from "@/lib/types";
 import { getDictionary } from "@/dictionaries";
 import { formatSeriesLabel, formatContentLanguage, formatLevel, formatThemeLabel } from "@/lib/format";
 import { getTeachingTitle, getTeachingDescription, getSeriesTitle } from "@/lib/content-i18n";
-import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, SITE_URL, type Locale } from "@/lib/i18n";
 
 const levelColor: Record<string, string> = {
   débutant: "text-[#5f7050] bg-[#eef0e6]",
@@ -196,7 +196,7 @@ export default async function TeachingDetailPage({
                 {/* Partage */}
                 <ShareButtons
                   title={getTeachingTitle(teaching, lang)}
-                  url={`https://abumaryam.tv/bibliotheque/${teaching.id}`}
+                  url={`${SITE_URL}/${lang}/bibliotheque/${teaching.id}`}
                   dict={dict.common}
                   lang={lang}
                 />

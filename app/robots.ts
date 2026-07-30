@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/i18n";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow: ["/api/", "/admin/"] },
     ],
-    sitemap: "https://abumaryam.tv/sitemap.xml",
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

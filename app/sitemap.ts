@@ -1,15 +1,13 @@
 import type { MetadataRoute } from "next";
 import { getAllTeachings } from "@/lib/db/queries";
-import { locales } from "@/lib/i18n";
-
-const BASE_URL = "https://abumaryam.tv";
+import { locales, SITE_URL } from "@/lib/i18n";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = [];
   const teachings = await getAllTeachings();
 
   for (const lang of locales) {
-    const base = `${BASE_URL}/${lang}`;
+    const base = `${SITE_URL}/${lang}`;
     routes.push(
       { url: base, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
       { url: `${base}/bibliotheque`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },

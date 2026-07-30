@@ -5,9 +5,11 @@ import Link from "@/components/ui/LocalizedLink";
 import Image from "next/image";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
+import { SITE_URL } from "@/lib/i18n";
 import type { Seminar } from "@/lib/types";
 import { formatPlacesFraction, formatSeminarDateRange, formatSeminarSingleDate, formatLocation } from "@/lib/format";
 import { getSeminarField } from "@/lib/content-i18n";
+import { buildWhatsAppShareLink } from "@/lib/whatsapp";
 
 function useCountdown(targetDate: string) {
   const [diff, setDiff] = useState(0);
@@ -154,7 +156,7 @@ export default function SeminarHero({
             {dict.registerCta}
           </Link>
           <a
-            href={`https://wa.me/?text=${encodeURIComponent("Séminaire Abu Maryam TV — Inscrivez-vous : https://abumaryam.tv/inscription")}`}
+            href={buildWhatsAppShareLink(`Séminaire Abu Maryam TV — Inscrivez-vous : ${SITE_URL}/inscription`)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 border border-[rgba(37,211,102,0.5)] text-[#25D366] font-[var(--font-hanken)] font-semibold text-[13.5px] px-5 py-3.5 rounded-full hover:bg-[rgba(37,211,102,0.1)] transition-colors"

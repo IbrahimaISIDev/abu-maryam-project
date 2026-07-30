@@ -2,6 +2,7 @@
 
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
+import { buildWhatsAppShareLink } from "@/lib/whatsapp";
 
 interface ShareButtonsProps {
   title: string;
@@ -11,13 +12,14 @@ interface ShareButtonsProps {
 }
 
 export default function ShareButtons({ title, url, dict, lang }: ShareButtonsProps) {
-  const encodedTitle = encodeURIComponent(`${title} — Abu Maryam TV`);
+  const fullTitle = `${title} — Abu Maryam TV`;
+  const encodedTitle = encodeURIComponent(fullTitle);
   const encodedUrl = encodeURIComponent(url);
 
   const share = [
     {
       label: "WhatsApp",
-      href: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+      href: buildWhatsAppShareLink(`${fullTitle} ${url}`),
       color: "#25D366",
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
