@@ -5,6 +5,7 @@ import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatDaysAgo, formatDayShort } from "@/lib/format";
 import { getScheduleTitle, getScheduleSubtitle, getReplayTitle } from "@/lib/content-i18n";
+import { buildYoutubeThumbnailUrl, buildYoutubeWatchUrl } from "@/lib/youtube";
 
 export default async function LiveSidebar({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   const replays = await getReplays();
@@ -45,26 +46,50 @@ export default async function LiveSidebar({ dict, lang }: { dict: Dictionary; la
           {dict.live.rewatchLives}
         </h3>
         <ul className="space-y-3 divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
-          {replays.map((r) => (
-            <li key={r.id} className="flex items-center gap-3 pt-3 first:pt-0">
-              <div className="w-[78px] h-[48px] rounded-[5px] overflow-hidden shrink-0 relative">
-                <ImagePlaceholder className="w-full h-full" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="w-7 h-7 rounded-full bg-[rgba(60,74,55,0.7)] flex items-center justify-center text-[#fbf9f3] text-[10px]">
-                    ▶
-                  </span>
+          {replays.map((r) => {
+            const thumbSrc = r.thumbnail ?? (r.youtubeId ? buildYoutubeThumbnailUrl(r.youtubeId, "mqdefault") : null);
+            const content = (
+              <>
+                <div className="w-[78px] h-[48px] rounded-[5px] overflow-hidden shrink-0 relative">
+                  {thumbSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={thumbSrc} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <ImagePlaceholder className="w-full h-full" />
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="w-7 h-7 rounded-full bg-[rgba(60,74,55,0.7)] flex items-center justify-center text-[#fbf9f3] text-[10px]">
+                      ▶
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="min-w-0">
-                <p className="font-[var(--font-hanken)] font-medium text-[13px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
-                  {getReplayTitle(r, lang)}
-                </p>
-                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
-                  {formatDaysAgo(r.daysAgo, lang)}
-                </p>
-              </div>
-            </li>
-          ))}
+                <div className="min-w-0">
+                  <p className="font-[var(--font-hanken)] font-medium text-[13px] text-[#232a20] dark:text-[#f2ede0] leading-snug line-clamp-2">
+                    {getReplayTitle(r, lang)}
+                  </p>
+                  <p className="font-[var(--font-hanken)] text-[11.5px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
+                    {formatDaysAgo(r.daysAgo, lang)}
+                  </p>
+                </div>
+              </>
+            );
+            return (
+              <li key={r.id} className="pt-3 first:pt-0">
+                {r.youtubeId ? (
+                  <a
+                    href={buildYoutubeWatchUrl(r.youtubeId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <div className="flex items-center gap-3">{content}</div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </aside>

@@ -7,6 +7,7 @@ const ar: Dictionary = {
     library: "المكتبة",
     live: "البث المباشر",
     events: "الفعاليات",
+    activities: "الأنشطة",
     about: "من نحن",
     watchLive: "مشاهدة البث المباشر",
     search: "بحث",
@@ -21,6 +22,7 @@ const ar: Dictionary = {
     library: "المكتبة",
     live: "مباشر",
     events: "الفعاليات",
+    activities: "الأنشطة",
     profile: "الملف",
   },
   search: {
@@ -99,6 +101,7 @@ const ar: Dictionary = {
     agendaTitle: "جدول الأنشطة",
     tabUpcoming: "القادمة",
     tabPast: "السابقة",
+    watchReplay: "مشاهدة الإعادة ↗",
     typeLabels: {
       séminaire: "ندوة",
       conférence: "محاضرة",

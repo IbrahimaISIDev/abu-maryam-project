@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import type { AgendaItem, Registration, Seminar } from "@/lib/types";
+import type { AgendaItem, Registration, Seminar, Replay } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import { computeAgendaStatus } from "@/lib/activities";
 import Modal from "@/components/ui/Modal";
@@ -17,10 +17,14 @@ export default function EvenementsAdminPage() {
   const [semEdit, setSemEdit] = useState<Seminar | null>(null);
   const [agenda, setAgenda] = useState<AgendaItem[]>([]);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [replays, setReplays] = useState<Replay[]>([]);
   const [loading, setLoading] = useState(true);
   const [editAgenda, setEditAgenda] = useState<AgendaItem | null>(null);
   const [newAgenda, setNewAgenda] = useState(false);
   const [deleteAgendaId, setDeleteAgendaId] = useState<string | null>(null);
+  const [newReplayTitle, setNewReplayTitle] = useState("");
+  const [newReplayUrl, setNewReplayUrl] = useState("");
+  const [deleteReplayId, setDeleteReplayId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,17 +32,20 @@ export default function EvenementsAdminPage() {
       fetch(apiRoutes.seminar()).then((res) => (res.ok ? res.json() : Promise.reject())),
       fetch(apiRoutes.agenda()).then((res) => (res.ok ? res.json() : Promise.reject())),
       fetch(apiRoutes.inscription()).then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.replays()).then((res) => (res.ok ? res.json() : Promise.reject())),
     ])
       .then(
-        ([seminarData, agendaData, regData]: [
+        ([seminarData, agendaData, regData, replaysData]: [
           { seminar: Seminar | null },
           { agendaItems: AgendaItem[] },
           { registrations: Registration[] },
+          { replays: Replay[] },
         ]) => {
           if (cancelled) return;
           setSem(seminarData.seminar);
           setAgenda(agendaData.agendaItems);
           setRegistrations(regData.registrations);
+          setReplays(replaysData.replays);
         }
       )
       .catch(() => {
@@ -51,6 +58,42 @@ export default function EvenementsAdminPage() {
       cancelled = true;
     };
   }, [toast]);
+
+  async function addReplay() {
+    if (!newReplayTitle.trim() || !newReplayUrl.trim()) {
+      toast("Titre et URL YouTube requis", "error");
+      return;
+    }
+    try {
+      const res = await fetch(apiRoutes.replays(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newReplayTitle, youtubeUrlOrId: newReplayUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setReplays((prev) => [...prev, data.replay]);
+      setNewReplayTitle("");
+      setNewReplayUrl("");
+      toast("Replay ajouté", "success");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Échec de l'ajout", "error");
+    }
+  }
+
+  async function deleteReplay() {
+    const id = deleteReplayId;
+    if (!id) return;
+    try {
+      const res = await fetch(apiRoutes.replayItem(id), { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setReplays((prev) => prev.filter((r) => r.id !== id));
+      toast("Replay supprimé", "success");
+    } catch {
+      toast("Échec de la suppression", "error");
+    }
+    setDeleteReplayId(null);
+  }
 
   const confirmed = registrations.filter((r) => r.status === "confirmed").length;
   const capacity = sem?.totalPlaces ?? 150;
@@ -262,6 +305,59 @@ export default function EvenementsAdminPage() {
         )}
       </div>
 
+      {/* Replays */}
+      <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] overflow-hidden mt-6">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#e2dac9]">
+          <div>
+            <h2 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20]">Replays</h2>
+            <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] mt-0.5">
+              À relier ensuite à un événement passé depuis son bouton « Modifier ».
+            </p>
+          </div>
+        </div>
+        <div className="px-5 py-4 border-b border-[#e2dac9] flex flex-col sm:flex-row gap-2">
+          <input
+            value={newReplayTitle}
+            onChange={(e) => setNewReplayTitle(e.target.value)}
+            placeholder="Titre du replay"
+            className="flex-1 px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]"
+          />
+          <input
+            value={newReplayUrl}
+            onChange={(e) => setNewReplayUrl(e.target.value)}
+            placeholder="URL ou ID YouTube"
+            dir="ltr"
+            className="flex-1 px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]"
+          />
+          <button
+            onClick={addReplay}
+            className="shrink-0 px-4 py-2.5 bg-[#3c4a37] hover:bg-[#2d3829] text-[#fbf9f3] font-[var(--font-hanken)] text-[13px] font-semibold rounded-[9px] transition-colors"
+          >
+            + Ajouter
+          </button>
+        </div>
+        {replays.length === 0 ? (
+          <p className="font-[var(--font-hanken)] text-[13.5px] text-[#9a9483] py-8 text-center">Aucun replay pour l&apos;instant</p>
+        ) : (
+          <ul className="divide-y divide-[#f0ece3]">
+            {replays.map((r) => (
+              <li key={r.id} className="flex items-center gap-4 px-5 py-3 group hover:bg-[#f9f6ef] transition-colors">
+                <div className="flex-1 min-w-0">
+                  <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#232a20]">{r.title}</p>
+                  <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483]" dir="ltr">{r.youtubeId ?? "—"}</p>
+                </div>
+                <button
+                  onClick={() => setDeleteReplayId(r.id)}
+                  className="opacity-0 group-hover:opacity-100 font-[var(--font-hanken)] text-[12px] text-[#8a2f29] hover:text-[#6e2520] transition-opacity"
+                >
+                  Supprimer
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
       {/* Modal édition séminaire */}
       <Modal isOpen={!!semEdit} title="Modifier le séminaire" onClose={() => setSemEdit(null)}>
         {semEdit && (
@@ -347,6 +443,19 @@ export default function EvenementsAdminPage() {
             <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483]">
               Le statut « À venir / Passé » se calcule automatiquement à partir de la date — pas besoin de le renseigner.
             </p>
+            <div>
+              <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">
+                Replay lié (optionnel — affiché une fois l&apos;événement passé)
+              </label>
+              <select
+                value={editAgenda.replayId ?? ""}
+                onChange={(e) => setEditAgenda({ ...editAgenda, replayId: e.target.value || null })}
+                className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]"
+              >
+                <option value="">— Aucun —</option>
+                {replays.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+              </select>
+            </div>
             <div className="flex gap-3 pt-2">
               <button onClick={() => { setEditAgenda(null); setNewAgenda(false); }} className="flex-1 py-2.5 border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] font-medium text-[#6f7363] hover:bg-[#f0ece3] transition-colors">Annuler</button>
               <button onClick={newAgenda ? addAgendaItem : saveAgendaEdit} className="flex-1 py-2.5 bg-[#3c4a37] hover:bg-[#2d3829] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#fbf9f3] transition-colors">
@@ -365,6 +474,16 @@ export default function EvenementsAdminPage() {
         danger
         onConfirm={deleteAgendaItem}
         onCancel={() => setDeleteAgendaId(null)}
+      />
+
+      <ConfirmModal
+        isOpen={!!deleteReplayId}
+        title="Supprimer ce replay ?"
+        message="Les créneaux qui y sont reliés perdront ce lien."
+        confirmLabel="Supprimer"
+        danger
+        onConfirm={deleteReplay}
+        onCancel={() => setDeleteReplayId(null)}
       />
     </div>
   );

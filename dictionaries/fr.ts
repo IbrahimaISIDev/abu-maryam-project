@@ -7,6 +7,7 @@ const fr: Dictionary = {
     library: "Bibliothèque",
     live: "En direct",
     events: "Événements",
+    activities: "Activités",
     about: "À propos",
     watchLive: "Regarder le live",
     search: "Rechercher",
@@ -21,6 +22,7 @@ const fr: Dictionary = {
     library: "Biblio",
     live: "Live",
     events: "Événements",
+    activities: "Activités",
     profile: "Profil",
   },
   search: {
@@ -99,6 +101,7 @@ const fr: Dictionary = {
     agendaTitle: "Agenda des activités",
     tabUpcoming: "À venir",
     tabPast: "Passés",
+    watchReplay: "Voir le replay ↗",
     typeLabels: {
       séminaire: "Séminaire",
       conférence: "Conférence",

@@ -97,7 +97,7 @@ function toSeminar(row: typeof seminars.$inferSelect): Seminar {
 
 function toReplay(row: typeof replays.$inferSelect): Replay {
   const daysAgo = Math.max(0, Math.floor((Date.now() - row.createdAt.getTime()) / 86_400_000));
-  return { id: row.id, title: row.title, thumbnail: row.thumbnail, daysAgo };
+  return { id: row.id, title: row.title, thumbnail: row.thumbnail, youtubeId: row.youtubeId, daysAgo };
 }
 
 export const getTeachingsCount = cache(async (): Promise<number> => {

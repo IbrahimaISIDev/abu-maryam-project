@@ -6,7 +6,7 @@ import Footer from "@/components/layout/Footer";
 import SeminarHero from "@/components/evenements/SeminarHero";
 import AgendaList from "@/components/evenements/AgendaList";
 import { getDictionary } from "@/dictionaries";
-import { getSeminar, getAgendaItems } from "@/lib/db/queries";
+import { getSeminar, getAgendaItems, getReplays } from "@/lib/db/queries";
 import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
 export const revalidate = 60;
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
 export default async function EvenementsPage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
-  const [seminar, agendaItems] = await Promise.all([getSeminar(), getAgendaItems()]);
+  const [seminar, agendaItems, replays] = await Promise.all([getSeminar(), getAgendaItems(), getReplays()]);
 
   return (
     <>
@@ -50,7 +50,7 @@ export default async function EvenementsPage({ params }: { params: Promise<{ lan
       <main id="main-content" className="pb-20 md:pb-0">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-8 space-y-12">
           {seminar && <SeminarHero dict={dict.events} lang={lang} seminar={seminar} />}
-          <AgendaList dict={dict.events} lang={lang} agendaItems={agendaItems} />
+          <AgendaList dict={dict.events} lang={lang} agendaItems={agendaItems} replays={replays} />
         </div>
       </main>
 

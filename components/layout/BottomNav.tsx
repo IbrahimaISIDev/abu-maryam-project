@@ -49,6 +49,15 @@ export default function BottomNav() {
       ),
     },
     {
+      href: "/activites",
+      label: dict.bottomNav.activities,
+      icon: (active: boolean) => (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" fill={active ? "currentColor" : "none"} fillOpacity={active ? 0.15 : 0} />
+        </svg>
+      ),
+    },
+    {
       href: "/a-propos",
       label: dict.bottomNav.profile,
       icon: () => (

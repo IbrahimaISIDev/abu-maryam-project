@@ -22,6 +22,9 @@ export const apiRoutes = {
   agenda: () => `${API_BASE}/api/admin/agenda`,
   agendaItem: (id: string) => `${API_BASE}/api/admin/agenda/${id}`,
 
+  replays: () => `${API_BASE}/api/admin/replays`,
+  replayItem: (id: string) => `${API_BASE}/api/admin/replays/${id}`,
+
   live: () => `${API_BASE}/api/admin/live`,
   seminar: () => `${API_BASE}/api/admin/seminar`,
 

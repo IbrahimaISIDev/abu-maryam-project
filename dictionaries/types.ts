@@ -5,6 +5,7 @@ export interface Dictionary {
     library: string;
     live: string;
     events: string;
+    activities: string;
     about: string;
     watchLive: string;
     search: string;
@@ -19,6 +20,7 @@ export interface Dictionary {
     library: string;
     live: string;
     events: string;
+    activities: string;
     profile: string;
   };
   search: {
@@ -96,6 +98,7 @@ export interface Dictionary {
     agendaTitle: string;
     tabUpcoming: string;
     tabPast: string;
+    watchReplay: string;
     typeLabels: {
       séminaire: string;
       conférence: string;

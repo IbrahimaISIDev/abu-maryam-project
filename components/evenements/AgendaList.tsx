@@ -2,21 +2,24 @@
 
 import { useState } from "react";
 import Link from "@/components/ui/LocalizedLink";
-import type { AgendaItem } from "@/lib/types";
+import type { AgendaItem, Replay } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatUntilDate, formatEventCta, formatLocation } from "@/lib/format";
 import { getAgendaItemTitle } from "@/lib/content-i18n";
 import { computeAgendaStatus } from "@/lib/activities";
+import { buildYoutubeWatchUrl } from "@/lib/youtube";
 
 export default function AgendaList({
   dict,
   lang,
   agendaItems,
+  replays = [],
 }: {
   dict: Dictionary["events"];
   lang: Locale;
   agendaItems: AgendaItem[];
+  replays?: Replay[];
 }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
 
@@ -117,6 +120,24 @@ export default function AgendaList({
                   </Link>
                 </div>
               )}
+
+              {/* Lien replay — événements passés reliés à un replay YouTube */}
+              {computeAgendaStatus(item) === "past" && item.replayId && (() => {
+                const replay = replays.find((r) => r.id === item.replayId);
+                if (!replay?.youtubeId) return null;
+                return (
+                  <div className="shrink-0">
+                    <a
+                      href={buildYoutubeWatchUrl(replay.youtubeId)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block font-[var(--font-hanken)] font-semibold text-[13px] px-5 py-2.5 rounded-full border border-[#d8d0bf] dark:border-[#454c3c] text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors"
+                    >
+                      {dict.watchReplay}
+                    </a>
+                  </div>
+                );
+              })()}
             </li>
           );
         })}

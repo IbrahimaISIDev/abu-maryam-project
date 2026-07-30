@@ -15,6 +15,7 @@ export default function Footer() {
     { href: "/bibliotheque", label: dict.nav.library },
     { href: "/en-direct", label: dict.nav.live },
     { href: "/evenements", label: dict.nav.events },
+    { href: "/activites", label: dict.nav.activities },
     { href: "/a-propos", label: dict.nav.about },
   ];
 

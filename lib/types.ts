@@ -65,6 +65,7 @@ export interface Replay {
   id: string;
   title: string;
   thumbnail: string | null;
+  youtubeId: string | null;
   daysAgo: number;
 }
 
