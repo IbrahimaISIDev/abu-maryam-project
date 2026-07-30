@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { usePlayer } from "@/contexts/PlayerContext";
 import { useProgress } from "@/hooks/useProgress";
+import { useVolume } from "@/hooks/useVolume";
 import YoutubePlayer, { type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
 import { YT_PLAYER_STATE } from "@/hooks/useYoutubePlayer";
 import type { Teaching } from "@/lib/types";
@@ -16,8 +18,130 @@ interface TeachingPlayerProps {
   lang: Locale;
 }
 
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
+
 function fmtTime(s: number): string {
   return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+}
+
+function currentChapterIndexFor(teaching: Teaching, positionSeconds: number): number {
+  return teaching.chapters
+    ? teaching.chapters.reduce((acc, ch, i) => (ch.timeSeconds <= positionSeconds ? i : acc), -1)
+    : -1;
+}
+
+/** Lit `?t=` une seule fois au montage (lien profond vers un instant précis). */
+function useInitialTimestamp(): number | null {
+  const searchParams = useSearchParams();
+  const [initial] = useState<number | null>(() => {
+    const raw = searchParams.get("t");
+    const parsed = raw ? Number(raw) : NaN;
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+  });
+  return initial;
+}
+
+function isTypingTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  if (!el) return false;
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
+}
+
+function VolumeControl({
+  volume,
+  muted,
+  onVolumeChange,
+  onToggleMute,
+  dict,
+}: {
+  volume: number;
+  muted: boolean;
+  onVolumeChange: (v: number) => void;
+  onToggleMute: () => void;
+  dict: Dictionary;
+}) {
+  const isSilent = muted || volume === 0;
+  return (
+    <div className="hidden sm:flex items-center gap-1.5">
+      <button type="button"
+        onClick={onToggleMute}
+        aria-label={isSilent ? dict.library.unmuteAria : dict.library.muteAria}
+        aria-pressed={isSilent}
+        className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors shrink-0"
+      >
+        {isSilent ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M11 5 6 9H2v6h4l5 4V5z" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M11 5 6 9H2v6h4l5 4V5z" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>
+        )}
+      </button>
+      <input
+        type="range"
+        min={0}
+        max={1}
+        step={0.05}
+        value={isSilent ? 0 : volume}
+        onChange={(e) => onVolumeChange(Number(e.target.value))}
+        aria-label={dict.library.volumeAria}
+        className="w-16 accent-[#b58a3c]"
+      />
+    </div>
+  );
+}
+
+function SpeedControl({ rate, onChange, dict }: { rate: number; onChange: (r: number) => void; dict: Dictionary }) {
+  function cycle() {
+    const idx = SPEEDS.indexOf(rate as (typeof SPEEDS)[number]);
+    onChange(SPEEDS[(idx + 1) % SPEEDS.length]);
+  }
+  return (
+    <button type="button"
+      onClick={cycle}
+      aria-label={dict.library.speedAria}
+      dir="ltr"
+      className="shrink-0 text-[11px] font-[var(--font-hanken)] font-semibold text-[rgba(251,249,243,0.7)] hover:text-[#fbf9f3] transition-colors border border-[rgba(251,249,243,0.25)] hover:border-[#b58a3c] rounded-full px-2 py-1 tabular-nums"
+    >
+      {rate}×
+    </button>
+  );
+}
+
+function CopyTimestampButton({ positionSeconds, lang }: { positionSeconds: number; lang: Locale }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    const url = new URL(window.location.href);
+    url.searchParams.set("t", String(Math.floor(positionSeconds)));
+    await navigator.clipboard.writeText(url.toString());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <button type="button"
+      onClick={handleCopy}
+      className="shrink-0 flex items-center gap-1 text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
+      aria-label={lang === "ar" ? "نسخ رابط هذه اللحظة" : "Copier le lien à cet instant"}
+    >
+      {copied ? (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        </svg>
+      )}
+    </button>
+  );
 }
 
 function ChapterBar({
@@ -74,7 +198,7 @@ function ChapterBar({
               key={i}
               onClick={() => onChapterClick(ch.timeSeconds)}
               dir="ltr"
-              className={`shrink-0 px-3 py-1.5 rounded-full text-[11.5px] font-[var(--font-hanken)] font-medium border transition-colors ${
+              className={`shrink-0 px-3 py-1.5 rounded-full text-[11.5px] font-[var(--font-hanken)] font-medium border transition-all duration-200 ${
                 i === currentChapterIndex
                   ? "bg-[#b58a3c] border-[#b58a3c] text-[#232a20]"
                   : "border-[rgba(251,249,243,0.25)] text-[rgba(251,249,243,0.7)] hover:border-[#b58a3c] hover:text-[#fbf9f3]"
@@ -89,29 +213,55 @@ function ChapterBar({
   );
 }
 
-function currentChapterIndexFor(teaching: Teaching, positionSeconds: number): number {
-  return teaching.chapters
-    ? teaching.chapters.reduce((acc, ch, i) => (ch.timeSeconds <= positionSeconds ? i : acc), -1)
-    : -1;
-}
-
 export default function TeachingPlayer(props: TeachingPlayerProps) {
   if (props.teaching.type === "video") return <VideoTeachingPlayer {...props} />;
   return <AudioTeachingPlayer {...props} />;
 }
 
 function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
-  const { state, play, pause, resume, seek } = usePlayer();
+  const { state, play, pause, resume, seek, volume, muted, playbackRate, setVolume, toggleMute, setPlaybackRate } =
+    usePlayer();
+  const initialTimestamp = useInitialTimestamp();
+  const appliedInitialTimestamp = useRef(false);
 
   const isThisLoaded = state.teaching?.id === teaching.id;
   const isThisPlaying = isThisLoaded && state.isPlaying;
   const positionSeconds = isThisLoaded ? state.positionSeconds : 0;
+  const hasError = isThisLoaded && state.hasError;
 
   function handlePlayPause() {
     if (!isThisLoaded) play(teaching, 0);
     else if (isThisPlaying) pause();
     else resume();
   }
+
+  // Lien profond ?t= — ne s'applique qu'une fois, au premier montage.
+  useEffect(() => {
+    if (appliedInitialTimestamp.current || initialTimestamp === null) return;
+    appliedInitialTimestamp.current = true;
+    play(teaching, initialTimestamp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialTimestamp]);
+
+  // Raccourcis clavier — actifs tant que cette page est affichée.
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (isTypingTarget(e.target)) return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        handlePlayPause();
+      } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        if (isThisLoaded) seek(Math.max(0, positionSeconds - 5));
+      } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        if (isThisLoaded) seek(Math.min(teaching.durationSeconds, positionSeconds + 5));
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isThisLoaded, positionSeconds, teaching.durationSeconds]);
 
   function handleSeekClick(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -144,22 +294,28 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
           </p>
         )}
 
-        <button type="button"
-          onClick={handlePlayPause}
-          className="relative z-10 w-[74px] h-[74px] rounded-full bg-[rgba(251,249,243,0.15)] border-2 border-[rgba(251,249,243,0.4)] flex items-center justify-center text-[#fbf9f3] hover:bg-[rgba(251,249,243,0.25)] transition-colors"
-          aria-label={isThisPlaying ? dict.common.pause : dict.live.launchPlayback}
-        >
-          {isThisPlaying ? (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="6" y="4" width="4" height="16" rx="1" />
-              <rect x="14" y="4" width="4" height="16" rx="1" />
-            </svg>
-          ) : (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="6 3 20 12 6 21 6 3" />
-            </svg>
-          )}
-        </button>
+        {hasError ? (
+          <p className="relative z-10 font-[var(--font-hanken)] text-[13px] text-[rgba(251,249,243,0.75)] px-6 text-center">
+            {dict.library.errorAudio}
+          </p>
+        ) : (
+          <button type="button"
+            onClick={handlePlayPause}
+            className="relative z-10 w-[74px] h-[74px] rounded-full bg-[rgba(251,249,243,0.15)] border-2 border-[rgba(251,249,243,0.4)] flex items-center justify-center text-[#fbf9f3] hover:bg-[rgba(251,249,243,0.25)] transition-colors"
+            aria-label={isThisPlaying ? dict.common.pause : dict.live.launchPlayback}
+          >
+            {isThisPlaying ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="6 3 20 12 6 21 6 3" />
+              </svg>
+            )}
+          </button>
+        )}
 
         <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-[rgba(28,34,22,0.7)] text-[#fbf9f3] text-[12px] font-[var(--font-hanken)] px-3 py-1 rounded-full">
           <span>♪</span>
@@ -190,7 +346,7 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
 
           <button type="button"
             onClick={handlePlayPause}
-            className="w-9 h-9 rounded-full bg-[#b58a3c] flex items-center justify-center text-[#fbf9f3] hover:bg-[#9e7832] transition-colors"
+            className="w-9 h-9 rounded-full bg-[#b58a3c] flex items-center justify-center text-[#fbf9f3] hover:bg-[#9e7832] transition-colors shrink-0"
             aria-label={isThisPlaying ? dict.common.pause : dict.common.play}
           >
             {isThisPlaying ? (
@@ -216,9 +372,15 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
             +30s
           </button>
 
-          <span dir="ltr" className="ml-auto font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)]">
+          <span dir="ltr" className="font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)] shrink-0">
             {fmtTime(positionSeconds)} / {teaching.duration}
           </span>
+
+          <div className="ml-auto flex items-center gap-3">
+            <SpeedControl rate={playbackRate} onChange={setPlaybackRate} dict={dict} />
+            <VolumeControl volume={volume} muted={muted} onVolumeChange={setVolume} onToggleMute={toggleMute} dict={dict} />
+            <CopyTimestampButton positionSeconds={positionSeconds} lang={lang} />
+          </div>
         </div>
       </div>
     </div>
@@ -227,12 +389,52 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
 
 function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
   const { updateProgress, getProgress } = useProgress();
+  const { volume, muted, playbackRate, setVolume, toggleMute, setPlaybackRate } = useVolume();
+  const initialTimestamp = useInitialTimestamp();
   const playerRef = useRef<YoutubePlayerHandle>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [positionSeconds, setPositionSeconds] = useState(() => {
     const saved = getProgress(teaching.id);
     return saved && !saved.completed ? saved.positionSeconds : 0;
   });
+
+  // Applique les préférences persistées (volume/muet/vitesse) dès que le lecteur est prêt,
+  // et se positionne sur le lien profond ?t= éventuel.
+  function handleReady() {
+    setIsReady(true);
+    playerRef.current?.setVolume(volume);
+    playerRef.current?.setMuted(muted);
+    playerRef.current?.setPlaybackRate(playbackRate);
+    if (initialTimestamp !== null) {
+      playerRef.current?.seekTo(initialTimestamp);
+      setPositionSeconds(initialTimestamp);
+    }
+  }
+
+  // Filet de sécurité : un ID mal formé ne déclenche parfois ni onReady ni
+  // onError (le lecteur reste bloqué en silence) — au bout de 10s sans
+  // signal, on bascule sur le message d'erreur plutôt que de laisser
+  // tourner le spinner indéfiniment.
+  useEffect(() => {
+    if (isReady) return;
+    const timeout = setTimeout(() => setHasError(true), 10000);
+    return () => clearTimeout(timeout);
+  }, [isReady]);
+
+  useEffect(() => {
+    if (!isReady) return;
+    playerRef.current?.setVolume(volume);
+  }, [isReady, volume]);
+  useEffect(() => {
+    if (!isReady) return;
+    playerRef.current?.setMuted(muted);
+  }, [isReady, muted]);
+  useEffect(() => {
+    if (!isReady) return;
+    playerRef.current?.setPlaybackRate(playbackRate);
+  }, [isReady, playbackRate]);
 
   // Polling léger pendant la lecture — lit l'état réel du lecteur YouTube,
   // ne simule rien (contrairement à l'ancien minuteur factice).
@@ -256,17 +458,35 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
     else playerRef.current?.play();
   }
 
-  function handleSeekClick(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const ratio = (e.clientX - rect.left) / rect.width;
-    const newPos = Math.floor(ratio * teaching.durationSeconds);
-    playerRef.current?.seekTo(newPos);
-    setPositionSeconds(newPos);
-  }
-
   function seekAndDisplay(t: number) {
     playerRef.current?.seekTo(t);
     setPositionSeconds(t);
+  }
+
+  // Raccourcis clavier — actifs tant que cette page est affichée.
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (isTypingTarget(e.target)) return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        handlePlayPause();
+      } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        seekAndDisplay(Math.max(0, positionSeconds - 5));
+      } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        seekAndDisplay(Math.min(teaching.durationSeconds, positionSeconds + 5));
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying, positionSeconds, teaching.durationSeconds]);
+
+  function handleSeekClick(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    seekAndDisplay(Math.floor(ratio * teaching.durationSeconds));
   }
 
   if (!teaching.youtubeId) {
@@ -282,11 +502,27 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
   return (
     <div className="bg-[#232a20] rounded-[14px] overflow-hidden">
       <div className="relative" style={{ aspectRatio: "16/9" }}>
-        <YoutubePlayer
-          videoId={teaching.youtubeId}
-          onStateChange={handleStateChange}
-          className="absolute inset-0 w-full h-full"
-        />
+        {hasError ? (
+          <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+            <p className="font-[var(--font-hanken)] text-[13px] text-[rgba(251,249,243,0.75)]">{dict.library.errorVideo}</p>
+          </div>
+        ) : (
+          <>
+            {!isReady && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-9 h-9 border-2 border-[rgba(251,249,243,0.25)] border-t-[#b58a3c] rounded-full animate-spin" />
+                <span className="sr-only">{dict.library.loadingVideo}</span>
+              </div>
+            )}
+            <YoutubePlayer
+              videoId={teaching.youtubeId}
+              onStateChange={handleStateChange}
+              onError={() => setHasError(true)}
+              onReady={handleReady}
+              className="absolute inset-0 w-full h-full"
+            />
+          </>
+        )}
       </div>
 
       <div className="px-5 py-4 space-y-3">
@@ -300,7 +536,7 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
           lang={lang}
         />
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button type="button"
             onClick={() => seekAndDisplay(Math.max(0, positionSeconds - 15))}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
@@ -312,7 +548,7 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
 
           <button type="button"
             onClick={handlePlayPause}
-            className="w-9 h-9 rounded-full bg-[#b58a3c] flex items-center justify-center text-[#fbf9f3] hover:bg-[#9e7832] transition-colors"
+            className="w-9 h-9 rounded-full bg-[#b58a3c] flex items-center justify-center text-[#fbf9f3] hover:bg-[#9e7832] transition-colors shrink-0"
             aria-label={isPlaying ? dict.common.pause : dict.common.play}
           >
             {isPlaying ? (
@@ -328,7 +564,7 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
           </button>
 
           <button type="button"
-            onClick={() => playerRef.current?.seekTo(Math.min(teaching.durationSeconds, positionSeconds + 30))}
+            onClick={() => seekAndDisplay(Math.min(teaching.durationSeconds, positionSeconds + 30))}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
             aria-label={dict.live.forwardAria}
             dir="ltr"
@@ -336,18 +572,23 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
             +30s
           </button>
 
-          <span dir="ltr" className="ml-auto font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)]">
+          <span dir="ltr" className="font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)] shrink-0">
             {fmtTime(positionSeconds)} / {teaching.duration}
           </span>
 
-          <a
-            href={`https://www.youtube.com/watch?v=${teaching.youtubeId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] hover:text-[#cda350] transition-colors whitespace-nowrap"
-          >
-            {lang === "ar" ? "مشاهدة على يوتيوب ↗" : "Voir sur YouTube ↗"}
-          </a>
+          <div className="ml-auto flex items-center gap-3 flex-wrap">
+            <SpeedControl rate={playbackRate} onChange={setPlaybackRate} dict={dict} />
+            <VolumeControl volume={volume} muted={muted} onVolumeChange={setVolume} onToggleMute={toggleMute} dict={dict} />
+            <CopyTimestampButton positionSeconds={positionSeconds} lang={lang} />
+            <a
+              href={`https://www.youtube.com/watch?v=${teaching.youtubeId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] hover:text-[#cda350] transition-colors whitespace-nowrap"
+            >
+              {lang === "ar" ? "مشاهدة على يوتيوب ↗" : "Voir sur YouTube ↗"}
+            </a>
+          </div>
         </div>
       </div>
     </div>

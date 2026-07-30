@@ -11,14 +11,21 @@ import {
 } from "react";
 import type { Teaching, PlayerState } from "@/lib/types";
 import { useProgress } from "@/hooks/useProgress";
+import { useVolume } from "@/hooks/useVolume";
 
 interface PlayerContextValue {
   state: PlayerState;
+  volume: number;
+  muted: boolean;
+  playbackRate: number;
   play: (teaching: Teaching, startSeconds?: number) => void;
   pause: () => void;
   resume: () => void;
   seek: (seconds: number) => void;
   close: () => void;
+  setVolume: (volume: number) => void;
+  toggleMute: () => void;
+  setPlaybackRate: (rate: number) => void;
 }
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
@@ -28,13 +35,15 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     teaching: null,
     isPlaying: false,
     positionSeconds: 0,
+    hasError: false,
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { updateProgress } = useProgress();
+  const { volume, muted, playbackRate, setVolume, toggleMute, setPlaybackRate } = useVolume();
 
   const play = useCallback((teaching: Teaching, startSeconds = 0) => {
-    setState({ teaching, isPlaying: true, positionSeconds: startSeconds });
+    setState({ teaching, isPlaying: true, positionSeconds: startSeconds, hasError: false });
   }, []);
 
   const pause = useCallback(() => {
@@ -54,8 +63,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const close = useCallback(() => {
     audioRef.current?.pause();
-    setState({ teaching: null, isPlaying: false, positionSeconds: 0 });
+    setState({ teaching: null, isPlaying: false, positionSeconds: 0, hasError: false });
   }, []);
+
+  // Volume/muet/vitesse s'appliquent en continu à l'élément réel.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = volume;
+    audio.muted = muted;
+    audio.playbackRate = playbackRate;
+  }, [volume, muted, playbackRate]);
 
   // Charge le fichier réel dès qu'un enseignement audio devient l'élément actif.
   // Le ref évite de relancer .play()/réassigner .src à chaque tick de timeupdate.
@@ -72,8 +90,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     loadedTeachingIdRef.current = teaching.id;
     audio.src = teaching.audioUrl ?? "";
     audio.currentTime = state.positionSeconds;
+    audio.volume = volume;
+    audio.muted = muted;
+    audio.playbackRate = playbackRate;
     if (state.isPlaying) audio.play().catch(() => {});
-  }, [state.teaching, state.positionSeconds, state.isPlaying]);
+  }, [state.teaching, state.positionSeconds, state.isPlaying, volume, muted, playbackRate]);
 
   // Source de vérité réelle de la position : les événements du <audio>, pas un minuteur simulé.
   useEffect(() => {
@@ -90,17 +111,58 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     function handleEnded() {
       setState((prev) => ({ ...prev, isPlaying: false }));
     }
+    function handleError() {
+      if (!audio || !audio.src) return; // pas de source assignée pour l'instant, pas une vraie erreur
+      setState((prev) => ({ ...prev, isPlaying: false, hasError: true }));
+    }
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
   }, [state.teaching, updateProgress]);
 
+  // Media Session API — contrôles de l'écran verrouillé / casque sur mobile.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+    const teaching = state.teaching;
+    if (!teaching) {
+      navigator.mediaSession.metadata = null;
+      return;
+    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: teaching.title,
+      artist: "Oustaz Niang Mbaye (H.A)",
+      album: "Abu Maryam TV",
+    });
+    navigator.mediaSession.playbackState = state.isPlaying ? "playing" : "paused";
+    navigator.mediaSession.setActionHandler("play", resume);
+    navigator.mediaSession.setActionHandler("pause", pause);
+    navigator.mediaSession.setActionHandler("seekbackward", () => seek(Math.max(0, state.positionSeconds - 15)));
+    navigator.mediaSession.setActionHandler("seekforward", () =>
+      seek(Math.min(teaching.durationSeconds, state.positionSeconds + 30))
+    );
+    navigator.mediaSession.setActionHandler("seekto", (details) => {
+      if (typeof details.seekTime === "number") seek(details.seekTime);
+    });
+
+    return () => {
+      navigator.mediaSession.setActionHandler("play", null);
+      navigator.mediaSession.setActionHandler("pause", null);
+      navigator.mediaSession.setActionHandler("seekbackward", null);
+      navigator.mediaSession.setActionHandler("seekforward", null);
+      navigator.mediaSession.setActionHandler("seekto", null);
+    };
+  }, [state.teaching, state.isPlaying, state.positionSeconds, pause, resume, seek]);
+
   return (
-    <PlayerContext.Provider value={{ state, play, pause, resume, seek, close }}>
+    <PlayerContext.Provider
+      value={{ state, volume, muted, playbackRate, play, pause, resume, seek, close, setVolume, toggleMute, setPlaybackRate }}
+    >
       {children}
       {/* Toujours monté (pas conditionné à un teaching actif) pour que audioRef soit stable dès le premier play(). */}
       <audio ref={audioRef} className="hidden" />

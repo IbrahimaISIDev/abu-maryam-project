@@ -185,6 +185,14 @@ export interface Dictionary {
     yourProgress: string;
     seekAria: string;
     chaptersAria: string;
+    volumeAria: string;
+    muteAria: string;
+    unmuteAria: string;
+    speedAria: string;
+    errorAudio: string;
+    errorVideo: string;
+    retry: string;
+    loadingVideo: string;
   };
   footer: {
     tagline: string;

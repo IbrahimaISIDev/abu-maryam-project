@@ -148,6 +148,7 @@ export interface PlayerState {
   teaching: Teaching | null;
   isPlaying: boolean;
   positionSeconds: number;
+  hasError: boolean;
 }
 
 export interface Registration {

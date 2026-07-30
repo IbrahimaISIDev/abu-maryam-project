@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "@/components/ui/LocalizedLink";
 import Navbar from "@/components/layout/Navbar";
@@ -118,7 +119,9 @@ export default async function TeachingDetailPage({
             {/* Colonne principale */}
             <div className="space-y-6">
               {/* Player */}
-              <TeachingPlayer teaching={teaching} dict={dict} lang={lang} />
+              <Suspense fallback={<div className="bg-[#232a20] rounded-[14px]" style={{ aspectRatio: "16/9" }} />}>
+                <TeachingPlayer teaching={teaching} dict={dict} lang={lang} />
+              </Suspense>
 
               {/* Infos */}
               <div>
