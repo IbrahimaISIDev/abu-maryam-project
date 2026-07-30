@@ -25,6 +25,8 @@ const levelColor: Record<string, string> = {
   avancé: "text-[#8a2f29] bg-[rgba(138,47,41,0.08)]",
 };
 
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const teachings = await getAllTeachings();
   return teachings.map((t) => ({ id: t.id }));

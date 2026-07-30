@@ -12,6 +12,8 @@ import { formatStartedAgo } from "@/lib/format";
 import { getLiveStatusTitle, getLiveStatusDescription } from "@/lib/content-i18n";
 import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
+export const revalidate = 30;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
   const alternates = buildLanguageAlternates(lang, "/en-direct");

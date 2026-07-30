@@ -14,6 +14,8 @@ import { getDictionary } from "@/dictionaries";
 import { getAllTeachings } from "@/lib/db/queries";
 import type { Locale } from "@/lib/i18n";
 
+export const revalidate = 60;
+
 export default async function HomePage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);

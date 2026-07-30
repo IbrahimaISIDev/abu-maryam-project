@@ -9,6 +9,8 @@ import { getAllTeachings, getAllSeries } from "@/lib/db/queries";
 import { getDictionary } from "@/dictionaries";
 import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
   const alternates = buildLanguageAlternates(lang, "/bibliotheque");
