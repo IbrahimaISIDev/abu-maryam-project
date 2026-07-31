@@ -201,6 +201,7 @@ export interface Dictionary {
     tagline: string;
     quickLinks: string;
     followUs: string;
+    podcast: string;
   };
   notFound: {
     badge: string;

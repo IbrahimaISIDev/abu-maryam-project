@@ -47,7 +47,12 @@ export async function generateMetadata({
     description,
     keywords,
     authors: [{ name: "Oustaz Niang Mbaye (H.A)" }],
-    alternates: isLocale(lang) ? buildLanguageAlternates(lang, "") : undefined,
+    alternates: isLocale(lang)
+      ? {
+          ...buildLanguageAlternates(lang, ""),
+          types: { "application/rss+xml": `${SITE_URL}/podcast.xml` },
+        }
+      : undefined,
     openGraph: {
       type: "website",
       locale: ogLocale,

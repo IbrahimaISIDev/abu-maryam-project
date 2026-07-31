@@ -204,6 +204,7 @@ const fr: Dictionary = {
     tagline: "Le savoir islamique authentique, accessible à tous, en wolof et en arabe.",
     quickLinks: "Liens rapides",
     followUs: "Suivez-nous",
+    podcast: "S'abonner au podcast",
   },
   notFound: {
     badge: "Erreur 404",

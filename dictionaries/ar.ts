@@ -204,6 +204,7 @@ const ar: Dictionary = {
     tagline: "العلم الشرعي الأصيل، في متناول الجميع، بالولوف والعربية.",
     quickLinks: "روابط سريعة",
     followUs: "تابعونا",
+    podcast: "الاشتراك في البودكاست",
   },
   notFound: {
     badge: "خطأ 404",

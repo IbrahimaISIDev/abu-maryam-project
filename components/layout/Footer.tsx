@@ -74,6 +74,15 @@ export default function Footer() {
                   </a>
                 </li>
               ))}
+              <li>
+                <a
+                  href="/podcast.xml"
+                  className="flex items-center justify-center md:justify-start gap-2.5 font-[var(--font-hanken)] text-[13.5px] text-[#3f463a] dark:text-[#d8d4c4] hover:text-[#b58a3c] dark:hover:text-[#e3c685] transition-colors"
+                >
+                  <SocialIcon id="rss" className="w-4 h-4 shrink-0" />
+                  {dict.footer.podcast}
+                </a>
+              </li>
             </ul>
           </div>
         </div>

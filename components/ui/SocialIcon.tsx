@@ -1,12 +1,20 @@
 import type { SocialLink } from "@/data/socials";
 
 interface SocialIconProps {
-  id: SocialLink["id"];
+  id: SocialLink["id"] | "rss";
   className?: string;
 }
 
 export default function SocialIcon({ id, className = "" }: SocialIconProps) {
   switch (id) {
+    case "rss":
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="4.5" cy="19.5" r="2.25" />
+          <path d="M2 8.667v3.333c6.443 0 11.667 5.223 11.667 11.667H17c0-8.284-6.716-15-15-15z" />
+          <path d="M2 2v3.333c9.665 0 17.5 7.835 17.5 17.5H22.833C22.833 10.94 13.06 2 2 2z" />
+        </svg>
+      );
     case "telegram":
     case "telegram-group":
       return (
