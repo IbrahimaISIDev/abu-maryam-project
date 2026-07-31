@@ -103,6 +103,23 @@ export default function EnseignementsPage() {
       })
     : filtered;
 
+  async function handleQuickPublishToggle(t: Teaching) {
+    const nextPublished = t.published === false ? true : false;
+    setItems((prev) => prev.map((it) => (it.id === t.id ? { ...it, published: nextPublished } : it)));
+    try {
+      const res = await fetch(apiRoutes.teaching(t.id), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...t, published: nextPublished }),
+      });
+      if (!res.ok) throw new Error();
+      toast(nextPublished ? "Enseignement publié" : "Passé en brouillon", "success");
+    } catch {
+      setItems((prev) => prev.map((it) => (it.id === t.id ? { ...it, published: t.published } : it)));
+      toast("Échec de la mise à jour", "error");
+    }
+  }
+
   async function handleDelete() {
     const id = deleteId;
     if (!id) return;
@@ -272,13 +289,19 @@ export default function EnseignementsPage() {
                     <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 text-[12px] ${t.type === "video" ? "bg-[#3c4a37] text-[#cda350]" : "bg-[rgba(181,138,60,0.12)] text-[#b58a3c]"}`}>
                       {t.type === "video" ? "▶" : "♪"}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex items-center gap-2">
                       <span className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#232a20] line-clamp-1">{t.title}</span>
-                      {t.published === false && (
-                        <span className="ml-2 text-[10px] font-semibold font-[var(--font-hanken)] px-1.5 py-0.5 rounded bg-[rgba(154,148,131,0.2)] text-[#9a9483]">
-                          Brouillon
-                        </span>
-                      )}
+                      <button
+                        onClick={() => handleQuickPublishToggle(t)}
+                        title={t.published === false ? "Publier" : "Repasser en brouillon"}
+                        className={`shrink-0 text-[10px] font-semibold font-[var(--font-hanken)] px-1.5 py-0.5 rounded transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c] ${
+                          t.published === false
+                            ? "bg-[rgba(154,148,131,0.2)] text-[#9a9483] hover:bg-[rgba(154,148,131,0.32)]"
+                            : "bg-[rgba(60,74,55,0.1)] text-[#3c4a37] hover:bg-[rgba(60,74,55,0.18)]"
+                        }`}
+                      >
+                        {t.published === false ? "Brouillon" : "Publié"}
+                      </button>
                     </div>
                   </div>
                 </td>
@@ -291,14 +314,22 @@ export default function EnseignementsPage() {
                 <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] tabular-nums text-[#6f7363]">{t.duration}</td>
                 <td className="px-4 py-3.5 hidden xl:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363] capitalize">{t.language}</td>
                 <td className="px-5 py-3.5 text-right">
-                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center justify-end gap-1.5">
                     <button onClick={() => openEdit(t)}
-                      className="px-3 py-1.5 text-[12px] font-[var(--font-hanken)] font-medium text-[#b58a3c] hover:text-[#9e7832] border border-[#e2dac9] hover:border-[#b58a3c] rounded-[7px] transition-colors">
-                      Modifier
+                      aria-label="Modifier"
+                      title="Modifier"
+                      className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#b58a3c] hover:bg-[rgba(181,138,60,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c]">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                      </svg>
                     </button>
                     <button onClick={() => setDeleteId(t.id)}
-                      className="px-3 py-1.5 text-[12px] font-[var(--font-hanken)] font-medium text-[#8a2f29] hover:text-[#6e2520] border border-[#e2dac9] hover:border-[#8a2f29] rounded-[7px] transition-colors">
-                      Supprimer
+                      aria-label="Supprimer"
+                      title="Supprimer"
+                      className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#8a2f29] hover:bg-[rgba(138,47,41,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8a2f29]">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
                     </button>
                   </div>
                 </td>
