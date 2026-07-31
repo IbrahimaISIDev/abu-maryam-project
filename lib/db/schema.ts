@@ -69,8 +69,10 @@ export const teachings = pgTable("teachings", {
   duration: text("duration").notNull(),
   durationSeconds: integer("duration_seconds").notNull().default(0),
   thumbnail: text("thumbnail"),
-  // Exactement un des deux selon `type` — remplace l'ancien `mediaUrl` ambigu.
+  // Vidéo : `youtubeId` (hébergement YouTube) OU `videoUrl` (fichier auto-hébergé,
+  // typiquement R2 — voir lib/r2.ts) selon le choix fait à la création. Audio : `audioUrl` seul.
   youtubeId: text("youtube_id"),
+  videoUrl: text("video_url"),
   audioUrl: text("audio_url"),
   publishedAt: timestamp("published_at").notNull().defaultNow(),
   published: boolean("published").notNull().default(true),

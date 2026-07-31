@@ -19,7 +19,7 @@ type SortKey = "title" | "type" | "theme" | "duration" | "language";
 
 const EMPTY_TEACHING: Omit<Teaching, "id"> = {
   title: "", type: "video", theme: "tafsir", language: "wolof",
-  duration: "", durationSeconds: 0, thumbnail: null, youtubeId: null, audioUrl: null,
+  duration: "", durationSeconds: 0, thumbnail: null, youtubeId: null, videoUrl: null, audioUrl: null,
   publishedAt: new Date().toISOString().slice(0, 10),
 };
 

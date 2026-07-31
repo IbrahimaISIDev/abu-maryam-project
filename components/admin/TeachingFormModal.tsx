@@ -6,6 +6,7 @@ import { parseTimeToSeconds, formatDurationString, buildYoutubeThumbnailUrl } fr
 import { useToast } from "@/contexts/ToastContext";
 import { apiRoutes } from "@/lib/api-routes";
 import Modal from "@/components/ui/Modal";
+import MediaUploader from "@/components/admin/MediaUploader";
 
 const THEME_LABELS: Record<Theme, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
@@ -54,6 +55,10 @@ export default function TeachingFormModal({
   const [youtubeUrlInput, setYoutubeUrlInput] = useState("");
   const [resolving, setResolving] = useState(false);
   const [resolvedTitle, setResolvedTitle] = useState<string | null>(null);
+  const [videoSource, setVideoSource] = useState<"youtube" | "upload">(() =>
+    editItem?.videoUrl && !editItem?.youtubeId ? "upload" : "youtube"
+  );
+  const [showAudioUrlField, setShowAudioUrlField] = useState(false);
 
   if (!editItem) return null;
 
@@ -156,59 +161,105 @@ export default function TeachingFormModal({
           </div>
         </div>
 
-        {/* Média — YouTube pour la vidéo, URL directe pour l'audio */}
+        {/* Média — vidéo : YouTube ou fichier direct ; audio : envoi de fichier */}
         {editItem.type === "video" ? (
           <div className="bg-[#f5f1e8] rounded-[9px] p-4 space-y-3">
-            <FieldLabel>Vidéo YouTube</FieldLabel>
-            <div className="flex gap-2">
-              <input
-                value={youtubeUrlInput}
-                onChange={(e) => setYoutubeUrlInput(e.target.value)}
-                placeholder="URL YouTube ou ID (ex : https://youtube.com/watch?v=…)"
-                className={`${inputClass} bg-[#fbf9f3]`}
-              />
-              <button type="button"
-                onClick={handleResolveYoutube}
-                disabled={resolving || !youtubeUrlInput.trim()}
-                className="shrink-0 px-4 py-2.5 bg-[#3c4a37] hover:bg-[#2d3829] disabled:opacity-50 disabled:cursor-not-allowed text-[#fbf9f3] rounded-[9px] font-[var(--font-hanken)] text-[13px] font-semibold transition-colors whitespace-nowrap"
-              >
-                {resolving ? "Recherche…" : "Récupérer les infos"}
-              </button>
+            <div className="flex items-center gap-1 bg-[#e9e3d4] rounded-full p-1 w-fit">
+              {(["youtube", "upload"] as const).map((src) => (
+                <button
+                  key={src}
+                  type="button"
+                  onClick={() => {
+                    setVideoSource(src);
+                    if (src === "youtube") onChange({ ...editItem, videoUrl: null });
+                    else onChange({ ...editItem, youtubeId: null });
+                  }}
+                  className={`px-4 py-1.5 rounded-full font-[var(--font-hanken)] text-[12.5px] font-medium transition-colors ${
+                    videoSource === src
+                      ? "bg-[#fbf9f3] text-[#232a20] shadow-sm"
+                      : "text-[#6f7363] hover:text-[#3f463a]"
+                  }`}
+                >
+                  {src === "youtube" ? "YouTube" : "Fichier direct"}
+                </button>
+              ))}
             </div>
-            {editItem.youtubeId && (
-              <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={buildYoutubeThumbnailUrl(editItem.youtubeId, "mqdefault")}
-                  alt=""
-                  className="w-[100px] h-[56px] object-cover rounded-[6px] border border-[#d8d0bf]"
-                />
-                <div className="min-w-0">
-                  <p className="font-[var(--font-hanken)] text-[12px] text-[#3f463a] font-medium truncate">
-                    ID : <span dir="ltr">{editItem.youtubeId}</span>
-                  </p>
-                  {resolvedTitle && (
-                    <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] truncate">
-                      Titre YouTube : {resolvedTitle}
-                    </p>
-                  )}
+
+            {videoSource === "youtube" ? (
+              <>
+                <div className="flex gap-2">
+                  <input
+                    value={youtubeUrlInput}
+                    onChange={(e) => setYoutubeUrlInput(e.target.value)}
+                    placeholder="URL YouTube ou ID (ex : https://youtube.com/watch?v=…)"
+                    className={`${inputClass} bg-[#fbf9f3]`}
+                  />
+                  <button type="button"
+                    onClick={handleResolveYoutube}
+                    disabled={resolving || !youtubeUrlInput.trim()}
+                    className="shrink-0 px-4 py-2.5 bg-[#3c4a37] hover:bg-[#2d3829] disabled:opacity-50 disabled:cursor-not-allowed text-[#fbf9f3] rounded-[9px] font-[var(--font-hanken)] text-[13px] font-semibold transition-colors whitespace-nowrap"
+                  >
+                    {resolving ? "Recherche…" : "Récupérer les infos"}
+                  </button>
                 </div>
+                {editItem.youtubeId && (
+                  <div className="flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={buildYoutubeThumbnailUrl(editItem.youtubeId, "mqdefault")}
+                      alt=""
+                      className="w-[100px] h-[56px] object-cover rounded-[6px] border border-[#d8d0bf]"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-[var(--font-hanken)] text-[12px] text-[#3f463a] font-medium truncate">
+                        ID : <span dir="ltr">{editItem.youtubeId}</span>
+                      </p>
+                      {resolvedTitle && (
+                        <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] truncate">
+                          Titre YouTube : {resolvedTitle}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div>
+                <MediaUploader
+                  kind="video"
+                  currentUrl={editItem.videoUrl}
+                  onUploaded={(url) => onChange({ ...editItem, videoUrl: url })}
+                />
+                <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mt-1.5">
+                  Pour une vidéo à accès restreint ou non destinée à YouTube — hébergée directement sur la plateforme.
+                </p>
               </div>
             )}
           </div>
         ) : (
           <div>
-            <FieldLabel>URL du fichier audio</FieldLabel>
-            <input
-              value={editItem.audioUrl ?? ""}
-              onChange={(e) => onChange({ ...editItem, audioUrl: e.target.value || null })}
-              placeholder="https://…"
-              dir="ltr"
-              className={inputClass}
+            <FieldLabel>Fichier audio</FieldLabel>
+            <MediaUploader
+              kind="audio"
+              currentUrl={editItem.audioUrl}
+              onUploaded={(url) => onChange({ ...editItem, audioUrl: url })}
             />
-            <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mt-1.5">
-              Coller le lien direct vers le fichier audio déjà hébergé (l&apos;envoi de fichier depuis cette page arrivera bientôt).
-            </p>
+            <button
+              type="button"
+              onClick={() => setShowAudioUrlField((v) => !v)}
+              className="mt-2 font-[var(--font-hanken)] text-[11.5px] font-medium text-[#b58a3c] hover:text-[#9e7832] transition-colors"
+            >
+              {showAudioUrlField ? "Masquer" : "Ou coller un lien déjà hébergé"}
+            </button>
+            {showAudioUrlField && (
+              <input
+                value={editItem.audioUrl ?? ""}
+                onChange={(e) => onChange({ ...editItem, audioUrl: e.target.value || null })}
+                placeholder="https://…"
+                dir="ltr"
+                className={`${inputClass} mt-2`}
+              />
+            )}
           </div>
         )}
 

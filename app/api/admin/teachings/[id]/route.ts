@@ -31,6 +31,7 @@ const teachingUpdateSchema = z.object({
   durationSeconds: z.number().int().min(0).optional(),
   thumbnail: z.string().nullable().optional(),
   youtubeId: z.string().nullable().optional(),
+  videoUrl: z.string().nullable().optional(),
   audioUrl: z.string().nullable().optional(),
   publishedAt: z.coerce.date().optional(),
   published: z.boolean().optional(),

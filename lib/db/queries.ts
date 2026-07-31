@@ -15,6 +15,7 @@ function toTeaching(row: typeof teachings.$inferSelect): Teaching {
     durationSeconds: row.durationSeconds,
     thumbnail: row.thumbnail,
     youtubeId: row.youtubeId,
+    videoUrl: row.videoUrl,
     audioUrl: row.audioUrl,
     publishedAt: row.publishedAt.toISOString().slice(0, 10),
     published: row.published,

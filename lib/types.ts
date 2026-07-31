@@ -32,7 +32,8 @@ export interface Teaching {
   duration: string;          // "1:12:04"
   durationSeconds: number;   // pour la progression
   thumbnail: string | null;
-  youtubeId: string | null;  // pour type "video"
+  youtubeId: string | null;  // pour type "video" hébergé sur YouTube
+  videoUrl: string | null;   // pour type "video" auto-hébergé (R2)
   audioUrl: string | null;   // pour type "audio"
   publishedAt: string;       // ISO date string
   published?: boolean;       // true = visible public, false = brouillon

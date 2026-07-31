@@ -6,6 +6,7 @@ import { usePlayer } from "@/contexts/PlayerContext";
 import { useProgress } from "@/hooks/useProgress";
 import { useVolume } from "@/hooks/useVolume";
 import YoutubePlayer, { type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
+import NativeVideoPlayer from "@/components/player/NativeVideoPlayer";
 import { YT_PLAYER_STATE } from "@/hooks/useYoutubePlayer";
 import type { Teaching } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
@@ -490,7 +491,7 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
     seekAndDisplay(Math.floor(ratio * teaching.durationSeconds));
   }
 
-  if (!teaching.youtubeId) {
+  if (!teaching.youtubeId && !teaching.videoUrl) {
     return (
       <div className="bg-[#232a20] rounded-[14px] overflow-hidden flex items-center justify-center" style={{ aspectRatio: "16/9" }}>
         <p className="font-[var(--font-hanken)] text-[13px] text-[rgba(251,249,243,0.6)]">
@@ -515,14 +516,25 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
                 <span className="sr-only">{dict.library.loadingVideo}</span>
               </div>
             )}
-            <YoutubePlayer
-              ref={playerRef}
-              videoId={teaching.youtubeId}
-              onStateChange={handleStateChange}
-              onError={() => setHasError(true)}
-              onReady={handleReady}
-              className="absolute inset-0 w-full h-full"
-            />
+            {teaching.youtubeId ? (
+              <YoutubePlayer
+                ref={playerRef}
+                videoId={teaching.youtubeId}
+                onStateChange={handleStateChange}
+                onError={() => setHasError(true)}
+                onReady={handleReady}
+                className="absolute inset-0 w-full h-full"
+              />
+            ) : (
+              <NativeVideoPlayer
+                ref={playerRef}
+                src={teaching.videoUrl!}
+                onStateChange={handleStateChange}
+                onError={() => setHasError(true)}
+                onReady={handleReady}
+                className="absolute inset-0 w-full h-full object-contain bg-black"
+              />
+            )}
           </>
         )}
       </div>
@@ -582,14 +594,16 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
             <SpeedControl rate={playbackRate} onChange={setPlaybackRate} dict={dict} />
             <VolumeControl volume={volume} muted={muted} onVolumeChange={setVolume} onToggleMute={toggleMute} dict={dict} />
             <CopyTimestampButton positionSeconds={positionSeconds} lang={lang} />
-            <a
-              href={buildYoutubeWatchUrl(teaching.youtubeId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] hover:text-[#cda350] transition-colors whitespace-nowrap"
-            >
-              {lang === "ar" ? "مشاهدة على يوتيوب ↗" : "Voir sur YouTube ↗"}
-            </a>
+            {teaching.youtubeId && (
+              <a
+                href={buildYoutubeWatchUrl(teaching.youtubeId)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] hover:text-[#cda350] transition-colors whitespace-nowrap"
+              >
+                {lang === "ar" ? "مشاهدة على يوتيوب ↗" : "Voir sur YouTube ↗"}
+              </a>
+            )}
           </div>
         </div>
       </div>

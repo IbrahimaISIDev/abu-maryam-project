@@ -31,6 +31,7 @@ export const apiRoutes = {
   registration: (id: string) => `${API_BASE}/api/admin/registrations/${id}`,
 
   youtubeResolve: () => `${API_BASE}/api/admin/youtube/resolve`,
+  mediaPresign: () => `${API_BASE}/api/admin/media/presign`,
 
   adminProfile: () => `${API_BASE}/api/admin/profile`,
   adminPassword: () => `${API_BASE}/api/admin/password`,
