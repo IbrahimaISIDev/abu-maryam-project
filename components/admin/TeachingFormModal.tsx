@@ -265,7 +265,17 @@ export default function TeachingFormModal({
 
         <div>
           <FieldLabel>Durée (ex : 1:12:04)</FieldLabel>
-          <input value={editItem.duration} onChange={(e) => onChange({ ...editItem, duration: e.target.value })}
+          <input
+            value={editItem.duration}
+            onChange={(e) => {
+              const duration = e.target.value;
+              const durationSeconds = parseTimeToSeconds(duration);
+              onChange({
+                ...editItem,
+                duration,
+                ...(durationSeconds !== null ? { durationSeconds } : {}),
+              });
+            }}
             placeholder="0:00:00"
             dir="ltr"
             className={inputClass}
