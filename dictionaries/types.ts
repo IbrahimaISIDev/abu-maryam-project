@@ -209,4 +209,11 @@ export interface Dictionary {
     message: string;
     backHome: string;
   };
+  errorBoundary: {
+    badge: string;
+    title: string;
+    message: string;
+    retry: string;
+    backHome: string;
+  };
 }

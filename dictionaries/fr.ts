@@ -212,6 +212,13 @@ const fr: Dictionary = {
     message: "Le lien suivi est peut-être ancien, ou l'adresse a été mal saisie. Vous pouvez retourner à l'accueil ou explorer la bibliothèque des enseignements.",
     backHome: "Retour à l'accueil",
   },
+  errorBoundary: {
+    badge: "Une erreur est survenue",
+    title: "Quelque chose s'est mal passé",
+    message: "La page n'a pas pu s'afficher correctement. Vous pouvez réessayer, ou retourner à l'accueil.",
+    retry: "Réessayer",
+    backHome: "Retour à l'accueil",
+  },
 };
 
 export default fr;
