@@ -5,7 +5,7 @@ import type { Dictionary } from "@/dictionaries/types";
 
 export default function Hero({ dict }: { dict: Dictionary["home"] }) {
   return (
-    <section className="relative h-[400px] md:h-[560px] overflow-hidden">
+    <section className="relative min-h-[400px] md:min-h-[560px] overflow-hidden">
       {/* Image de fond */}
       <Image
         src="/images/oustaz-niang-mbaye1.jpeg"
@@ -30,7 +30,7 @@ export default function Hero({ dict }: { dict: Dictionary["home"] }) {
       />
 
       {/* Contenu */}
-      <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-10">
+      <div className="relative z-10 flex flex-col justify-center px-6 md:px-10 py-10 md:py-0 md:h-full">
         <div className="max-w-[760px]">
           {/* Badge */}
           <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(205,163,80,0.4)] bg-[rgba(181,138,60,0.16)]">
