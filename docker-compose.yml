@@ -1,5 +1,5 @@
 services:
-  app:
+  abu-maryam-tv:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,14 +9,10 @@ services:
     image: abu-maryam-tv
     container_name: abu-maryam-tv
     restart: unless-stopped
-    # Les secrets de production sont injectés via le fichier .env.production
-    # (non versionné — copié manuellement sur le serveur)
     env_file:
       - .env.production
     networks:
-      shaolin_web:
-        aliases:
-          - abu-maryam-tv
+      - shaolin_web
 
 networks:
   shaolin_web:
