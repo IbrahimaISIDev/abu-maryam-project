@@ -22,7 +22,10 @@ export async function GET() {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
   const [row] = await db.select().from(liveStatus).where(eq(liveStatus.id, "singleton"));
-  return NextResponse.json({ liveStatus: row ?? null });
+  return NextResponse.json({
+    liveStatus: row ?? null,
+    youtubeApiKeyConfigured: Boolean(process.env.YOUTUBE_API_KEY),
+  });
 }
 
 export async function PUT(req: Request) {

@@ -13,13 +13,16 @@ export default function DirectAdminPage() {
   const [liveTitle, setLiveTitle] = useState("");
   const [channelId, setChannelId] = useState("");
   const [isDirty, setIsDirty] = useState(false);
+  const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     fetch(apiRoutes.live())
       .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data: { liveStatus: LiveStatus | null }) => {
-        if (cancelled || !data.liveStatus) return;
+      .then((data: { liveStatus: LiveStatus | null; youtubeApiKeyConfigured: boolean }) => {
+        if (cancelled) return;
+        setApiKeyConfigured(data.youtubeApiKeyConfigured);
+        if (!data.liveStatus) return;
         setIsLive(data.liveStatus.isLive);
         setLiveTitle(data.liveStatus.title ?? "");
         setChannelId(data.liveStatus.youtubeChannelId ?? "");
@@ -68,13 +71,38 @@ export default function DirectAdminPage() {
       </div>
 
       <div className="max-w-[560px] space-y-5">
+        {/* Statut de la détection automatique */}
+        {channelId && apiKeyConfigured ? (
+          <div className="flex items-start gap-2.5 px-4 py-3 bg-[rgba(60,74,55,0.08)] border border-[rgba(60,74,55,0.2)] rounded-[10px]">
+            <span className="w-2 h-2 mt-1 rounded-full bg-[#3c4a37] shrink-0" />
+            <p className="font-[var(--font-hanken)] text-[12.5px] text-[#3c4a37] leading-relaxed">
+              <strong>Détection automatique active.</strong> Le site vérifie lui-même si la chaîne
+              diffuse (toutes les ~30 min) et met à jour le bandeau « En direct » sans action de
+              votre part. Le statut ci-dessous ne sert que de repli si la vérification échoue.
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-start gap-2.5 px-4 py-3 bg-[rgba(181,138,60,0.1)] border border-[rgba(181,138,60,0.3)] rounded-[10px]">
+            <span className="w-2 h-2 mt-1 rounded-full bg-[#b58a3c] shrink-0" />
+            <p className="font-[var(--font-hanken)] text-[12.5px] text-[#7a5a26] leading-relaxed">
+              <strong>Bascule manuelle.</strong>{" "}
+              {!channelId
+                ? "Renseignez l'ID de la chaîne YouTube ci-dessous pour activer la détection automatique."
+                : "YOUTUBE_API_KEY n'est pas configurée sur le serveur — voir GUIDE_YOUTUBE_API_KEY.md."}{" "}
+              En attendant, le statut ci-dessous est celui affiché sur le site.
+            </p>
+          </div>
+        )}
+
         {/* Statut live */}
         <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20] mb-0.5">Statut du direct</h2>
               <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483]">
-                Activer affiche le bandeau &quot;En direct&quot; sur la plateforme
+                {channelId && apiKeyConfigured
+                  ? "Repli manuel — ignoré tant que la détection automatique fonctionne"
+                  : "Activer affiche le bandeau \"En direct\" sur la plateforme"}
               </p>
             </div>
             <button

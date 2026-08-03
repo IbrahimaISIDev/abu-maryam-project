@@ -58,6 +58,7 @@ export interface LiveStatus {
   streamUrl: string | null;
   youtubeChannelId: string | null;
   startedAt: string | null;
+  startedMinutesAgo: number | null;
   hostName: string;
   description: string;
 }

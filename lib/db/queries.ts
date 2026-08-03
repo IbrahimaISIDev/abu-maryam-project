@@ -3,6 +3,7 @@ import { eq, and, ne, asc, desc, sql } from "drizzle-orm";
 import { db } from "./client";
 import { teachings, series, agendaItems, liveStatus, seminars, replays, registrations } from "./schema";
 import type { Teaching, Series, AgendaItem, LiveStatus, Replay, Seminar, Registration, Theme } from "@/lib/types";
+import { fetchYoutubeLiveStatus, buildYoutubeWatchUrl } from "@/lib/youtube";
 
 function toTeaching(row: typeof teachings.$inferSelect): Teaching {
   return {
@@ -58,6 +59,7 @@ function toAgendaItem(row: typeof agendaItems.$inferSelect): AgendaItem {
 }
 
 function toLiveStatus(row: typeof liveStatus.$inferSelect): LiveStatus {
+  const startedAt = row.startedAt?.toISOString() ?? null;
   return {
     isLive: row.isLive,
     title: row.title,
@@ -65,10 +67,17 @@ function toLiveStatus(row: typeof liveStatus.$inferSelect): LiveStatus {
     viewers: row.viewers,
     streamUrl: row.streamUrl,
     youtubeChannelId: row.youtubeChannelId,
-    startedAt: row.startedAt?.toISOString() ?? null,
+    startedAt,
+    startedMinutesAgo: minutesSince(startedAt),
     hostName: row.hostName,
     description: row.description,
   };
+}
+
+/** Calcul dérivé côté requêtes (pas dans un composant) — voir `toReplay` pour le même principe avec `daysAgo`. */
+function minutesSince(iso: string | null): number | null {
+  if (!iso) return null;
+  return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000));
 }
 
 function toSeminar(row: typeof seminars.$inferSelect): Seminar {
@@ -176,22 +185,47 @@ export const getThemeCounts = cache(async (): Promise<Partial<Record<Theme, numb
   return map;
 });
 
+/**
+ * Statut « en direct » effectif. La ligne en base (via /admin/direct) reste la source des
+ * champs éditoriaux (hôte, verset, description) et sert de repli manuel pour `isLive` —
+ * mais si un youtubeChannelId est renseigné et que YOUTUBE_API_KEY est configurée, le
+ * statut réel (live ou non, titre, spectateurs, heure de début) est vérifié auprès de
+ * YouTube et prend le dessus. En cas de clé absente ou d'erreur réseau, on retombe
+ * silencieusement sur le toggle manuel — jamais de page cassée pour ça.
+ */
 export const getLiveStatus = cache(async (): Promise<LiveStatus> => {
   const [row] = await db.select().from(liveStatus).where(eq(liveStatus.id, "singleton"));
-  if (!row) {
-    return {
-      isLive: false,
-      title: "",
-      arabicVerse: "",
-      viewers: 0,
-      streamUrl: null,
-      youtubeChannelId: null,
-      startedAt: null,
-      hostName: "",
-      description: "",
-    };
-  }
-  return toLiveStatus(row);
+  const manual: LiveStatus = row
+    ? toLiveStatus(row)
+    : {
+        isLive: false,
+        title: "",
+        arabicVerse: "",
+        viewers: 0,
+        streamUrl: null,
+        youtubeChannelId: null,
+        startedAt: null,
+        startedMinutesAgo: null,
+        hostName: "",
+        description: "",
+      };
+
+  if (!manual.youtubeChannelId) return manual;
+
+  const live = await fetchYoutubeLiveStatus(manual.youtubeChannelId);
+  if (!live) return manual; // clé absente ou vérification impossible — repli manuel
+  if (!live.isLive) return { ...manual, isLive: false };
+
+  const startedAt = live.startedAt ? live.startedAt.toISOString() : manual.startedAt;
+  return {
+    ...manual,
+    isLive: true,
+    title: live.title || manual.title,
+    viewers: live.viewers ?? manual.viewers,
+    startedAt,
+    startedMinutesAgo: minutesSince(startedAt),
+    streamUrl: live.videoId ? buildYoutubeWatchUrl(live.videoId) : manual.streamUrl,
+  };
 });
 
 export const getReplays = cache(async (): Promise<Replay[]> => {

@@ -105,3 +105,56 @@ export async function fetchYoutubeDuration(id: string): Promise<YoutubeDurationR
   const durationSeconds = parseIsoDuration(iso);
   return { duration: formatDurationString(durationSeconds), durationSeconds };
 }
+
+export interface YoutubeLiveCheckResult {
+  isLive: boolean;
+  videoId?: string;
+  title?: string;
+  viewers?: number;
+  startedAt?: Date;
+}
+
+/**
+ * Détecte si une chaîne diffuse actuellement en direct, via la Data API v3.
+ * Nécessite YOUTUBE_API_KEY — retourne `null` (pas `{isLive:false}`) si la clé est
+ * absente ou si l'appel échoue, pour que l'appelant puisse distinguer « pas de live »
+ * de « impossible de vérifier » et se replier sur un statut géré manuellement.
+ *
+ * `search.list` (eventType=live) coûte 100 unités sur les 10 000/jour du quota gratuit
+ * par défaut — avec un cache de 30 min (`next.revalidate`), au pire 48 appels/jour
+ * (4 800 unités), qui laisse de la marge pour le reste (résolution vidéo à la volée
+ * dans l'admin). Un live met donc jusqu'à ~30 min à apparaître automatiquement sur le
+ * site après son démarrage réel — pour un live hebdomadaire programmé, c'est un bon
+ * compromis ; réduire `revalidate` consomme le quota plus vite en échange de plus de
+ * réactivité.
+ */
+export async function fetchYoutubeLiveStatus(channelId: string): Promise<YoutubeLiveCheckResult | null> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`;
+    const searchRes = await fetch(searchUrl, { next: { revalidate: 1800 } });
+    if (!searchRes.ok) return null;
+    const searchData = await searchRes.json();
+    const videoId: string | undefined = searchData.items?.[0]?.id?.videoId;
+    if (!videoId) return { isLive: false };
+
+    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${videoId}&key=${apiKey}`;
+    const detailsRes = await fetch(detailsUrl, { next: { revalidate: 1800 } });
+    if (!detailsRes.ok) return { isLive: true, videoId };
+    const detailsData = await detailsRes.json();
+    const video = detailsData.items?.[0];
+    const streaming = video?.liveStreamingDetails;
+
+    return {
+      isLive: true,
+      videoId,
+      title: video?.snippet?.title,
+      viewers: streaming?.concurrentViewers !== undefined ? Number(streaming.concurrentViewers) : undefined,
+      startedAt: streaming?.actualStartTime ? new Date(streaming.actualStartTime) : undefined,
+    };
+  } catch {
+    return null;
+  }
+}

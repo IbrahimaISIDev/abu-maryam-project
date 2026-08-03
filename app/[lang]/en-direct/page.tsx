@@ -84,9 +84,11 @@ export default async function EnDirectPage({ params }: { params: Promise<{ lang:
                     <p className="font-[var(--font-hanken)] font-semibold text-[14px] text-[#232a20] dark:text-[#f2ede0]">
                       {liveStatus.hostName}
                     </p>
-                    <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] dark:text-[#8f8973]">
-                      {formatStartedAgo(32, lang)}
-                    </p>
+                    {liveStatus.isLive && liveStatus.startedMinutesAgo !== null && (
+                      <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] dark:text-[#8f8973]">
+                        {formatStartedAgo(liveStatus.startedMinutesAgo, lang)}
+                      </p>
+                    )}
                   </div>
                 </div>
 
