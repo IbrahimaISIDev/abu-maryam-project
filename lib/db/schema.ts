@@ -41,6 +41,11 @@ export const registrationStatusEnum = pgEnum("registration_status", [
 ]);
 export const paymentStatusEnum = pgEnum("payment_status", ["paid", "unpaid", "free"]);
 export const registrationModeEnum = pgEnum("registration_mode", ["presentiel", "ligne"]);
+export const questionStatusEnum = pgEnum("question_status", [
+  "pending",
+  "answered",
+  "archived",
+]);
 
 export const series = pgTable("series", {
   id: text("id").primaryKey(),
@@ -202,4 +207,16 @@ export const siteSettings = pgTable("site_settings", {
     .notNull()
     .default([{ start: 0, end: 5 }]),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const questions = pgTable("questions", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  theme: themeEnum("theme").notNull().default("rappel"),
+  questionText: text("question_text").notNull(),
+  status: questionStatusEnum("status").notNull().default("pending"),
+  answerNote: text("answer_note"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });

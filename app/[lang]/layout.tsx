@@ -72,6 +72,8 @@ export const viewport: Viewport = {
   themeColor: "#3c4a37",
 };
 
+import QuestionFloatingButton from "@/components/questions/QuestionFloatingButton";
+
 export default async function LangLayout({
   children,
   params,
@@ -103,6 +105,7 @@ export default async function LangLayout({
             <PlayerProvider>
               {children}
               <MiniPlayer />
+              <QuestionFloatingButton />
             </PlayerProvider>
             <PublicSearch teachings={teachings} seriesList={seriesList} agendaItems={agendaItems} />
           </SearchProvider>
