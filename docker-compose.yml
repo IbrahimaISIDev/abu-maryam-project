@@ -14,7 +14,9 @@ services:
     env_file:
       - .env.production
     networks:
-      - shaolin_web
+      shaolin_web:
+        aliases:
+          - abu-maryam-tv
 
 networks:
   shaolin_web:
