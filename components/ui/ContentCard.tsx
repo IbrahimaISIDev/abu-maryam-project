@@ -40,7 +40,7 @@ export default function ContentCard({ teaching, size = "default", progressPercen
             className="object-cover"
           />
         ) : (
-          <ImagePlaceholder className="w-full h-full" theme={teaching.theme} />
+          <ImagePlaceholder className="w-full h-full" theme={teaching.theme} type={teaching.type} />
         )}
 
         {/* Badge thème haut-gauche */}
