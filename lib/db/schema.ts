@@ -188,5 +188,15 @@ export const siteSettings = pgTable("site_settings", {
   siteDescription: text("site_description").notNull().default(""),
   notifyByEmail: boolean("notify_by_email").notNull().default(true),
   notifyByWhatsapp: boolean("notify_by_whatsapp").notNull().default(false),
+  // Détection automatique du direct YouTube (lib/youtube.ts) — coupe-circuit général
+  // (ex. période sans activité prévue : vacances, voyage...) et plages d'heures creuses
+  // (0-23, heure du Sénégal = UTC) pendant lesquelles l'API n'est pas interrogée, pour
+  // économiser le quota gratuit et resserrer l'intervalle de vérification le reste du
+  // temps. Plusieurs plages possibles (ex. nuit + après-midi calme).
+  liveCheckEnabled: boolean("live_check_enabled").notNull().default(true),
+  liveCheckQuietHours: jsonb("live_check_quiet_hours")
+    .$type<{ start: number; end: number }[]>()
+    .notNull()
+    .default([{ start: 0, end: 5 }]),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

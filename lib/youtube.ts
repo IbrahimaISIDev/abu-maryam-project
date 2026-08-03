@@ -114,34 +114,59 @@ export interface YoutubeLiveCheckResult {
   startedAt?: Date;
 }
 
+/** Budget de quota quotidien réservé à la détection de direct (unités YouTube — plafond gratuit : 10 000/jour). */
+const LIVE_CHECK_DAILY_UNIT_BUDGET = 9500;
+/** Coût d'un cycle de vérification complet (search.list + videos.list) en unités de quota. */
+const LIVE_CHECK_UNIT_COST = 101;
+const MIN_REVALIDATE_SECONDS = 300;
+const DEFAULT_REVALIDATE_SECONDS = 900;
+
+/**
+ * Calcule l'intervalle de cache (secondes) à partir du nombre d'heures actives par jour
+ * (24 − heures creuses configurées dans /admin/paramètres), pour rester sous le budget
+ * de quota même en heures creuses désactivées. Plus il y a d'heures creuses, plus
+ * l'intervalle se resserre pendant les heures actives, sans jamais dépasser le quota.
+ */
+export function computeLiveCheckRevalidateSeconds(activeHoursPerDay: number): number {
+  const clamped = Math.max(1, Math.min(24, activeHoursPerDay));
+  const maxCallsPerDay = LIVE_CHECK_DAILY_UNIT_BUDGET / LIVE_CHECK_UNIT_COST;
+  const seconds = Math.floor((clamped * 3600) / maxCallsPerDay);
+  return Math.max(MIN_REVALIDATE_SECONDS, seconds || DEFAULT_REVALIDATE_SECONDS);
+}
+
 /**
  * Détecte si une chaîne diffuse actuellement en direct, via la Data API v3.
  * Nécessite YOUTUBE_API_KEY — retourne `null` (pas `{isLive:false}`) si la clé est
  * absente ou si l'appel échoue, pour que l'appelant puisse distinguer « pas de live »
  * de « impossible de vérifier » et se replier sur un statut géré manuellement.
  *
- * `search.list` (eventType=live) coûte 100 unités sur les 10 000/jour du quota gratuit
- * par défaut — avec un cache de 30 min (`next.revalidate`), au pire 48 appels/jour
- * (4 800 unités), qui laisse de la marge pour le reste (résolution vidéo à la volée
- * dans l'admin). Un live met donc jusqu'à ~30 min à apparaître automatiquement sur le
- * site après son démarrage réel — pour un live hebdomadaire programmé, c'est un bon
- * compromis ; réduire `revalidate` consomme le quota plus vite en échange de plus de
- * réactivité.
+ * `search.list` (eventType=live) coûte 100 unités + ~1 unité pour le détail vidéo, sur
+ * les 10 000/jour du quota gratuit par défaut. `revalidateSeconds` (calculé par
+ * `computeLiveCheckRevalidateSeconds` à partir des heures creuses configurées) borne le
+ * nombre d'appels réels par jour pour ne jamais dépasser le quota — en dessous de ce
+ * plancher, le quota peut s'épuiser en cours de journée et désactiver la détection
+ * automatique (repli manuel silencieux) pour le reste de la journée, y compris
+ * potentiellement pendant le direct lui-même. Pour aller plus vite sans ce risque,
+ * demander une augmentation de quota (gratuite) dans Google Cloud Console → API et
+ * services → YouTube Data API v3 → Quotas.
  */
-export async function fetchYoutubeLiveStatus(channelId: string): Promise<YoutubeLiveCheckResult | null> {
+export async function fetchYoutubeLiveStatus(
+  channelId: string,
+  revalidateSeconds: number = DEFAULT_REVALIDATE_SECONDS
+): Promise<YoutubeLiveCheckResult | null> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) return null;
 
   try {
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`;
-    const searchRes = await fetch(searchUrl, { next: { revalidate: 1800 } });
+    const searchRes = await fetch(searchUrl, { next: { revalidate: revalidateSeconds } });
     if (!searchRes.ok) return null;
     const searchData = await searchRes.json();
     const videoId: string | undefined = searchData.items?.[0]?.id?.videoId;
     if (!videoId) return { isLive: false };
 
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${videoId}&key=${apiKey}`;
-    const detailsRes = await fetch(detailsUrl, { next: { revalidate: 1800 } });
+    const detailsRes = await fetch(detailsUrl, { next: { revalidate: revalidateSeconds } });
     if (!detailsRes.ok) return { isLive: true, videoId };
     const detailsData = await detailsRes.json();
     const video = detailsData.items?.[0];

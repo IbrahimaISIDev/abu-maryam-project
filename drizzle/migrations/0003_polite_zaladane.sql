@@ -1,0 +1,2 @@
+ALTER TABLE "site_settings" ADD COLUMN "live_check_enabled" boolean DEFAULT true NOT NULL;--> statement-breakpoint
+ALTER TABLE "site_settings" ADD COLUMN "live_check_quiet_hours" jsonb DEFAULT '[{"start":0,"end":5}]'::jsonb NOT NULL;

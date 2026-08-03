@@ -5,11 +5,20 @@ import { db } from "@/lib/db/client";
 import { siteSettings } from "@/lib/db/schema";
 import { hasValidAdminSession } from "@/lib/adminAuth";
 
+const quietHourRangeSchema = z
+  .object({
+    start: z.number().int().min(0).max(23),
+    end: z.number().int().min(0).max(23),
+  })
+  .refine((r) => r.start !== r.end, { message: "Une plage d'heures creuses ne peut pas avoir le même début et la même fin" });
+
 const settingsUpdateSchema = z.object({
   siteName: z.string().min(1).optional(),
   siteDescription: z.string().optional(),
   notifyByEmail: z.boolean().optional(),
   notifyByWhatsapp: z.boolean().optional(),
+  liveCheckEnabled: z.boolean().optional(),
+  liveCheckQuietHours: z.array(quietHourRangeSchema).max(6).optional(),
 });
 
 export async function GET() {

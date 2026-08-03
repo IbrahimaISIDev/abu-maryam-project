@@ -15,6 +15,8 @@ export default function ParametresPage() {
   const [siteDesc, setSiteDesc] = useState("");
   const [notifEmail, setNotifEmail] = useState(true);
   const [notifWhatsapp, setNotifWhatsapp] = useState(false);
+  const [liveCheckEnabled, setLiveCheckEnabled] = useState(true);
+  const [quietHours, setQuietHours] = useState<{ start: number; end: number }[]>([{ start: 0, end: 5 }]);
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -34,6 +36,8 @@ export default function ParametresPage() {
         setSiteDesc(s?.siteDescription ?? "");
         setNotifEmail(s?.notifyByEmail ?? true);
         setNotifWhatsapp(s?.notifyByWhatsapp ?? false);
+        setLiveCheckEnabled(s?.liveCheckEnabled ?? true);
+        setQuietHours(s?.liveCheckQuietHours?.length ? s.liveCheckQuietHours : [{ start: 0, end: 5 }]);
       })
       .catch(() => {
         if (!cancelled) toast("Impossible de charger les paramètres", "error");
@@ -94,6 +98,54 @@ export default function ParametresPage() {
     } catch {
       setter(!nextValue);
       toast("Échec de la mise à jour", "error");
+    }
+  }
+
+  async function toggleLiveCheckEnabled(nextValue: boolean) {
+    setLiveCheckEnabled(nextValue);
+    try {
+      const res = await fetch(apiRoutes.adminSettings(), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ liveCheckEnabled: nextValue }),
+      });
+      if (!res.ok) throw new Error();
+      toast(nextValue ? "Détection automatique activée" : "Détection automatique désactivée", "info");
+    } catch {
+      setLiveCheckEnabled(!nextValue);
+      toast("Échec de la mise à jour", "error");
+    }
+  }
+
+  function updateQuietHour(index: number, patch: Partial<{ start: number; end: number }>) {
+    setQuietHours((prev) => prev.map((r, i) => (i === index ? { ...r, ...patch } : r)));
+  }
+
+  function addQuietHourRange() {
+    setQuietHours((prev) => [...prev, { start: 22, end: 23 }]);
+  }
+
+  function removeQuietHourRange(index: number) {
+    setQuietHours((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function saveQuietHours() {
+    const invalid = quietHours.some((r) => r.start === r.end);
+    if (invalid) {
+      toast("Une plage ne peut pas avoir la même heure de début et de fin", "error");
+      return;
+    }
+    try {
+      const res = await fetch(apiRoutes.adminSettings(), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ liveCheckQuietHours: quietHours }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast("Heures creuses sauvegardées", "success");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Échec de l'enregistrement", "error");
     }
   }
 
@@ -211,6 +263,86 @@ export default function ParametresPage() {
               <button onClick={saveSite}
                 className="px-5 py-2.5 bg-[#3c4a37] hover:bg-[#2d3829] text-[#fbf9f3] font-[var(--font-hanken)] text-[13.5px] font-semibold rounded-[9px] transition-colors">
                 Enregistrer
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Détection automatique du direct */}
+        <section className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[14px] p-6">
+          <h2 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] mb-1">
+            Détection automatique du direct
+          </h2>
+          <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] mb-5">
+            Vérifie automatiquement si la chaîne YouTube (configurée dans « En direct ») diffuse — voir
+            GUIDE_YOUTUBE_API_KEY.md pour l&apos;activer.
+          </p>
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#232a20]">Activée</p>
+                <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483]">
+                  À désactiver si aucune activité n&apos;est prévue (vacances, pause) — évite de consommer le
+                  quota pour rien
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => toggleLiveCheckEnabled(!liveCheckEnabled)}
+                className={`relative shrink-0 w-10 h-6 rounded-full transition-colors ${liveCheckEnabled ? "bg-[#3c4a37]" : "bg-[#d8d0bf]"}`}
+              >
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${liveCheckEnabled ? "left-4" : "left-0.5"}`} />
+              </button>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className={labelCls}>Heures creuses (aucune diffusion attendue)</label>
+                <button type="button" onClick={addQuietHourRange}
+                  className="font-[var(--font-hanken)] text-[12px] font-semibold text-[#b58a3c] hover:text-[#9e7832] transition-colors">
+                  + Ajouter une plage
+                </button>
+              </div>
+              <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mb-3">
+                Aucune vérification pendant ces plages (heure du Sénégal) — le quota économisé resserre
+                l&apos;intervalle de vérification le reste du temps.
+              </p>
+              {quietHours.length === 0 ? (
+                <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483]">Aucune plage définie.</p>
+              ) : (
+                <div className="space-y-2">
+                  {quietHours.map((range, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <select value={range.start} onChange={(e) => updateQuietHour(i, { start: Number(e.target.value) })}
+                        className={`${inputCls} w-auto`}>
+                        {Array.from({ length: 24 }, (_, h) => (
+                          <option key={h} value={h}>{String(h).padStart(2, "0")}h</option>
+                        ))}
+                      </select>
+                      <span className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483]">à</span>
+                      <select value={range.end} onChange={(e) => updateQuietHour(i, { end: Number(e.target.value) })}
+                        className={`${inputCls} w-auto`}>
+                        {Array.from({ length: 24 }, (_, h) => (
+                          <option key={h} value={h}>{String(h).padStart(2, "0")}h</option>
+                        ))}
+                      </select>
+                      <button type="button" onClick={() => removeQuietHourRange(i)}
+                        aria-label="Supprimer cette plage"
+                        className="ml-auto w-8 h-8 flex items-center justify-center text-[#8a2f29] hover:bg-[rgba(138,47,41,0.08)] rounded-[7px] transition-colors">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6 6 18M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <button onClick={saveQuietHours}
+                className="px-5 py-2.5 bg-[#3c4a37] hover:bg-[#2d3829] text-[#fbf9f3] font-[var(--font-hanken)] text-[13.5px] font-semibold rounded-[9px] transition-colors">
+                Enregistrer les heures creuses
               </button>
             </div>
           </div>

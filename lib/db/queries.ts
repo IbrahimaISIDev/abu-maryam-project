@@ -1,9 +1,9 @@
 import { cache } from "react";
 import { eq, and, ne, asc, desc, sql } from "drizzle-orm";
 import { db } from "./client";
-import { teachings, series, agendaItems, liveStatus, seminars, replays, registrations } from "./schema";
+import { teachings, series, agendaItems, liveStatus, seminars, replays, registrations, siteSettings } from "./schema";
 import type { Teaching, Series, AgendaItem, LiveStatus, Replay, Seminar, Registration, Theme } from "@/lib/types";
-import { fetchYoutubeLiveStatus, buildYoutubeWatchUrl } from "@/lib/youtube";
+import { fetchYoutubeLiveStatus, computeLiveCheckRevalidateSeconds, buildYoutubeWatchUrl } from "@/lib/youtube";
 
 function toTeaching(row: typeof teachings.$inferSelect): Teaching {
   return {
@@ -185,13 +185,27 @@ export const getThemeCounts = cache(async (): Promise<Partial<Record<Theme, numb
   return map;
 });
 
+/** Heure courante (0-23, Sénégal = UTC, pas de DST) au sein d'une ou plusieurs plages « heures creuses ». Gère le passage à minuit (ex. {start:22,end:6}). */
+function isWithinQuietHours(ranges: { start: number; end: number }[], hour: number): boolean {
+  return ranges.some(({ start, end }) =>
+    start < end ? hour >= start && hour < end : hour >= start || hour < end
+  );
+}
+
+/** Somme des heures couvertes par les plages « heures creuses » (approximation par excès si des plages se chevauchent — sans risque, ça ne fait que resserrer l'intervalle de vérification). */
+function totalQuietHours(ranges: { start: number; end: number }[]): number {
+  const sum = ranges.reduce((acc, { start, end }) => acc + (start < end ? end - start : 24 - start + end), 0);
+  return Math.min(24, sum);
+}
+
 /**
  * Statut « en direct » effectif. La ligne en base (via /admin/direct) reste la source des
  * champs éditoriaux (hôte, verset, description) et sert de repli manuel pour `isLive` —
  * mais si un youtubeChannelId est renseigné et que YOUTUBE_API_KEY est configurée, le
  * statut réel (live ou non, titre, spectateurs, heure de début) est vérifié auprès de
- * YouTube et prend le dessus. En cas de clé absente ou d'erreur réseau, on retombe
- * silencieusement sur le toggle manuel — jamais de page cassée pour ça.
+ * YouTube et prend le dessus. En cas de clé absente, de coupure manuelle
+ * (site_settings.live_check_enabled), d'heure creuse configurée, ou d'erreur réseau, on
+ * retombe silencieusement sur le toggle manuel — jamais de page cassée pour ça.
  */
 export const getLiveStatus = cache(async (): Promise<LiveStatus> => {
   const [row] = await db.select().from(liveStatus).where(eq(liveStatus.id, "singleton"));
@@ -212,7 +226,14 @@ export const getLiveStatus = cache(async (): Promise<LiveStatus> => {
 
   if (!manual.youtubeChannelId) return manual;
 
-  const live = await fetchYoutubeLiveStatus(manual.youtubeChannelId);
+  const [settingsRow] = await db.select().from(siteSettings).where(eq(siteSettings.id, "singleton"));
+  if (settingsRow && !settingsRow.liveCheckEnabled) return manual; // désactivé (ex. aucune activité prévue)
+  const currentHour = new Date().getUTCHours();
+  if (settingsRow && isWithinQuietHours(settingsRow.liveCheckQuietHours, currentHour)) return manual;
+
+  const activeHours = settingsRow ? 24 - totalQuietHours(settingsRow.liveCheckQuietHours) : 19;
+  const revalidateSeconds = computeLiveCheckRevalidateSeconds(activeHours);
+  const live = await fetchYoutubeLiveStatus(manual.youtubeChannelId, revalidateSeconds);
   if (!live) return manual; // clé absente ou vérification impossible — repli manuel
   if (!live.isLive) return { ...manual, isLive: false };
 

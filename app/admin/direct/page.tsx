@@ -77,8 +77,9 @@ export default function DirectAdminPage() {
             <span className="w-2 h-2 mt-1 rounded-full bg-[#3c4a37] shrink-0" />
             <p className="font-[var(--font-hanken)] text-[12.5px] text-[#3c4a37] leading-relaxed">
               <strong>Détection automatique active.</strong> Le site vérifie lui-même si la chaîne
-              diffuse (toutes les ~30 min) et met à jour le bandeau « En direct » sans action de
-              votre part. Le statut ci-dessous ne sert que de repli si la vérification échoue.
+              diffuse et met à jour le bandeau « En direct » sans action de votre part — l&apos;intervalle
+              exact dépend des heures creuses configurées dans Paramètres. Le statut ci-dessous ne sert
+              que de repli si la vérification échoue ou est désactivée.
             </p>
           </div>
         ) : (
