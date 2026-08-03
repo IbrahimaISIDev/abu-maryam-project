@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllTeachingsAdmin, getAllSeries, getRegistrations, getSeminar, getLiveStatus } from "@/lib/db/queries";
+import { db } from "@/lib/db/client";
+import { questions } from "@/lib/db/schema";
+import { eq, desc } from "drizzle-orm";
 import { daysUntil } from "@/lib/activities";
 import { buildWhatsAppContactLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
 export default async function DashboardPage() {
-  const [teachings, seriesList, registrations, seminar, liveStatus] = await Promise.all([
+  const [teachings, seriesList, registrations, seminar, liveStatus, pendingQuestions] = await Promise.all([
     getAllTeachingsAdmin(),
     getAllSeries(),
     getRegistrations(),
     getSeminar(),
     getLiveStatus(),
+    db.select().from(questions).where(eq(questions.status, "pending")).orderBy(desc(questions.createdAt)).limit(5),
   ]);
 
   const statCards = [
@@ -66,6 +70,18 @@ export default async function DashboardPage() {
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <rect x="3" y="4" width="18" height="18" rx="2" />
           <path d="M16 2v4M8 2v4M3 10h18" />
+        </svg>
+      ),
+    },
+    {
+      label: "Questions en attente",
+      value: pendingQuestions.length,
+      sub: pendingQuestions.length === 0 ? "Aucune question en attente" : `${pendingQuestions.length} question${pendingQuestions.length > 1 ? "s" : ""} à traiter`,
+      href: "/admin/questions",
+      color: pendingQuestions.length > 0 ? "#b58a3c" : "#9a9483",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       ),
     },
@@ -143,7 +159,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 xl:grid-cols-5 gap-4 mb-8">
         {statCards.map((card) => (
           <Link key={card.label} href={card.href}>
             <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] p-5 hover:border-[#d0c9b8] hover:shadow-sm transition-all group">
@@ -167,8 +183,8 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Deux colonnes : dernières inscriptions + derniers enseignements */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      {/* Trois colonnes : dernières inscriptions + derniers enseignements + dernières questions */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Dernières inscriptions */}
         <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-[#e2dac9]">
@@ -241,6 +257,49 @@ export default async function DashboardPage() {
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Dernières questions en attente */}
+        <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#e2dac9]">
+            <h2 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20] flex items-center gap-2">
+              Questions
+              {pendingQuestions.length > 0 && (
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#b58a3c] text-white text-[10px] font-bold font-[var(--font-hanken)]">
+                  {pendingQuestions.length}
+                </span>
+              )}
+            </h2>
+            <Link href="/admin/questions" className="font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] hover:text-[#9e7832]">
+              Voir tout →
+            </Link>
+          </div>
+          {pendingQuestions.length === 0 ? (
+            <div className="px-5 py-8 text-center">
+              <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483]">✅ Aucune question en attente</p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-[#f0ece3]">
+              {pendingQuestions.map((q) => (
+                <li key={q.id} className="px-5 py-3">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <p className="font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#232a20] truncate">
+                      {q.name}
+                    </p>
+                    <span className="shrink-0 text-[9.5px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full bg-[rgba(181,138,60,0.1)] text-[#b58a3c] uppercase tracking-wide">
+                      {q.theme}
+                    </span>
+                  </div>
+                  <p className="font-[var(--font-hanken)] text-[11.5px] text-[#6f7363] line-clamp-2">
+                    {q.questionText}
+                  </p>
+                  <p className="font-[var(--font-hanken)] text-[10.5px] text-[#9a9483] mt-1">
+                    {new Date(q.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>

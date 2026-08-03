@@ -62,7 +62,7 @@ export default function QuestionModal({ isOpen, onClose }: QuestionModalProps) {
           <div className="flex items-center gap-2.5">
             <span className="text-xl">💬</span>
             <h3 className="font-[var(--font-cormorant)] text-xl font-bold text-[#e6cf8b] md:text-2xl">
-              Poser une Question à Oustaz
+              Poser une question à Oustaz Niang Mbaye
             </h3>
           </div>
           <button

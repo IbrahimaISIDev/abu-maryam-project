@@ -14,8 +14,8 @@ export default function QuestionFloatingButton() {
         {/* Mobile FAB : bouton rond */}
         <button
           onClick={() => setIsOpen(true)}
-          title="Poser une question à Oustaz"
-          aria-label="Poser une question à Oustaz"
+          title="Poser une question à Oustaz Niang Mbaye"
+          aria-label="Poser une question à Oustaz Niang Mbaye"
           className="
             group relative flex md:hidden
             h-14 w-14
@@ -58,7 +58,7 @@ export default function QuestionFloatingButton() {
         {/* Desktop FAB : bouton étendu avec texte */}
         <button
           onClick={() => setIsOpen(true)}
-          title="Poser une question à Oustaz"
+          title="Poser une question à Oustaz Niang Mbaye"
           className="
             hidden md:flex
             items-center gap-3
@@ -77,7 +77,7 @@ export default function QuestionFloatingButton() {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </span>
-          Poser une question à Oustaz
+          Poser une question à Oustaz Niang Mbaye
         </button>
       </div>
 

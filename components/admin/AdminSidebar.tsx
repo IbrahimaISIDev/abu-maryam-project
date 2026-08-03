@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import GlobalSearch from "./GlobalSearch";
 import { apiRoutes } from "@/lib/api-routes";
 
@@ -93,6 +94,28 @@ const navItems = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Polling léger — recharge le count des questions en attente toutes les 60s
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchCount() {
+      try {
+        const res = await fetch("/api/admin/questions");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && data.questions) {
+          const pending = data.questions.filter((q: { status: string }) => q.status === "pending").length;
+          setPendingCount(pending);
+        }
+      } catch {
+        // silencieux
+      }
+    }
+    fetchCount();
+    const interval = setInterval(fetchCount, 60_000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
 
   async function handleLogout() {
     await fetch(apiRoutes.adminLogout(), { method: "POST" });
@@ -146,7 +169,12 @@ export default function AdminSidebar() {
               }`}
             >
               <span className={isActive ? "text-[#cda350]" : ""}>{item.icon}</span>
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.href === "/admin/questions" && pendingCount > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-[#b58a3c] text-white text-[10px] font-bold px-1">
+                  {pendingCount > 99 ? "99+" : pendingCount}
+                </span>
+              )}
             </Link>
           );
         })}
