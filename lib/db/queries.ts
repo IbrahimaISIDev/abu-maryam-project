@@ -281,3 +281,8 @@ export const getRegistrations = cache(async (): Promise<Registration[]> => {
     message: r.message ?? undefined,
   }));
 });
+
+export const getSiteSettings = cache(async () => {
+  const [row] = await db.select().from(siteSettings).where(eq(siteSettings.id, "singleton"));
+  return row ?? null;
+});

@@ -274,6 +274,31 @@ export default function TeachingFormModal({
           </div>
         )}
 
+        {/* Vignette personnalisée */}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <FieldLabel>Vignette personnalisée (optionnel)</FieldLabel>
+            {editItem.thumbnail && (
+              <button
+                type="button"
+                onClick={() => onChange({ ...editItem, thumbnail: null })}
+                className="font-[var(--font-hanken)] text-[11.5px] font-semibold text-[#8a2f29] hover:text-[#7a2923] transition-colors"
+              >
+                Supprimer
+              </button>
+            )}
+          </div>
+          <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mb-2">
+            Si absente, l'aperçu islamique par défaut ({editItem.type === "video" ? "mihrab vidéo" : "onde audio"}) sera utilisé.
+          </p>
+          <MediaUploader
+            kind="image"
+            currentUrl={editItem.thumbnail ?? null}
+            onUploaded={(url) => onChange({ ...editItem, thumbnail: url })}
+            onRemove={() => onChange({ ...editItem, thumbnail: null })}
+          />
+        </div>
+
         <div>
           <FieldLabel>Durée (ex : 1:12:04)</FieldLabel>
           <input

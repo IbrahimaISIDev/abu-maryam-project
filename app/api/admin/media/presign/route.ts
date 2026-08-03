@@ -3,15 +3,16 @@ import { z } from "zod";
 import { hasValidAdminSession } from "@/lib/adminAuth";
 import { createPresignedUpload } from "@/lib/r2";
 
-const ALLOWED_TYPES: Record<"audio" | "video", string[]> = {
+const ALLOWED_TYPES: Record<"audio" | "video" | "image", string[]> = {
   audio: ["audio/mpeg", "audio/mp4", "audio/wav", "audio/x-wav", "audio/ogg", "audio/webm", "audio/x-m4a"],
   video: ["video/mp4", "video/webm", "video/quicktime", "video/x-matroska"],
+  image: ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"],
 };
 
 const presignSchema = z.object({
   filename: z.string().min(1),
   contentType: z.string().min(1),
-  kind: z.enum(["audio", "video"]),
+  kind: z.enum(["audio", "video", "image"]),
 });
 
 /** Nettoie le nom de fichier pour une clé R2 sûre — pas d'espaces, d'accents ni de caractères spéciaux. */
@@ -48,7 +49,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Type de fichier non autorisé" }, { status: 422 });
   }
 
-  const key = `teachings/${kind}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${sanitizeFilename(filename)}`;
+  const folder = kind === "image" ? "teachings/images" : `teachings/${kind}`;
+  const key = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${sanitizeFilename(filename)}`;
 
   try {
     const presigned = await createPresignedUpload(key, contentType);

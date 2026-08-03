@@ -16,6 +16,7 @@ export default function ParametresPage() {
   const [notifEmail, setNotifEmail] = useState(true);
   const [notifWhatsapp, setNotifWhatsapp] = useState(false);
   const [liveCheckEnabled, setLiveCheckEnabled] = useState(true);
+  const [showDailyVerse, setShowDailyVerse] = useState(false);
   const [quietHours, setQuietHours] = useState<{ start: number; end: number }[]>([{ start: 0, end: 5 }]);
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
@@ -36,6 +37,7 @@ export default function ParametresPage() {
         setSiteDesc(s?.siteDescription ?? "");
         setNotifEmail(s?.notifyByEmail ?? true);
         setNotifWhatsapp(s?.notifyByWhatsapp ?? false);
+        setShowDailyVerse(s?.showDailyVerse ?? false);
         setLiveCheckEnabled(s?.liveCheckEnabled ?? true);
         setQuietHours(s?.liveCheckQuietHours?.length ? s.liveCheckQuietHours : [{ start: 0, end: 5 }]);
       })
@@ -265,6 +267,53 @@ export default function ParametresPage() {
                 Enregistrer
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* Widget Verset du Jour */}
+        <section className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[14px] p-6">
+          <h2 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] mb-1">
+            📖 Widget « Verset du Jour »
+          </h2>
+          <p className="font-[var(--font-hanken)] text-[12.5px] text-[#9a9483] mb-5">
+            Affiche un verset ou hadith quotidien avec explication audio d'Oustaz sur la page d'accueil.
+            Désactiver si vous souhaitez alléger la page d'accueil.
+          </p>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#232a20]">
+                {showDailyVerse ? "Activé — visible sur la page d'accueil" : "Désactivé — masqué sur la page d'accueil"}
+              </p>
+              <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483]">
+                Les visiteurs verront ou non le widget selon ce réglage.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                const next = !showDailyVerse;
+                setShowDailyVerse(next);
+                try {
+                  const res = await fetch(apiRoutes.adminSettings(), {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ showDailyVerse: next }),
+                  });
+                  if (!res.ok) throw new Error();
+                  toast(next ? "Widget Verset activé" : "Widget Verset désactivé", "info");
+                } catch {
+                  setShowDailyVerse(!next);
+                  toast("Échec de la mise à jour", "error");
+                }
+              }}
+              className={`relative shrink-0 w-10 h-6 rounded-full transition-colors ${
+                showDailyVerse ? "bg-[#b58a3c]" : "bg-[#d8d0bf]"
+              }`}
+            >
+              <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                showDailyVerse ? "left-4" : "left-0.5"
+              }`} />
+            </button>
           </div>
         </section>
 

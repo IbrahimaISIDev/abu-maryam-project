@@ -1,0 +1,1 @@
+ALTER TABLE "site_settings" ADD COLUMN "show_daily_verse" boolean DEFAULT false NOT NULL;

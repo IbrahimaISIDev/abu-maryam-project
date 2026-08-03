@@ -17,6 +17,7 @@ const settingsUpdateSchema = z.object({
   siteDescription: z.string().optional(),
   notifyByEmail: z.boolean().optional(),
   notifyByWhatsapp: z.boolean().optional(),
+  showDailyVerse: z.boolean().optional(),
   liveCheckEnabled: z.boolean().optional(),
   liveCheckQuietHours: z.array(quietHourRangeSchema).max(6).optional(),
 });

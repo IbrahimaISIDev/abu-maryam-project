@@ -196,6 +196,7 @@ export const siteSettings = pgTable("site_settings", {
   siteDescription: text("site_description").notNull().default(""),
   notifyByEmail: boolean("notify_by_email").notNull().default(true),
   notifyByWhatsapp: boolean("notify_by_whatsapp").notNull().default(false),
+  showDailyVerse: boolean("show_daily_verse").notNull().default(false),
   // Détection automatique du direct YouTube (lib/youtube.ts) — coupe-circuit général
   // (ex. période sans activité prévue : vacances, voyage...) et plages d'heures creuses
   // (0-23, heure du Sénégal = UTC) pendant lesquelles l'API n'est pas interrogée, pour

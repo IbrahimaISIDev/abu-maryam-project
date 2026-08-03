@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "img.youtube.com" },
       { protocol: "https", hostname: "i.ytimg.com" },
+      // Cloudflare R2 — URLs publiques des vignettes uploadées
+      { protocol: "https", hostname: "*.r2.dev" },
     ],
   },
 };
