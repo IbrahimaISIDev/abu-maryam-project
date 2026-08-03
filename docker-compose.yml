@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: "https://abou-maryam.com"
+        NEXT_PUBLIC_API_BASE_URL: ""
+    image: abu-maryam-tv
+    container_name: abu-maryam-tv
+    restart: unless-stopped
+    # Les secrets de production sont injectés via le fichier .env.production
+    # (non versionné — copié manuellement sur le serveur)
+    env_file:
+      - .env.production
+    networks:
+      - shaolin_web
+
+networks:
+  shaolin_web:
+    external: true
