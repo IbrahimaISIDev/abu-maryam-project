@@ -1,10 +1,12 @@
-# ─── Étape 1 : dépendances ──────────────────────────────────────────────────
+# ─── Étape 1 : dépendances (toutes — dev incluses pour le build) ─────────────
 FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+# On installe TOUTES les dépendances (y compris devDeps) car @tailwindcss/postcss
+# est nécessaire à next build. L'image finale ne les emporte pas.
+RUN npm ci
 
 # ─── Étape 2 : build ────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
@@ -18,13 +20,11 @@ ARG NEXT_PUBLIC_SITE_URL=https://abou-maryam.com
 ARG NEXT_PUBLIC_API_BASE_URL=
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
-
-# Active le standalone output de Next.js pour un conteneur léger
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN echo 'const nextConfig = { output: "standalone", images: { remotePatterns: [{ protocol: "https", hostname: "img.youtube.com" }, { protocol: "https", hostname: "i.ytimg.com" }] } }; export default nextConfig;' > /dev/null
+
 RUN npm run build
 
-# ─── Étape 3 : image de production ──────────────────────────────────────────
+# ─── Étape 3 : image de production (légère — standalone auto-contenu) ────────
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -34,7 +34,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs \
  && adduser  --system --uid 1001 nextjs
 
-# Copie le build standalone (auto-contenu, sans node_modules complet)
+# Copie uniquement le build standalone : pas de node_modules dans l'image finale
 COPY --from=builder /app/public          ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
