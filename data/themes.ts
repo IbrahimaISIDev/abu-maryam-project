@@ -7,4 +7,5 @@ export const themes: ThemeItem[] = [
   { id: "famille",   arabicLetter: "ع", labelFr: "Famille" },
   { id: "tafsir",    arabicLetter: "ف", labelFr: "Tafsîr" },
   { id: "sunna",     arabicLetter: "س", labelFr: "Sunna" },
+  { id: "rappel",    arabicLetter: "ذ", labelFr: "Rappel" },
 ];

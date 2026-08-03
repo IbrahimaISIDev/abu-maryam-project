@@ -17,6 +17,7 @@ const seriesSchema = z.object({
     "sahaba",
     "khoutba",
     "conférence",
+    "rappel",
   ]),
   language: z.enum(["wolof", "arabe"]),
   totalEpisodes: z.number().int().min(0),

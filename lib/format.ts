@@ -99,6 +99,7 @@ const themeLabelsAr: Record<string, string> = {
   sahaba: "صحابة",
   khoutba: "خطبة",
   "conférence": "محاضرة",
+  rappel: "تذكير",
 };
 
 const themeLabelsFr: Record<string, string> = {
@@ -111,6 +112,7 @@ const themeLabelsFr: Record<string, string> = {
   sahaba: "Sahaba",
   khoutba: "Khoutba",
   "conférence": "Conférence",
+  rappel: "Rappel",
 };
 
 export function formatThemeLabel(theme: string, lang: Locale): string {

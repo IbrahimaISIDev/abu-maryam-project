@@ -29,6 +29,7 @@ export const apiRoutes = {
   seminar: () => `${API_BASE}/api/admin/seminar`,
 
   registration: (id: string) => `${API_BASE}/api/admin/registrations/${id}`,
+  registrations: () => `${API_BASE}/api/admin/registrations`,
 
   youtubeResolve: () => `${API_BASE}/api/admin/youtube/resolve`,
   mediaPresign: () => `${API_BASE}/api/admin/media/presign`,

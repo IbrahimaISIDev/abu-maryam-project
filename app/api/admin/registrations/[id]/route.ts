@@ -41,3 +41,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   return NextResponse.json({ registration: updated });
 }
+
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await hasValidAdminSession())) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+  const { id } = await params;
+
+  await db.delete(registrations).where(eq(registrations.id, id));
+  return NextResponse.json({ ok: true });
+}

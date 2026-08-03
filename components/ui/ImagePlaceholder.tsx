@@ -17,6 +17,7 @@ const THEME_VISUAL: Record<Theme, { letter: string; accent: string }> = {
   sahaba: { letter: "ح", accent: "#e08b81" },
   khoutba: { letter: "خ", accent: "#e3c685" },
   "conférence": { letter: "م", accent: "#e08b81" },
+  rappel: { letter: "ذ", accent: "#e3c685" },
 };
 
 // Note: no `relative` in base class — callers control positioning (absolute/relative/static)

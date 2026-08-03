@@ -22,7 +22,7 @@ import {
 import { getTeachingTitle } from "@/lib/content-i18n";
 
 const PAGE_SIZE = 9;
-const ALL_THEMES = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence"] as const;
+const ALL_THEMES = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence", "rappel"] as const;
 const ALL_LANGUAGES = ["wolof", "arabe"] as const;
 
 type Tab = "cours" | "series";

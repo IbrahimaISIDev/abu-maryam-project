@@ -15,6 +15,7 @@ const themeColor: Record<string, { bg: string; text: string }> = {
   salat:    { bg: "bg-[#eef0e6] dark:bg-[rgba(95,112,80,0.18)]", text: "text-[#5f7050] dark:text-[#8fa781]" },
   khoutba:  { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#7d5f26] dark:text-[#e3c685]" },
   conférence: { bg: "bg-[rgba(138,47,41,0.08)] dark:bg-[rgba(224,139,129,0.18)]", text: "text-[#8a2f29] dark:text-[#e08b81]" },
+  rappel:   { bg: "bg-[rgba(181,138,60,0.1)] dark:bg-[rgba(205,163,80,0.18)]", text: "text-[#7d5f26] dark:text-[#e3c685]" },
 };
 
 interface SeriesCardProps {

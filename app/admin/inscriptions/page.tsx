@@ -58,6 +58,8 @@ export default function InscriptionsPage() {
   const [filter, setFilter] = useState<"all" | "confirmed" | "pending" | "cancelled">("all");
   const [search, setSearch] = useState("");
   const [cancelId, setCancelId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   const [detailItem, setDetailItem] = useState<Registration | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("registeredAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
@@ -172,6 +174,38 @@ export default function InscriptionsPage() {
       toast("Échec de la mise à jour groupée", "error");
     }
     setSelected(new Set());
+  }
+
+  async function handleDeleteOne(id: string) {
+    try {
+      const res = await fetch(apiRoutes.registration(id), { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setItems((prev) => prev.filter((r) => r.id !== id));
+      if (detailItem?.id === id) setDetailItem(null);
+      toast("Inscription supprimée", "success");
+    } catch {
+      toast("Échec de la suppression", "error");
+    }
+    setDeleteId(null);
+  }
+
+  async function handleBulkDelete() {
+    const ids = Array.from(selected);
+    const count = ids.length;
+    try {
+      const res = await fetch(apiRoutes.registrations(), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      if (!res.ok) throw new Error();
+      setItems((prev) => prev.filter((r) => !selected.has(r.id)));
+      setSelected(new Set());
+      toast(`${count} inscription${count > 1 ? "s" : ""} supprimée${count > 1 ? "s" : ""}`, "success");
+    } catch {
+      toast("Échec de la suppression groupée", "error");
+    }
+    setConfirmBulkDelete(false);
   }
 
   const thClass = "px-4 py-3 font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase tracking-wider cursor-pointer select-none group text-left";
@@ -354,6 +388,16 @@ export default function InscriptionsPage() {
                           Réactiver
                         </button>
                       )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDeleteId(r.id); }}
+                        aria-label="Supprimer"
+                        title="Supprimer"
+                        className="p-1.5 rounded-[6px] text-[#6f7363] hover:text-[#8a2f29] hover:bg-[rgba(138,47,41,0.1)] transition-colors"
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -390,6 +434,13 @@ export default function InscriptionsPage() {
           >
             Annuler tous
           </button>
+          <div className="w-px h-4 bg-[rgba(255,255,255,0.2)]" />
+          <button
+            onClick={() => setConfirmBulkDelete(true)}
+            className="font-[var(--font-hanken)] text-[13px] font-semibold text-[#8a2f29] hover:text-[#a83b34] transition-colors"
+          >
+            Supprimer ({selected.size})
+          </button>
           <button
             onClick={() => setSelected(new Set())}
             className="ml-1 text-[rgba(251,249,243,0.4)] hover:text-[#fbf9f3] transition-colors"
@@ -410,6 +461,26 @@ export default function InscriptionsPage() {
         danger
         onConfirm={() => { setStatus(cancelId!, "cancelled"); setCancelId(null); }}
         onCancel={() => setCancelId(null)}
+      />
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Supprimer cette inscription ?"
+        message="Cette action est irréversible. L'inscription sera définitivement supprimée de la base de données."
+        confirmLabel="Supprimer"
+        danger
+        onConfirm={() => handleDeleteOne(deleteId!)}
+        onCancel={() => setDeleteId(null)}
+      />
+
+      <ConfirmModal
+        isOpen={confirmBulkDelete}
+        title={`Supprimer ${selected.size} inscription${selected.size > 1 ? "s" : ""} ?`}
+        message="Cette action est irréversible. Les inscriptions sélectionnées seront définitivement supprimées."
+        confirmLabel="Supprimer définitivement"
+        danger
+        onConfirm={handleBulkDelete}
+        onCancel={() => setConfirmBulkDelete(false)}
       />
 
       {/* Modal détail inscription */}

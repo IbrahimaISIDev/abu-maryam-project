@@ -12,6 +12,7 @@ const THEME_LABELS: Record<Theme, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
   salat: "Salât", famille: "Famille", sunna: "Sunna",
   sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
+  rappel: "Rappel",
 };
 const THEMES = Object.keys(THEME_LABELS) as Theme[];
 

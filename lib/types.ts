@@ -9,7 +9,8 @@ export type Theme =
   | "sunna"
   | "sahaba"
   | "khoutba"
-  | "conférence";
+  | "conférence"
+  | "rappel";
 
 export type DifficultyLevel = "débutant" | "intermédiaire" | "avancé";
 
@@ -26,6 +27,7 @@ export interface Series {
 export interface Teaching {
   id: string;
   title: string;
+  titleAr?: string | null;
   type: ContentType;
   theme: Theme;
   language: Language;
@@ -38,6 +40,7 @@ export interface Teaching {
   publishedAt: string;       // ISO date string
   published?: boolean;       // true = visible public, false = brouillon
   description?: string;
+  descriptionAr?: string | null;
   seriesId?: string | null;
   episodeNumber?: number | null;
   level?: DifficultyLevel | null;

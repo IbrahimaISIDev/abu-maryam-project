@@ -20,6 +20,7 @@ export const themeEnum = pgEnum("theme", [
   "sahaba",
   "khoutba",
   "conférence",
+  "rappel",
 ]);
 export const difficultyLevelEnum = pgEnum("difficulty_level", [
   "débutant",
@@ -63,6 +64,7 @@ export interface ChapterJson {
 export const teachings = pgTable("teachings", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
+  titleAr: text("title_ar"),
   type: contentTypeEnum("type").notNull(),
   theme: themeEnum("theme").notNull(),
   language: languageEnum("language").notNull(),
@@ -77,6 +79,7 @@ export const teachings = pgTable("teachings", {
   publishedAt: timestamp("published_at").notNull().defaultNow(),
   published: boolean("published").notNull().default(true),
   description: text("description"),
+  descriptionAr: text("description_ar"),
   seriesId: text("series_id").references((): typeof series.id => series.id, {
     onDelete: "set null",
   }),

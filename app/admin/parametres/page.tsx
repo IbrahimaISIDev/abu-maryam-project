@@ -173,14 +173,14 @@ export default function ParametresPage() {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-[760px]">
+      <div className="p-8 max-w-[1280px]">
         <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483] py-20 text-center">Chargement…</p>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-[760px]">
+    <div className="p-8 max-w-[1280px]">
       {/* En-tête */}
       <div className="mb-8">
         <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] uppercase tracking-widest mb-1">

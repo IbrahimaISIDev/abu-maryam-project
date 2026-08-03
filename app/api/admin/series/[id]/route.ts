@@ -19,6 +19,7 @@ const seriesUpdateSchema = z.object({
       "sahaba",
       "khoutba",
       "conférence",
+      "rappel",
     ])
     .optional(),
   language: z.enum(["wolof", "arabe"]).optional(),

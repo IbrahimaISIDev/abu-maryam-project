@@ -128,11 +128,23 @@ const agendaItemsAr: Record<string, string> = {
 };
 
 export function getTeachingTitle(teaching: Teaching, lang: Locale): string {
-  return lang === "ar" ? teachingsAr[teaching.id]?.title ?? teaching.title : teaching.title;
+  if (lang === "ar") {
+    if (teaching.titleAr && teaching.titleAr.trim() !== "") {
+      return teaching.titleAr;
+    }
+    return teachingsAr[teaching.id]?.title ?? teaching.title;
+  }
+  return teaching.title;
 }
 
 export function getTeachingDescription(teaching: Teaching, lang: Locale): string | undefined {
-  return lang === "ar" ? teachingsAr[teaching.id]?.description ?? teaching.description : teaching.description;
+  if (lang === "ar") {
+    if (teaching.descriptionAr && teaching.descriptionAr.trim() !== "") {
+      return teaching.descriptionAr;
+    }
+    return teachingsAr[teaching.id]?.description ?? teaching.description;
+  }
+  return teaching.description;
 }
 
 export function getChapterLabel(teaching: Teaching, index: number, lang: Locale, fallback: string): string {

@@ -12,6 +12,7 @@ const THEME_LABELS: Record<Theme, string> = {
   tafsir: "Tafsîr", tawhid: "Tawhîd", akhlaq: "Akhlâq",
   salat: "Salât", famille: "Famille", sunna: "Sunna",
   sahaba: "Sahaba", khoutba: "Khoutba", conférence: "Conférence",
+  rappel: "Rappel",
 };
 const THEMES = Object.keys(THEME_LABELS) as Theme[];
 const LANGUAGES: Language[] = ["wolof", "arabe"];
@@ -119,12 +120,22 @@ export default function TeachingFormModal({
       maxWidth="max-w-[640px]"
     >
       <div className="p-6 space-y-4">
-        <div>
-          <FieldLabel>Titre</FieldLabel>
-          <input value={editItem.title} onChange={(e) => onChange({ ...editItem, title: e.target.value })}
-            placeholder="Titre de l'enseignement"
-            className={inputClass}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <FieldLabel>Titre (Français/Wolof)</FieldLabel>
+            <input value={editItem.title} onChange={(e) => onChange({ ...editItem, title: e.target.value })}
+              placeholder="Titre de l'enseignement"
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <FieldLabel>Titre en arabe (optionnel)</FieldLabel>
+            <input value={editItem.titleAr ?? ""} onChange={(e) => onChange({ ...editItem, titleAr: e.target.value || null })}
+              placeholder="عنوان الدرس باللغة العربية"
+              dir="rtl"
+              className={`${inputClass} font-[var(--font-amiri)] text-[15px]`}
+            />
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -319,12 +330,22 @@ export default function TeachingFormModal({
           />
         </div>
 
-        <div>
-          <FieldLabel>Description</FieldLabel>
-          <textarea value={editItem.description ?? ""} onChange={(e) => onChange({ ...editItem, description: e.target.value })}
-            rows={3} placeholder="Résumé de l'enseignement…"
-            className={`${inputClass} resize-none`}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <FieldLabel>Description</FieldLabel>
+            <textarea value={editItem.description ?? ""} onChange={(e) => onChange({ ...editItem, description: e.target.value })}
+              rows={3} placeholder="Résumé de l'enseignement…"
+              className={`${inputClass} resize-none`}
+            />
+          </div>
+          <div>
+            <FieldLabel>Description en arabe (optionnel)</FieldLabel>
+            <textarea value={editItem.descriptionAr ?? ""} onChange={(e) => onChange({ ...editItem, descriptionAr: e.target.value || null })}
+              rows={3} placeholder="ملخص الدرس باللغة العربية…"
+              dir="rtl"
+              className={`${inputClass} resize-none font-[var(--font-amiri)] text-[15px]`}
+            />
+          </div>
         </div>
 
         {/* Chapitres */}

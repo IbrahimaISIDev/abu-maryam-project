@@ -19,7 +19,7 @@ interface FilterPanelProps {
   themeCounts: Partial<Record<Theme, number>>;
 }
 
-const themeIds: Theme[] = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence"];
+const themeIds: Theme[] = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence", "rappel"];
 
 export default function FilterPanel({
   dict, lang,

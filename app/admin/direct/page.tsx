@@ -70,7 +70,7 @@ export default function DirectAdminPage() {
         </p>
       </div>
 
-      <div className="max-w-[560px] space-y-5">
+      <div className="max-w-[1280px] space-y-5">
         {/* Statut de la détection automatique */}
         {channelId && apiKeyConfigured ? (
           <div className="flex items-start gap-2.5 px-4 py-3 bg-[rgba(60,74,55,0.08)] border border-[rgba(60,74,55,0.2)] rounded-[10px]">

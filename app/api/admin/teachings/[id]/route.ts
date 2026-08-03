@@ -12,6 +12,7 @@ const chapterSchema = z.object({
 
 const teachingUpdateSchema = z.object({
   title: z.string().min(1).optional(),
+  titleAr: z.string().nullable().optional(),
   type: z.enum(["video", "audio"]).optional(),
   theme: z
     .enum([
@@ -24,6 +25,7 @@ const teachingUpdateSchema = z.object({
       "sahaba",
       "khoutba",
       "conférence",
+      "rappel",
     ])
     .optional(),
   language: z.enum(["wolof", "arabe"]).optional(),
@@ -36,6 +38,7 @@ const teachingUpdateSchema = z.object({
   publishedAt: z.coerce.date().optional(),
   published: z.boolean().optional(),
   description: z.string().nullable().optional(),
+  descriptionAr: z.string().nullable().optional(),
   seriesId: z.string().nullable().optional(),
   episodeNumber: z.number().int().nullable().optional(),
   level: z.enum(["débutant", "intermédiaire", "avancé"]).nullable().optional(),
