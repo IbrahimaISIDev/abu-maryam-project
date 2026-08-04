@@ -18,6 +18,8 @@ interface TeachingPlayerProps {
   teaching: Teaching;
   dict: Dictionary;
   lang: Locale;
+  seriesEpisodes?: Teaching[];
+  relatedTeachings?: Teaching[];
 }
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
@@ -220,8 +222,41 @@ export default function TeachingPlayer(props: TeachingPlayerProps) {
   return <AudioTeachingPlayer {...props} />;
 }
 
-function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
-  const { state, play, pause, resume, seek, volume, muted, playbackRate, setVolume, toggleMute, setPlaybackRate } =
+/** Trouve l'épisode suivant dans une série ou un cours lié par thème */
+function findNextTeaching(
+  teaching: Teaching,
+  seriesEpisodes?: Teaching[],
+  relatedTeachings?: Teaching[]
+): Teaching | null {
+  // Priorité : épisode suivant dans la série
+  if (seriesEpisodes && teaching.episodeNumber) {
+    const next = seriesEpisodes.find((ep) => ep.episodeNumber === teaching.episodeNumber! + 1);
+    if (next) return next;
+  }
+  // Fallback : premier cours lié par thème
+  if (relatedTeachings && relatedTeachings.length > 0) {
+    return relatedTeachings[0];
+  }
+  return null;
+}
+
+/** Trouve l'épisode précédent dans une série ou un cours lié par thème */
+function findPreviousTeaching(
+  teaching: Teaching,
+  seriesEpisodes?: Teaching[],
+  relatedTeachings?: Teaching[]
+): Teaching | null {
+  // Priorité : épisode précédent dans la série
+  if (seriesEpisodes && teaching.episodeNumber && teaching.episodeNumber > 1) {
+    const prev = seriesEpisodes.find((ep) => ep.episodeNumber === teaching.episodeNumber! - 1);
+    if (prev) return prev;
+  }
+  // Fallback : pas de navigation "précédent" hors série
+  return null;
+}
+
+function AudioTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeachings }: TeachingPlayerProps) {
+  const { state, play, pause, resume, seek, volume, muted, playbackRate, setVolume, toggleMute, setPlaybackRate, registerOnEnded } =
     usePlayer();
   const initialTimestamp = useInitialTimestamp();
   const appliedInitialTimestamp = useRef(false);
@@ -231,11 +266,29 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
   const positionSeconds = isThisLoaded ? state.positionSeconds : 0;
   const hasError = isThisLoaded && state.hasError;
 
+  const nextTeaching = findNextTeaching(teaching, seriesEpisodes, relatedTeachings);
+  const previousTeaching = findPreviousTeaching(teaching, seriesEpisodes, relatedTeachings);
+
   function handlePlayPause() {
     if (!isThisLoaded) play(teaching, 0);
     else if (isThisPlaying) pause();
     else resume();
   }
+
+  function handleNavigateTo(teaching: Teaching) {
+    window.location.href = `/bibliotheque/${teaching.id}`;
+  }
+
+  // Enregistrement du callback de lecture automatique pour l'audio
+  useEffect(() => {
+    if (!nextTeaching) return;
+    const unregister = registerOnEnded(() => {
+      setTimeout(() => {
+        window.location.href = `/bibliotheque/${nextTeaching.id}`;
+      }, 1500);
+    });
+    return unregister;
+  }, [nextTeaching, registerOnEnded]);
 
   // Lien profond ?t= — ne s'applique qu'une fois, au premier montage.
   useEffect(() => {
@@ -337,6 +390,21 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
         />
 
         <div className="flex items-center gap-3">
+          {/* Bouton précédent */}
+          {previousTeaching && (
+            <button type="button"
+              onClick={() => handleNavigateTo(previousTeaching)}
+              className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)] flex items-center gap-1"
+              aria-label={lang === "ar" ? "السابق" : "Précédent"}
+              title={previousTeaching.title}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              <span className="hidden sm:inline">{lang === "ar" ? "السابق" : "Préc."}</span>
+            </button>
+          )}
+
           <button type="button"
             onClick={() => (isThisLoaded ? seek(Math.max(0, positionSeconds - 15)) : play(teaching, 0))}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
@@ -374,6 +442,21 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
             +30s
           </button>
 
+          {/* Bouton suivant */}
+          {nextTeaching && (
+            <button type="button"
+              onClick={() => handleNavigateTo(nextTeaching)}
+              className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)] flex items-center gap-1"
+              aria-label={lang === "ar" ? "التالي" : "Suivant"}
+              title={nextTeaching.title}
+            >
+              <span className="hidden sm:inline">{lang === "ar" ? "التالي" : "Suiv."}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
           <span dir="ltr" className="font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)] shrink-0">
             {fmtTime(positionSeconds)} / {teaching.duration}
           </span>
@@ -389,7 +472,7 @@ function AudioTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
   );
 }
 
-function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
+function VideoTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeachings }: TeachingPlayerProps) {
   const { updateProgress, getProgress } = useProgress();
   const { volume, muted, playbackRate, setVolume, toggleMute, setPlaybackRate } = useVolume();
   const initialTimestamp = useInitialTimestamp();
@@ -401,6 +484,9 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
     const saved = getProgress(teaching.id);
     return saved && !saved.completed ? saved.positionSeconds : 0;
   });
+
+  const nextTeaching = findNextTeaching(teaching, seriesEpisodes, relatedTeachings);
+  const previousTeaching = findPreviousTeaching(teaching, seriesEpisodes, relatedTeachings);
 
   // Applique les préférences persistées (volume/muet/vitesse) dès que le lecteur est prêt,
   // et se positionne sur le lien profond ?t= éventuel.
@@ -453,11 +539,23 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
   function handleStateChange(ytState: number) {
     if (ytState === YT_PLAYER_STATE.PLAYING) setIsPlaying(true);
     else if (ytState === YT_PLAYER_STATE.PAUSED || ytState === YT_PLAYER_STATE.ENDED) setIsPlaying(false);
+
+    // Lecture automatique de l'épisode suivant à la fin
+    if (ytState === YT_PLAYER_STATE.ENDED && nextTeaching) {
+      // Redirection vers l'épisode suivant après un court délai
+      setTimeout(() => {
+        window.location.href = `/bibliotheque/${nextTeaching.id}`;
+      }, 1500);
+    }
   }
 
   function handlePlayPause() {
     if (isPlaying) playerRef.current?.pause();
     else playerRef.current?.play();
+  }
+
+  function handleNavigateTo(teaching: Teaching) {
+    window.location.href = `/bibliotheque/${teaching.id}`;
   }
 
   function seekAndDisplay(t: number) {
@@ -551,6 +649,21 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
         />
 
         <div className="flex flex-wrap items-center gap-3">
+          {/* Bouton précédent */}
+          {previousTeaching && (
+            <button type="button"
+              onClick={() => handleNavigateTo(previousTeaching)}
+              className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)] flex items-center gap-1"
+              aria-label={lang === "ar" ? "السابق" : "Précédent"}
+              title={previousTeaching.title}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              <span className="hidden sm:inline">{lang === "ar" ? "السابق" : "Préc."}</span>
+            </button>
+          )}
+
           <button type="button"
             onClick={() => seekAndDisplay(Math.max(0, positionSeconds - 15))}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
@@ -585,6 +698,21 @@ function VideoTeachingPlayer({ teaching, dict, lang }: TeachingPlayerProps) {
           >
             +30s
           </button>
+
+          {/* Bouton suivant */}
+          {nextTeaching && (
+            <button type="button"
+              onClick={() => handleNavigateTo(nextTeaching)}
+              className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)] flex items-center gap-1"
+              aria-label={lang === "ar" ? "التالي" : "Suivant"}
+              title={nextTeaching.title}
+            >
+              <span className="hidden sm:inline">{lang === "ar" ? "التالي" : "Suiv."}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
 
           <span dir="ltr" className="font-[var(--font-hanken)] text-[12px] tabular-nums text-[rgba(251,249,243,0.6)] shrink-0">
             {fmtTime(positionSeconds)} / {teaching.duration}
