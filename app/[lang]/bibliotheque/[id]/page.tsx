@@ -122,7 +122,7 @@ export default async function TeachingDetailPage({
             <div className="space-y-6">
               {/* Player */}
               <Suspense fallback={<div className="bg-[#232a20] rounded-[14px]" style={{ aspectRatio: "16/9" }} />}>
-                <TeachingPlayer teaching={teaching} dict={dict} lang={lang} />
+                <TeachingPlayer teaching={teaching} dict={dict} lang={lang} seriesEpisodes={seriesEpisodes} relatedTeachings={related} />
               </Suspense>
 
               {/* Infos */}
