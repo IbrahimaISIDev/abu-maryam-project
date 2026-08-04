@@ -26,6 +26,7 @@ interface PlayerContextValue {
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   setPlaybackRate: (rate: number) => void;
+  registerOnEnded: (callback: () => void) => () => void;
 }
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
@@ -39,6 +40,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const onEndedCallbacksRef = useRef<Set<() => void>>(new Set());
   const { updateProgress } = useProgress();
   const { volume, muted, playbackRate, setVolume, toggleMute, setPlaybackRate } = useVolume();
 
@@ -64,6 +66,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const close = useCallback(() => {
     audioRef.current?.pause();
     setState({ teaching: null, isPlaying: false, positionSeconds: 0, hasError: false });
+  }, []);
+
+  const registerOnEnded = useCallback((callback: () => void) => {
+    onEndedCallbacksRef.current.add(callback);
+    return () => {
+      onEndedCallbacksRef.current.delete(callback);
+    };
   }, []);
 
   // Volume/muet/vitesse s'appliquent en continu à l'élément réel.
@@ -110,6 +119,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
     function handleEnded() {
       setState((prev) => ({ ...prev, isPlaying: false }));
+      // Appeler tous les callbacks enregistrés pour la lecture automatique
+      onEndedCallbacksRef.current.forEach((cb) => cb());
     }
     function handleError() {
       if (!audio || !audio.src) return; // pas de source assignée pour l'instant, pas une vraie erreur
@@ -161,7 +172,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   return (
     <PlayerContext.Provider
-      value={{ state, volume, muted, playbackRate, play, pause, resume, seek, close, setVolume, toggleMute, setPlaybackRate }}
+      value={{ state, volume, muted, playbackRate, play, pause, resume, seek, close, setVolume, toggleMute, setPlaybackRate, registerOnEnded }}
     >
       {children}
       {/* Toujours monté (pas conditionné à un teaching actif) pour que audioRef soit stable dès le premier play(). */}
