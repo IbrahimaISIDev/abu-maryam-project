@@ -24,6 +24,7 @@ const ar: Dictionary = {
     events: "الفعاليات",
     activities: "الأنشطة",
     profile: "الملف",
+    adhkar: "الأذكار",
   },
   search: {
     placeholder: "ابحث عن درس أو سلسلة أو فعالية…",

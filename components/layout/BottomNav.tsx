@@ -39,31 +39,30 @@ export default function BottomNav() {
       ),
     },
     {
+      href: "/adhkar",
+      label: dict.bottomNav.adhkar,
+      icon: () => (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <circle cx="12" cy="5" r="1.5" />
+          <circle cx="16" cy="7" r="1.5" />
+          <circle cx="18" cy="11" r="1.5" />
+          <circle cx="17" cy="15" r="1.5" />
+          <circle cx="14" cy="18" r="1.5" />
+          <circle cx="10" cy="18" r="1.5" />
+          <circle cx="7" cy="15" r="1.5" />
+          <circle cx="6" cy="11" r="1.5" />
+          <circle cx="8" cy="7" r="1.5" />
+          <path d="M12 18v3" />
+        </svg>
+      ),
+    },
+    {
       href: "/evenements",
       label: dict.bottomNav.events,
       icon: () => (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <rect x="3" y="4" width="18" height="18" rx="2" />
           <path d="M16 2v4M8 2v4M3 10h18" />
-        </svg>
-      ),
-    },
-    {
-      href: "/activites",
-      label: dict.bottomNav.activities,
-      icon: (active: boolean) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2" fill={active ? "currentColor" : "none"} fillOpacity={active ? 0.15 : 0} />
-        </svg>
-      ),
-    },
-    {
-      href: "/a-propos",
-      label: dict.bottomNav.profile,
-      icon: () => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <circle cx="12" cy="8" r="4" />
-          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
         </svg>
       ),
     },
@@ -79,13 +78,13 @@ export default function BottomNav() {
             <li key={href}>
               <Link
                 href={href}
-                className={`flex flex-col items-center gap-1 min-w-[48px] py-1 ${
+                className={`flex flex-col items-center gap-1 min-w-[56px] py-1 ${
                   isActive ? "text-[#3c4a37] dark:text-[#a9c19a]" : "text-[#6f7363] dark:text-[#8f8973]"
                 }`}
                 aria-current={isActive ? "page" : undefined}
               >
                 {icon(isActive)}
-                <span className="text-[10px] font-[var(--font-hanken)] font-medium">
+                <span className="text-[10.5px] font-[var(--font-hanken)] font-medium">
                   {label}
                 </span>
               </Link>

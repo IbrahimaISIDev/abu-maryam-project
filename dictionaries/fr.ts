@@ -24,6 +24,7 @@ const fr: Dictionary = {
     events: "Événements",
     activities: "Activités",
     profile: "Profil",
+    adhkar: "Adhkar",
   },
   search: {
     placeholder: "Rechercher un enseignement, une série, un événement…",

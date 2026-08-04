@@ -22,6 +22,7 @@ export interface Dictionary {
     events: string;
     activities: string;
     profile: string;
+    adhkar: string;
   };
   search: {
     placeholder: string;

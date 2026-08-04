@@ -89,6 +89,22 @@ export default function MobileHeader({ title }: { title?: string }) {
                     <span className="text-[18px] leading-none">🇸🇦</span> العربية
                   </NextLink>
                 </div>
+                <div className="border-t border-[#e2dac9] dark:border-[#3a4132] py-1">
+                  <Link
+                    href="/activites"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-[13.5px] font-[var(--font-hanken)] font-medium text-[#6f7363] dark:text-[#b7b2a0] hover:bg-[rgba(0,0,0,0.02)]"
+                  >
+                    {dict.nav.activities}
+                  </Link>
+                  <Link
+                    href="/a-propos"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-[13.5px] font-[var(--font-hanken)] font-medium text-[#6f7363] dark:text-[#b7b2a0] hover:bg-[rgba(0,0,0,0.02)]"
+                  >
+                    {dict.nav.about}
+                  </Link>
+                </div>
                 <Link
                   href="/en-direct"
                   onClick={() => setMenuOpen(false)}
