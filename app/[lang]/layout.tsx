@@ -10,6 +10,7 @@ import { DictionaryProvider } from "@/contexts/DictionaryContext";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import PublicSearch from "@/components/layout/PublicSearch";
 import PWARegister from "@/components/PWARegister";
+import PWAInstallBanner from "@/components/PWAInstallBanner";
 import { getAllTeachings, getAllSeries, getAgendaItems } from "@/lib/db/queries";
 
 export function generateStaticParams() {
@@ -93,6 +94,25 @@ export default async function LangLayout({
 
   return (
     <html lang={lang} dir={localeDir[lang as Locale]} className={fontVariables}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (!theme && systemDark)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-[#efe9dc] text-[#232a20]">
         <a
           href="#main-content"
@@ -106,6 +126,7 @@ export default async function LangLayout({
               {children}
               <MiniPlayer />
               <QuestionFloatingButton />
+              <PWAInstallBanner />
             </PlayerProvider>
             <PublicSearch teachings={teachings} seriesList={seriesList} agendaItems={agendaItems} />
           </SearchProvider>

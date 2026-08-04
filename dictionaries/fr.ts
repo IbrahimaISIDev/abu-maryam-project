@@ -26,6 +26,12 @@ const fr: Dictionary = {
     profile: "Profil",
     adhkar: "Adhkar",
   },
+  pwa: {
+    bannerTitle: "Installer l'application",
+    bannerDesc: "Accédez rapidement aux cours et directs directement depuis votre écran d'accueil.",
+    installBtn: "Installer",
+    dismissBtn: "Plus tard",
+  },
   search: {
     placeholder: "Rechercher un enseignement, une série, un événement…",
     minChars: "Tapez au moins 2 caractères pour rechercher",

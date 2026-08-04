@@ -24,6 +24,12 @@ export interface Dictionary {
     profile: string;
     adhkar: string;
   };
+  pwa: {
+    bannerTitle: string;
+    bannerDesc: string;
+    installBtn: string;
+    dismissBtn: string;
+  };
   search: {
     placeholder: string;
     minChars: string;

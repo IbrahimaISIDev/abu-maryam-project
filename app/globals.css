@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ── Custom Variant Dark Mode (Tailwind CSS v4) ── */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* ── Couleurs As-Sakîna ── */
   --color-bg-main:       #efe9dc;
@@ -39,11 +42,9 @@
   --placeholder-pattern: rgba(216, 208, 191, 0.45);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --placeholder-bg: #2b3326;
-    --placeholder-pattern: rgba(58, 65, 50, 0.6);
-  }
+.dark {
+  --placeholder-bg: #2b3326;
+  --placeholder-pattern: rgba(58, 65, 50, 0.6);
 }
 
 /* ── Reset de base ── */
@@ -60,13 +61,12 @@ body {
   background-color: #efe9dc;
   color: #232a20;
   font-family: var(--font-hanken), Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #1b211a;
-    color: #f2ede0;
-  }
+.dark body {
+  background-color: #1b211a;
+  color: #f2ede0;
 }
 
 /* ── Texte arabe toujours RTL ──

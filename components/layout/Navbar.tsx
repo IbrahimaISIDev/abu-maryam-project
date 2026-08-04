@@ -8,6 +8,7 @@ import BrandMark from "@/components/ui/BrandMark";
 import { useSearch } from "@/contexts/SearchContext";
 import { useDictionary } from "@/contexts/DictionaryContext";
 import { switchLocalePath } from "@/lib/i18n";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -96,6 +97,9 @@ export default function Navbar() {
               <path d="m21 21-4.3-4.3" />
             </svg>
           </button>
+
+          {/* Sélecteur de Thème */}
+          <ThemeToggle />
 
           {/* Regarder le live */}
           <Link

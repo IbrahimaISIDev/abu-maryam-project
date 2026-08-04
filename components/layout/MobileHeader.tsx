@@ -8,6 +8,7 @@ import BrandMark from "@/components/ui/BrandMark";
 import { useSearch } from "@/contexts/SearchContext";
 import { useDictionary } from "@/contexts/DictionaryContext";
 import { switchLocalePath } from "@/lib/i18n";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 export default function MobileHeader({ title }: { title?: string }) {
   const { openSearch } = useSearch();
@@ -44,6 +45,7 @@ export default function MobileHeader({ title }: { title?: string }) {
             <path d="m21 21-4.3-4.3" />
           </svg>
         </button>
+        <ThemeToggle />
         <div className="relative">
           <button
             type="button"

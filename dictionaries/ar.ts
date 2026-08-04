@@ -26,6 +26,12 @@ const ar: Dictionary = {
     profile: "الملف",
     adhkar: "الأذكار",
   },
+  pwa: {
+    bannerTitle: "تثبيت التطبيق",
+    bannerDesc: "وصول سريع ومباشر للدروس والبث المباشر من الشاشة الرئيسية لهاتفك.",
+    installBtn: "تثبيت",
+    dismissBtn: "ليس الآن",
+  },
   search: {
     placeholder: "ابحث عن درس أو سلسلة أو فعالية…",
     minChars: "اكتب حرفين على الأقل للبحث",
