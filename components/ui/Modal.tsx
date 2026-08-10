@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useId, useRef } from "react";
+import { type ReactNode, useEffect, useId, useRef, useLayoutEffect } from "react";
 
 interface Props {
   isOpen: boolean;
@@ -17,20 +17,39 @@ export default function Modal({ isOpen, title, onClose, children, maxWidth = "ma
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<Element | null>(null);
+  // `onClose` arrive souvent comme une fonction fléchée inline côté appelant, recréée à
+  // chaque rendu du parent (ex. à chaque frappe dans un champ du formulaire, via
+  // setEditItem). La stocker dans un ref permet aux effets ci-dessous de ne dépendre que
+  // de `isOpen` : sans ça, l'effet de focus initial se redéclenchait à chaque frappe et
+  // renvoyait le focus sur le premier champ du formulaire — d'où le curseur qui « sort »
+  // de l'input à chaque caractère saisi.
+  const onCloseRef = useRef(onClose);
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
+  // Focus initial + restauration au trigger — uniquement à l'ouverture/fermeture réelle.
   useEffect(() => {
     if (!isOpen) return;
-
     triggerRef.current = document.activeElement;
     const dialog = dialogRef.current;
     const focusable = dialog ? Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) : [];
     (focusable[0] ?? dialog)?.focus();
 
+    return () => {
+      if (triggerRef.current instanceof HTMLElement) triggerRef.current.focus();
+    };
+  }, [isOpen]);
+
+  // Échap + piège du Tab — écouteur stable, ne se ré-attache pas à chaque frappe.
+  useEffect(() => {
+    if (!isOpen) return;
     function handler(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
+      const dialog = dialogRef.current;
       if (e.key !== "Tab" || !dialog) return;
       const items = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
       if (items.length === 0) return;
@@ -45,11 +64,8 @@ export default function Modal({ isOpen, title, onClose, children, maxWidth = "ma
       }
     }
     document.addEventListener("keydown", handler);
-    return () => {
-      document.removeEventListener("keydown", handler);
-      if (triggerRef.current instanceof HTMLElement) triggerRef.current.focus();
-    };
-  }, [isOpen, onClose]);
+    return () => document.removeEventListener("keydown", handler);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
