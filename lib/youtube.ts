@@ -106,6 +106,28 @@ export async function fetchYoutubeDuration(id: string): Promise<YoutubeDurationR
   return { duration: formatDurationString(durationSeconds), durationSeconds };
 }
 
+/**
+ * Nombre de vues réelles d'une vidéo YouTube. Nécessite YOUTUBE_API_KEY — retourne null si la
+ * clé est absente, l'appel échoue, ou la vidéo est introuvable (repli sur la dernière valeur
+ * connue côté appelant). `videos.list?part=statistics` coûte 1 unité de quota — cache 1h,
+ * largement suffisant pour un compteur de vues (pas besoin de fraîcheur à la minute).
+ */
+export async function fetchYoutubeViewCount(videoId: string): Promise<number | null> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${apiKey}`;
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const count = data.items?.[0]?.statistics?.viewCount;
+    return count !== undefined ? Number(count) : null;
+  } catch {
+    return null;
+  }
+}
+
 export interface YoutubeLiveCheckResult {
   isLive: boolean;
   videoId?: string;

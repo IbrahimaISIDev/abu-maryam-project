@@ -48,6 +48,7 @@ export default function BibliothequeCatalogue({
   const sortOptions = [
     { value: "recent", label: dict.sortRecent },
     { value: "oldest", label: dict.sortOldest },
+    { value: "mostViewed", label: dict.sortMostViewed },
   ];
   const videoAudioLabel = {
     video: lang === "ar" ? "▶ فيديو" : "▶ Vidéo",
@@ -56,7 +57,10 @@ export default function BibliothequeCatalogue({
 
   const [tab, setTab] = useState<Tab>(() => (searchParams.get("tab") === "series" ? "series" : "cours"));
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
-  const [sort, setSort] = useState(() => (searchParams.get("sort") === "oldest" ? "oldest" : "recent"));
+  const [sort, setSort] = useState(() => {
+    const s = searchParams.get("sort");
+    return s === "oldest" || s === "mostViewed" ? s : "recent";
+  });
   const [selectedType, setSelectedType] = useState<ContentType | "all">(() => {
     const t = searchParams.get("type");
     return t === "video" || t === "audio" ? t : "all";
@@ -132,6 +136,7 @@ export default function BibliothequeCatalogue({
       );
     }
     if (sort === "oldest") return [...list].reverse();
+    if (sort === "mostViewed") return [...list].sort((a, b) => b.views - a.views);
     return list;
   }, [teachings, selectedType, selectedThemes, selectedLanguages, selectedEvent, query, sort, lang]);
 
@@ -216,7 +221,7 @@ export default function BibliothequeCatalogue({
               </div>
               <select
                 value={sort}
-                onChange={(e) => { setSort(e.target.value); setPage(1); }}
+                onChange={(e) => { setSort(e.target.value as "recent" | "oldest" | "mostViewed"); setPage(1); }}
                 className="px-4 py-3 bg-[#fbf9f3] dark:bg-[#20261b] border border-[#d8d0bf] dark:border-[#454c3c] rounded-full text-[14px] font-[var(--font-hanken)] text-[#3f463a] dark:text-[#d8d4c4] focus:outline-none focus:border-[#b58a3c] cursor-pointer"
               >
                 {sortOptions.map((o) => (

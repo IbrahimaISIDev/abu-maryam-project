@@ -33,6 +33,7 @@ export interface Teaching {
   language: Language;
   duration: string;          // "1:12:04"
   durationSeconds: number;   // pour la progression
+  views: number;
   thumbnail: string | null;
   youtubeId: string | null;  // pour type "video" hébergé sur YouTube
   videoUrl: string | null;   // pour type "video" auto-hébergé (R2)

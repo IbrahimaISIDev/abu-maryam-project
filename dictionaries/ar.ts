@@ -176,6 +176,7 @@ const ar: Dictionary = {
     searchPlaceholder: "ابحث عن درس أو سورة أو موضوع…",
     sortRecent: "الأحدث",
     sortOldest: "الأقدم",
+    sortMostViewed: "الأكثر مشاهدة",
     filterTitle: "تصفية",
     filterTypeLabel: "النوع",
     filterAll: "الكل",

@@ -3,7 +3,12 @@ import { eq, and, ne, asc, desc, sql } from "drizzle-orm";
 import { db } from "./client";
 import { teachings, series, agendaItems, liveStatus, seminars, replays, registrations, siteSettings } from "./schema";
 import type { Teaching, Series, AgendaItem, LiveStatus, Replay, Seminar, Registration, Theme } from "@/lib/types";
-import { fetchYoutubeLiveStatus, computeLiveCheckRevalidateSeconds, buildYoutubeWatchUrl } from "@/lib/youtube";
+import {
+  fetchYoutubeLiveStatus,
+  computeLiveCheckRevalidateSeconds,
+  buildYoutubeWatchUrl,
+  fetchYoutubeViewCount,
+} from "@/lib/youtube";
 
 function toTeaching(row: typeof teachings.$inferSelect): Teaching {
   return {
@@ -14,6 +19,7 @@ function toTeaching(row: typeof teachings.$inferSelect): Teaching {
     language: row.language,
     duration: row.duration,
     durationSeconds: row.durationSeconds,
+    views: row.views,
     thumbnail: row.thumbnail,
     youtubeId: row.youtubeId,
     videoUrl: row.videoUrl,
@@ -138,6 +144,41 @@ export const getTeachingById = cache(async (id: string): Promise<Teaching | unde
   const [row] = await db.select().from(teachings).where(eq(teachings.id, id));
   return row ? toTeaching(row) : undefined;
 });
+
+/**
+ * Incrémente le compteur de vues d'un enseignement auto-hébergé (jamais pour du contenu
+ * YouTube, dont les vues viennent de syncYoutubeViewCount). Retourne le nouveau total, ou
+ * `null` si l'enseignement n'existe pas, n'est pas publié, ou est hébergé sur YouTube.
+ * Volontairement non mise en cache (mutation) et hors de `toTeaching` (effet de bord).
+ */
+export async function incrementTeachingViews(id: string): Promise<number | null> {
+  const [row] = await db
+    .select({ published: teachings.published, youtubeId: teachings.youtubeId })
+    .from(teachings)
+    .where(eq(teachings.id, id));
+  if (!row || !row.published || row.youtubeId) return null;
+
+  const [updated] = await db
+    .update(teachings)
+    .set({ views: sql`${teachings.views} + 1` })
+    .where(eq(teachings.id, id))
+    .returning({ views: teachings.views });
+  return updated?.views ?? null;
+}
+
+/**
+ * Synchronise le compteur de vues d'un enseignement YouTube depuis les vraies statistiques
+ * YouTube (voir fetchYoutubeViewCount — mis en cache 1h côté fetch, coût de quota minime).
+ * Retourne la valeur à afficher : la fraîche si l'appel réussit, sinon la dernière connue en
+ * base (repli silencieux, même principe que getLiveStatus). N'écrit en base que si la valeur
+ * a changé, pour ne pas générer d'écriture à chaque chargement de page.
+ */
+export async function syncYoutubeViewCount(id: string, youtubeId: string, currentViews: number): Promise<number> {
+  const fresh = await fetchYoutubeViewCount(youtubeId);
+  if (fresh === null || fresh === currentViews) return currentViews;
+  await db.update(teachings).set({ views: fresh }).where(eq(teachings.id, id));
+  return fresh;
+}
 
 export const getSeriesEpisodes = cache(async (seriesId: string): Promise<Teaching[]> => {
   const rows = await db

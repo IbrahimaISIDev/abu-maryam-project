@@ -176,6 +176,7 @@ const fr: Dictionary = {
     searchPlaceholder: "Rechercher un cours, une sourate, un thème…",
     sortRecent: "Plus récents",
     sortOldest: "Plus anciens",
+    sortMostViewed: "Plus vus",
     filterTitle: "Filtrer",
     filterTypeLabel: "Type",
     filterAll: "Tout",

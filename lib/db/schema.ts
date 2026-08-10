@@ -75,6 +75,10 @@ export const teachings = pgTable("teachings", {
   language: languageEnum("language").notNull(),
   duration: text("duration").notNull(),
   durationSeconds: integer("duration_seconds").notNull().default(0),
+  // Vues : synchronisées depuis YouTube pour youtubeId (source la plus fiable, voir
+  // lib/youtube.ts → fetchYoutubeViewCount), incrémentées par nos soins pour le contenu
+  // auto-hébergé (R2) via /api/teachings/[id]/view — YouTube ne voit pas ces lectures.
+  views: integer("views").notNull().default(0),
   thumbnail: text("thumbnail"),
   // Vidéo : `youtubeId` (hébergement YouTube) OU `videoUrl` (fichier auto-hébergé,
   // typiquement R2 — voir lib/r2.ts) selon le choix fait à la création. Audio : `audioUrl` seul.

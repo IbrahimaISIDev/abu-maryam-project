@@ -9,6 +9,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 export const apiRoutes = {
   inscription: () => `${API_BASE}/api/inscription`,
+  teachingView: (id: string) => `${API_BASE}/api/teachings/${id}/view`,
 
   adminLogin: () => `${API_BASE}/api/admin/login`,
   adminLogout: () => `${API_BASE}/api/admin/logout`,

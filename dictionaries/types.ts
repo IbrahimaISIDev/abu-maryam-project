@@ -173,6 +173,7 @@ export interface Dictionary {
     searchPlaceholder: string;
     sortRecent: string;
     sortOldest: string;
+    sortMostViewed: string;
     filterTitle: string;
     filterTypeLabel: string;
     filterAll: string;

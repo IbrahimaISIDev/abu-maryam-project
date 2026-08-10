@@ -129,6 +129,11 @@ export function formatContentLanguage(value: string, lang: Locale): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+export function formatViews(views: number, lang: Locale): string {
+  const formatted = views.toLocaleString(lang === "ar" ? "ar-EG" : "fr-FR");
+  return lang === "ar" ? `${formatted} مشاهدة` : `${formatted} vue${views > 1 ? "s" : ""}`;
+}
+
 export function formatDayShort(value: string, lang: Locale): string {
   if (lang === "ar") {
     const map: Record<string, string> = { Ven: "جمعة", Sam: "سبت", Dim: "أحد" };

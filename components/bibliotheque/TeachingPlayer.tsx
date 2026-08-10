@@ -13,6 +13,7 @@ import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { getChapterLabel } from "@/lib/content-i18n";
 import { buildYoutubeWatchUrl } from "@/lib/youtube";
+import { registerView } from "@/lib/viewTracking";
 
 interface TeachingPlayerProps {
   teaching: Teaching;
@@ -260,11 +261,21 @@ function AudioTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
     usePlayer();
   const initialTimestamp = useInitialTimestamp();
   const appliedInitialTimestamp = useRef(false);
+  const hasRegisteredView = useRef(false);
 
   const isThisLoaded = state.teaching?.id === teaching.id;
   const isThisPlaying = isThisLoaded && state.isPlaying;
   const positionSeconds = isThisLoaded ? state.positionSeconds : 0;
   const hasError = isThisLoaded && state.hasError;
+
+  // Compte une vue au premier démarrage de lecture — l'audio est toujours auto-hébergé
+  // (jamais de youtubeId pour ce type), donc pas de garde à faire côté YouTube ici.
+  useEffect(() => {
+    if (isThisPlaying && !hasRegisteredView.current) {
+      hasRegisteredView.current = true;
+      registerView(teaching.id);
+    }
+  }, [isThisPlaying, teaching.id]);
 
   const nextTeaching = findNextTeaching(teaching, seriesEpisodes, relatedTeachings);
   const previousTeaching = findPreviousTeaching(teaching, seriesEpisodes, relatedTeachings);
@@ -484,9 +495,19 @@ function VideoTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
     const saved = getProgress(teaching.id);
     return saved && !saved.completed ? saved.positionSeconds : 0;
   });
+  const hasRegisteredView = useRef(false);
 
   const nextTeaching = findNextTeaching(teaching, seriesEpisodes, relatedTeachings);
   const previousTeaching = findPreviousTeaching(teaching, seriesEpisodes, relatedTeachings);
+
+  // Compte une vue au premier démarrage de lecture — uniquement pour le contenu
+  // auto-hébergé (videoUrl) : les vidéos YouTube sont comptées par YouTube lui-même.
+  useEffect(() => {
+    if (isPlaying && !teaching.youtubeId && !hasRegisteredView.current) {
+      hasRegisteredView.current = true;
+      registerView(teaching.id);
+    }
+  }, [isPlaying, teaching.id, teaching.youtubeId]);
 
   // Applique les préférences persistées (volume/muet/vitesse) dès que le lecteur est prêt,
   // et se positionne sur le lien profond ?t= éventuel.

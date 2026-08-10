@@ -12,10 +12,10 @@ import ShareButtons from "@/components/bibliotheque/ShareButtons";
 import ContentCard from "@/components/ui/ContentCard";
 import Badge from "@/components/ui/Badge";
 import GlossaryTerm from "@/components/ui/GlossaryTerm";
-import { getTeachingById, getSeriesEpisodes, getRelatedTeachings, getSeriesById, getAllTeachings } from "@/lib/db/queries";
+import { getTeachingById, getSeriesEpisodes, getRelatedTeachings, getSeriesById, getAllTeachings, syncYoutubeViewCount } from "@/lib/db/queries";
 import type { Theme } from "@/lib/types";
 import { getDictionary } from "@/dictionaries";
-import { formatSeriesLabel, formatContentLanguage, formatLevel, formatThemeLabel } from "@/lib/format";
+import { formatSeriesLabel, formatContentLanguage, formatLevel, formatThemeLabel, formatViews } from "@/lib/format";
 import { getTeachingTitle, getTeachingDescription, getSeriesTitle } from "@/lib/content-i18n";
 import { buildLanguageAlternates, SITE_URL, type Locale } from "@/lib/i18n";
 
@@ -64,6 +64,13 @@ export default async function TeachingDetailPage({
   const { lang, id } = await params;
   const teaching = await getTeachingById(id);
   if (!teaching) notFound();
+
+  // Vues fraîches depuis YouTube pour le contenu YouTube (repli silencieux sur la dernière
+  // valeur connue si l'appel échoue ou que YOUTUBE_API_KEY est absente) — voir
+  // syncYoutubeViewCount. Le contenu auto-hébergé garde directement teaching.views.
+  const views = teaching.youtubeId
+    ? await syncYoutubeViewCount(teaching.id, teaching.youtubeId, teaching.views)
+    : teaching.views;
 
   const dict = await getDictionary(lang);
   const series = teaching.seriesId ? await getSeriesById(teaching.seriesId) : null;
@@ -165,7 +172,7 @@ export default async function TeachingDetailPage({
                     </p>
                     <p className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973]">
                       {publishedDate} · {teaching.duration} ·{" "}
-                      {formatContentLanguage(teaching.language, lang)}
+                      {formatContentLanguage(teaching.language, lang)} · {formatViews(views, lang)}
                     </p>
                   </div>
                 </div>

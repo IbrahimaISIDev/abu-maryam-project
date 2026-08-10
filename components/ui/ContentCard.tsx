@@ -89,6 +89,12 @@ export default function ContentCard({ teaching, size = "default", progressPercen
         {size === "default" && (
           <p className="mt-1 text-[11px] text-[#6f7363] dark:text-[#8f8973] font-[var(--font-hanken)]">
             {formatThemeLabel(teaching.theme, lang)}
+            {teaching.views > 0 && (
+              <span dir="ltr" className="inline-block">
+                {" "}
+                · 👁 {teaching.views.toLocaleString(lang === "ar" ? "ar-EG" : "fr-FR")}
+              </span>
+            )}
           </p>
         )}
       </div>
