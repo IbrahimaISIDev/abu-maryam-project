@@ -43,6 +43,7 @@ export interface Teaching {
   descriptionAr?: string | null;
   seriesId?: string | null;
   episodeNumber?: number | null;
+  agendaItemId?: string | null; // rattache à un événement/activité (ex. vidéos d'un séminaire) — indépendant de seriesId
   level?: DifficultyLevel | null;
   arabicVerse?: string | null;
   chapters?: Chapter[] | null;

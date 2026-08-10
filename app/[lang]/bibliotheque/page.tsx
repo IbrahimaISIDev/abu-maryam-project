@@ -5,7 +5,7 @@ import MobileHeader from "@/components/layout/MobileHeader";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import BibliothequeCatalogue from "@/components/bibliotheque/BibliothequeCatalogue";
-import { getAllTeachings, getAllSeries } from "@/lib/db/queries";
+import { getAllTeachings, getAllSeries, getAgendaItems } from "@/lib/db/queries";
 import { getDictionary } from "@/dictionaries";
 import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
 
@@ -42,7 +42,11 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
 export default async function BibliothequePage({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
-  const [teachings, seriesList] = await Promise.all([getAllTeachings(), getAllSeries()]);
+  const [teachings, seriesList, agendaItems] = await Promise.all([
+    getAllTeachings(),
+    getAllSeries(),
+    getAgendaItems(),
+  ]);
 
   return (
     <>
@@ -51,7 +55,13 @@ export default async function BibliothequePage({ params }: { params: Promise<{ l
 
       <main id="main-content" className="pb-20 md:pb-0">
         <Suspense fallback={<div className="min-h-[60vh]" />}>
-          <BibliothequeCatalogue dict={dict.library} lang={lang} teachings={teachings} seriesList={seriesList} />
+          <BibliothequeCatalogue
+            dict={dict.library}
+            lang={lang}
+            teachings={teachings}
+            seriesList={seriesList}
+            agendaItems={agendaItems}
+          />
         </Suspense>
       </main>
 

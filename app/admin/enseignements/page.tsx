@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import type { Teaching, Theme, ContentType, Series } from "@/lib/types";
+import type { Teaching, Theme, ContentType, Series, AgendaItem } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import TeachingFormModal from "@/components/admin/TeachingFormModal";
@@ -36,6 +36,7 @@ export default function EnseignementsPage() {
   const toast = useToast();
   const [items, setItems] = useState<Teaching[]>([]);
   const [seriesList, setSeriesList] = useState<Series[]>([]);
+  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | ContentType>("all");
@@ -53,12 +54,20 @@ export default function EnseignementsPage() {
     Promise.all([
       fetch(apiRoutes.teachings()).then((res) => (res.ok ? res.json() : Promise.reject())),
       fetch(apiRoutes.series()).then((res) => (res.ok ? res.json() : Promise.reject())),
+      fetch(apiRoutes.agenda()).then((res) => (res.ok ? res.json() : Promise.reject())),
     ])
-      .then(([teachingsData, seriesData]: [{ teachings: Teaching[] }, { series: Series[] }]) => {
-        if (cancelled) return;
-        setItems(teachingsData.teachings);
-        setSeriesList(seriesData.series);
-      })
+      .then(
+        ([teachingsData, seriesData, agendaData]: [
+          { teachings: Teaching[] },
+          { series: Series[] },
+          { agendaItems: AgendaItem[] },
+        ]) => {
+          if (cancelled) return;
+          setItems(teachingsData.teachings);
+          setSeriesList(seriesData.series);
+          setAgendaItems(agendaData.agendaItems);
+        }
+      )
       .catch(() => {
         if (!cancelled) toast("Impossible de charger les enseignements", "error");
       })
@@ -365,6 +374,7 @@ export default function EnseignementsPage() {
         isNew={isNew}
         editItem={editItem}
         seriesList={seriesList}
+        agendaItems={agendaItems}
         onChange={setEditItem}
         onSave={handleSave}
         onClose={() => { setEditItem(null); setIsNew(false); }}

@@ -38,6 +38,7 @@ const teachingSchema = z.object({
   description: z.string().nullable().optional(),
   descriptionAr: z.string().nullable().optional(),
   seriesId: z.string().nullable().optional(),
+  agendaItemId: z.string().nullable().optional(),
   episodeNumber: z.number().int().nullable().optional(),
   level: z.enum(["débutant", "intermédiaire", "avancé"]).nullable().optional(),
   arabicVerse: z.string().nullable().optional(),

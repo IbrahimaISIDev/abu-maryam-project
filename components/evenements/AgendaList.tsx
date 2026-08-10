@@ -15,11 +15,13 @@ export default function AgendaList({
   lang,
   agendaItems,
   replays = [],
+  videoCounts = {},
 }: {
   dict: Dictionary["events"];
   lang: Locale;
   agendaItems: AgendaItem[];
   replays?: Replay[];
+  videoCounts?: Record<string, number>;
 }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
 
@@ -103,6 +105,16 @@ export default function AgendaList({
                   📍 {formatLocation(item.location, lang)}
                   {item.dateEnd && ` · ${formatUntilDate(parseDate(item.dateEnd).day, parseDate(item.dateEnd).month, lang)}`}
                 </p>
+                {!!videoCounts[item.id] && (
+                  <Link
+                    href={`/bibliotheque?event=${item.id}`}
+                    className="inline-flex items-center gap-1.5 mt-2 font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#b58a3c] hover:text-[#9e7832] transition-colors"
+                  >
+                    🎬 {lang === "ar"
+                      ? `${videoCounts[item.id]} فيديو لهذا الحدث ←`
+                      : `${videoCounts[item.id]} vidéo${videoCounts[item.id] > 1 ? "s" : ""} de cet événement →`}
+                  </Link>
+                )}
               </div>
 
               {/* Bouton action */}

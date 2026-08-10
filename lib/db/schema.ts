@@ -89,6 +89,11 @@ export const teachings = pgTable("teachings", {
     onDelete: "set null",
   }),
   episodeNumber: integer("episode_number"),
+  // Rattache un enseignement à un événement/activité de l'agenda (ex. les vidéos
+  // filmées pendant un séminaire) — indépendant de seriesId (regroupement thématique).
+  agendaItemId: text("agenda_item_id").references((): typeof agendaItems.id => agendaItems.id, {
+    onDelete: "set null",
+  }),
   level: difficultyLevelEnum("level"),
   arabicVerse: text("arabic_verse"),
   chapters: jsonb("chapters").$type<ChapterJson[]>(),

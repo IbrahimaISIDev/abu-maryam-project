@@ -7,7 +7,7 @@ import FilterPanel from "./FilterPanel";
 import SeriesCard from "./SeriesCard";
 import ContentCard from "@/components/ui/ContentCard";
 import { useProgress } from "@/hooks/useProgress";
-import type { ContentType, Theme, Language, Teaching, Series } from "@/lib/types";
+import type { ContentType, Theme, Language, Teaching, Series, AgendaItem } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import {
@@ -32,11 +32,13 @@ export default function BibliothequeCatalogue({
   lang,
   teachings,
   seriesList,
+  agendaItems,
 }: {
   dict: Dictionary["library"];
   lang: Locale;
   teachings: Teaching[];
   seriesList: Series[];
+  agendaItems: AgendaItem[];
 }) {
   const { getProgress } = useProgress();
   const CATALOGUE_TOTAL = teachings.length;
@@ -71,7 +73,10 @@ export default function BibliothequeCatalogue({
     const p = Number(searchParams.get("page"));
     return Number.isFinite(p) && p > 0 ? p : 1;
   });
+  const [selectedEvent, setSelectedEvent] = useState<string | null>(() => searchParams.get("event"));
   const [transitioning, setTransitioning] = useState(false);
+
+  const selectedEventItem = selectedEvent ? agendaItems.find((a) => a.id === selectedEvent) ?? null : null;
 
   // Garde l'URL synchronisée avec les filtres — permet de partager ou recharger une recherche précise
   useEffect(() => {
@@ -82,10 +87,11 @@ export default function BibliothequeCatalogue({
     if (selectedType !== "all") params.set("type", selectedType);
     if (selectedThemes.length) params.set("themes", selectedThemes.join(","));
     if (selectedLanguages.length) params.set("langs", selectedLanguages.join(","));
+    if (selectedEvent) params.set("event", selectedEvent);
     if (page !== 1) params.set("page", String(page));
     const qs = params.toString();
     window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
-  }, [tab, query, sort, selectedType, selectedThemes, selectedLanguages, page, pathname]);
+  }, [tab, query, sort, selectedType, selectedThemes, selectedLanguages, selectedEvent, page, pathname]);
 
   function goToPage(p: number) {
     setTransitioning(true);
@@ -99,6 +105,7 @@ export default function BibliothequeCatalogue({
     setSelectedType("all");
     setSelectedThemes([]);
     setSelectedLanguages([]);
+    setSelectedEvent(null);
     setPage(1);
   }
 
@@ -117,6 +124,7 @@ export default function BibliothequeCatalogue({
     if (selectedType !== "all") list = list.filter((t) => t.type === selectedType);
     if (selectedThemes.length) list = list.filter((t) => selectedThemes.includes(t.theme as Theme));
     if (selectedLanguages.length) list = list.filter((t) => selectedLanguages.includes(t.language as Language));
+    if (selectedEvent) list = list.filter((t) => t.agendaItemId === selectedEvent);
     if (query.trim()) {
       const q = query.toLowerCase();
       list = list.filter(
@@ -125,7 +133,7 @@ export default function BibliothequeCatalogue({
     }
     if (sort === "oldest") return [...list].reverse();
     return list;
-  }, [teachings, selectedType, selectedThemes, selectedLanguages, query, sort, lang]);
+  }, [teachings, selectedType, selectedThemes, selectedLanguages, selectedEvent, query, sort, lang]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -237,6 +245,24 @@ export default function BibliothequeCatalogue({
         {/* ——— ONGLET COURS ——— */}
         {tab === "cours" && (
           <>
+            {selectedEventItem && (
+              <div className="flex items-center gap-2 mb-4">
+                <span className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] dark:text-[#8f8973]">
+                  {lang === "ar" ? "مُصنّف حسب:" : "Filtré par :"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => { setSelectedEvent(null); setPage(1); }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#3c4a37] text-[#fbf9f3] font-[var(--font-hanken)] text-[12.5px] font-medium hover:bg-[#2d3829] transition-colors"
+                >
+                  {selectedEventItem.title}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
             {/* Mobile : pills de filtre rapide */}
             <div className="md:hidden flex gap-2 overflow-x-auto pb-3 mb-4 -mx-5 px-5">
               {(["all", "video", "audio"] as const).map((type) => (

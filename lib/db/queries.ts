@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { eq, and, ne, asc, desc, sql } from "drizzle-orm";
+import { eq, and, ne, isNotNull, asc, desc, sql } from "drizzle-orm";
 import { db } from "./client";
 import { teachings, series, agendaItems, liveStatus, seminars, replays, registrations, siteSettings } from "./schema";
 import type { Teaching, Series, AgendaItem, LiveStatus, Replay, Seminar, Registration, Theme } from "@/lib/types";
@@ -23,6 +23,7 @@ function toTeaching(row: typeof teachings.$inferSelect): Teaching {
     description: row.description ?? undefined,
     seriesId: row.seriesId,
     episodeNumber: row.episodeNumber,
+    agendaItemId: row.agendaItemId,
     level: row.level,
     arabicVerse: row.arabicVerse,
     chapters: row.chapters,
@@ -182,6 +183,18 @@ export const getThemeCounts = cache(async (): Promise<Partial<Record<Theme, numb
     .groupBy(teachings.theme);
   const map: Partial<Record<Theme, number>> = {};
   for (const r of rows) map[r.theme] = r.count;
+  return map;
+});
+
+/** Nombre d'enseignements publiés rattachés à chaque événement/activité de l'agenda (Teaching.agendaItemId). */
+export const getAgendaItemTeachingCounts = cache(async (): Promise<Record<string, number>> => {
+  const rows = await db
+    .select({ agendaItemId: teachings.agendaItemId, count: sql<number>`count(*)::int` })
+    .from(teachings)
+    .where(and(eq(teachings.published, true), isNotNull(teachings.agendaItemId)))
+    .groupBy(teachings.agendaItemId);
+  const map: Record<string, number> = {};
+  for (const r of rows) if (r.agendaItemId) map[r.agendaItemId] = r.count;
   return map;
 });
 

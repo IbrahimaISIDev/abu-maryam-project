@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Teaching, Theme, ContentType, Language, DifficultyLevel, Series, Chapter } from "@/lib/types";
+import type { Teaching, Theme, ContentType, Language, DifficultyLevel, Series, Chapter, AgendaItem } from "@/lib/types";
 import { parseTimeToSeconds, formatDurationString, buildYoutubeThumbnailUrl } from "@/lib/youtube";
 import { useToast } from "@/contexts/ToastContext";
 import { apiRoutes } from "@/lib/api-routes";
@@ -38,6 +38,7 @@ interface TeachingFormModalProps {
   isNew: boolean;
   editItem: Teaching | null;
   seriesList: Series[];
+  agendaItems: AgendaItem[];
   onChange: (item: Teaching) => void;
   onSave: () => void;
   onClose: () => void;
@@ -48,6 +49,7 @@ export default function TeachingFormModal({
   isNew,
   editItem,
   seriesList,
+  agendaItems,
   onChange,
   onSave,
   onClose,
@@ -343,6 +345,26 @@ export default function TeachingFormModal({
               />
             </div>
           )}
+        </div>
+
+        <div>
+          <FieldLabel>Événement associé (optionnel)</FieldLabel>
+          <select
+            value={editItem.agendaItemId ?? ""}
+            onChange={(e) => onChange({ ...editItem, agendaItemId: e.target.value || null })}
+            className={inputClass}
+          >
+            <option value="">— Aucun —</option>
+            {agendaItems.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.title} ({new Date(a.dateStart).toLocaleDateString("fr-FR")})
+              </option>
+            ))}
+          </select>
+          <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483] mt-1.5">
+            Pour rattacher une vidéo/audio filmé pendant un séminaire ou une activité — apparaîtra
+            groupé avec les autres contenus du même événement.
+          </p>
         </div>
 
         <div>
