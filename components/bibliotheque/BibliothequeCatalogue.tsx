@@ -19,7 +19,7 @@ import {
   formatMobileAll,
   formatPaginationPageLabel,
 } from "@/lib/format";
-import { getTeachingTitle } from "@/lib/content-i18n";
+import { getTeachingTitle, getAgendaItemTitle } from "@/lib/content-i18n";
 
 const PAGE_SIZE = 9;
 const ALL_THEMES = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence", "rappel"] as const;
@@ -149,6 +149,18 @@ export default function BibliothequeCatalogue({
     for (const t of teachings) map[t.theme] = (map[t.theme] ?? 0) + 1;
     return map;
   }, [teachings]);
+
+  const eventOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const t of teachings) {
+      if (!t.agendaItemId) continue;
+      counts.set(t.agendaItemId, (counts.get(t.agendaItemId) ?? 0) + 1);
+    }
+    return agendaItems
+      .filter((a) => counts.has(a.id))
+      .map((a) => ({ id: a.id, label: getAgendaItemTitle(a.id, a.title, lang), count: counts.get(a.id)! }))
+      .sort((a, b) => b.count - a.count);
+  }, [teachings, agendaItems, lang]);
 
   return (
     <>
@@ -289,11 +301,14 @@ export default function BibliothequeCatalogue({
                   selectedType={selectedType}
                   selectedThemes={selectedThemes}
                   selectedLanguages={selectedLanguages}
+                  selectedEvent={selectedEvent}
                   onTypeChange={(t) => { setSelectedType(t); setPage(1); }}
                   onThemeToggle={(t) => { toggleTheme(t); setPage(1); }}
                   onLanguageToggle={(l) => { toggleLang(l); setPage(1); }}
+                  onEventChange={(id) => { setSelectedEvent(id); setPage(1); }}
                   counts={counts}
                   themeCounts={themeCounts}
+                  eventOptions={eventOptions}
                 />
               </div>
 

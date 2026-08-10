@@ -6,26 +6,35 @@ import type { Locale } from "@/lib/i18n";
 import GlossaryTerm from "@/components/ui/GlossaryTerm";
 import { formatThemeLabel } from "@/lib/format";
 
+export interface EventFilterOption {
+  id: string;
+  label: string;
+  count: number;
+}
+
 interface FilterPanelProps {
   dict: Dictionary["library"];
   lang: Locale;
   selectedType: ContentType | "all";
   selectedThemes: Theme[];
   selectedLanguages: Language[];
+  selectedEvent: string | null;
   onTypeChange: (t: ContentType | "all") => void;
   onThemeToggle: (t: Theme) => void;
   onLanguageToggle: (l: Language) => void;
+  onEventChange: (id: string | null) => void;
   counts: { total: number; video: number; audio: number };
   themeCounts: Partial<Record<Theme, number>>;
+  eventOptions: EventFilterOption[];
 }
 
 const themeIds: Theme[] = ["tafsir", "tawhid", "akhlaq", "salat", "famille", "sunna", "sahaba", "khoutba", "conférence", "rappel"];
 
 export default function FilterPanel({
   dict, lang,
-  selectedType, selectedThemes, selectedLanguages,
-  onTypeChange, onThemeToggle, onLanguageToggle,
-  counts, themeCounts,
+  selectedType, selectedThemes, selectedLanguages, selectedEvent,
+  onTypeChange, onThemeToggle, onLanguageToggle, onEventChange,
+  counts, themeCounts, eventOptions,
 }: FilterPanelProps) {
   const languages: { id: Language; label: string }[] = [
     { id: "wolof", label: dict.languageWolof },
@@ -139,6 +148,56 @@ export default function FilterPanel({
           })}
         </ul>
       </div>
+
+      {/* ÉVÉNEMENTS */}
+      {eventOptions.length > 0 && (
+        <div className="mb-6">
+          <p className="font-[var(--font-hanken)] text-[11px] font-semibold tracking-widest uppercase text-[#6f7363] dark:text-[#8f8973] mb-3">
+            {lang === "ar" ? "الفعاليات" : "Événements"}
+          </p>
+          <ul className="space-y-2">
+            {eventOptions.map(({ id, label, count }) => {
+              const checked = selectedEvent === id;
+              return (
+                <li key={id}>
+                  {/* Pas de vrai <input type="radio"> pilotant le clic : cliquer sur une option
+                      déjà cochée ne déclenche pas onChange en HTML natif — le clic est donc géré
+                      sur le label lui-même pour permettre de désélectionner en recliquant. */}
+                  <label
+                    className="flex items-center justify-between gap-2 cursor-pointer group"
+                    onClick={(e) => { e.preventDefault(); onEventChange(checked ? null : id); }}
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <span
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                          checked
+                            ? "border-[#3c4a37] bg-[#3c4a37]"
+                            : "border-[#d8d0bf] dark:border-[#454c3c] group-hover:border-[#3c4a37]"
+                        }`}
+                      >
+                        {checked && <span className="w-2 h-2 rounded-full bg-[#fbf9f3]" />}
+                      </span>
+                      <input
+                        type="radio"
+                        className="sr-only"
+                        checked={checked}
+                        readOnly
+                        aria-label={label}
+                      />
+                      <span className="font-[var(--font-hanken)] text-[14px] text-[#3f463a] dark:text-[#d8d4c4] truncate">
+                        🎬 {label}
+                      </span>
+                    </span>
+                    <span className="font-[var(--font-hanken)] text-[12px] text-[#6f7363] dark:text-[#8f8973] shrink-0">
+                      {count}
+                    </span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {/* LANGUE */}
       <div>
