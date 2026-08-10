@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "@/components/ui/LocalizedLink";
-import type { AgendaItem, Replay } from "@/lib/types";
+import ContentCard from "@/components/ui/ContentCard";
+import type { AgendaItem, Replay, Teaching } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { formatUntilDate, formatEventCta, formatLocation } from "@/lib/format";
@@ -10,18 +11,20 @@ import { getAgendaItemTitle } from "@/lib/content-i18n";
 import { computeAgendaStatus } from "@/lib/activities";
 import { buildYoutubeWatchUrl } from "@/lib/youtube";
 
+const GRID_PREVIEW_LIMIT = 6;
+
 export default function AgendaList({
   dict,
   lang,
   agendaItems,
   replays = [],
-  videoCounts = {},
+  teachings = [],
 }: {
   dict: Dictionary["events"];
   lang: Locale;
   agendaItems: AgendaItem[];
   replays?: Replay[];
-  videoCounts?: Record<string, number>;
+  teachings?: Teaching[];
 }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
 
@@ -70,13 +73,16 @@ export default function AgendaList({
       <ul className="space-y-3">
         {filtered.map((item) => {
           const d = parseDate(item.dateStart);
+          const eventTeachings = teachings.filter((t) => t.agendaItemId === item.id);
+          const preview = eventTeachings.slice(0, GRID_PREVIEW_LIMIT);
           return (
             <li
               key={item.id}
-              className={`bg-[#fbf9f3] dark:bg-[#20261b] border rounded-[13px] flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0 p-5 ${
+              className={`bg-[#fbf9f3] dark:bg-[#20261b] border rounded-[13px] p-5 ${
                 item.isFeatured ? "border-[#b58a3c]" : "border-[#e2dac9] dark:border-[#3a4132]"
               }`}
             >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
               {/* Bloc date */}
               <div className="text-center shrink-0 sm:w-[80px]">
                 <p className="font-[var(--font-hanken)] text-[11px] font-semibold uppercase text-[#6f7363] dark:text-[#8f8973]">
@@ -105,15 +111,10 @@ export default function AgendaList({
                   📍 {formatLocation(item.location, lang)}
                   {item.dateEnd && ` · ${formatUntilDate(parseDate(item.dateEnd).day, parseDate(item.dateEnd).month, lang)}`}
                 </p>
-                {!!videoCounts[item.id] && (
-                  <Link
-                    href={`/bibliotheque?event=${item.id}`}
-                    className="inline-flex items-center gap-1.5 mt-2 font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#b58a3c] hover:text-[#9e7832] transition-colors"
-                  >
-                    🎬 {lang === "ar"
-                      ? `${videoCounts[item.id]} فيديو لهذا الحدث ←`
-                      : `${videoCounts[item.id]} vidéo${videoCounts[item.id] > 1 ? "s" : ""} de cet événement →`}
-                  </Link>
+                {eventTeachings.length > 0 && (
+                  <span className="inline-flex items-center gap-1.5 mt-2 font-[var(--font-hanken)] text-[11.5px] font-semibold text-[#b58a3c]">
+                    🎬 {lang === "ar" ? `${eventTeachings.length} فيديو` : `${eventTeachings.length} vidéo${eventTeachings.length > 1 ? "s" : ""}`}
+                  </span>
                 )}
               </div>
 
@@ -150,6 +151,33 @@ export default function AgendaList({
                   </div>
                 );
               })()}
+            </div>
+
+            {/* Vidéos rattachées à cet événement */}
+            {preview.length > 0 && (
+              <div className="mt-5 pt-5 border-t border-[#e2dac9] dark:border-[#3a4132]">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-[var(--font-hanken)] text-[12px] font-semibold uppercase tracking-widest text-[#7d5f26] dark:text-[#e3c685]">
+                    {lang === "ar" ? "فيديوهات هذا الحدث" : "Vidéos de cet événement"}
+                  </p>
+                  {eventTeachings.length > preview.length && (
+                    <Link
+                      href={`/bibliotheque?event=${item.id}`}
+                      className="font-[var(--font-hanken)] text-[12.5px] font-medium text-[#7d5f26] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] underline underline-offset-4 transition-colors"
+                    >
+                      {lang === "ar" ? "عرض الكل ←" : "Voir tout →"}
+                    </Link>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                  {preview.map((t) => (
+                    <Link key={t.id} href={`/bibliotheque/${t.id}`} className="block">
+                      <ContentCard teaching={t} lang={lang} />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
             </li>
           );
         })}
