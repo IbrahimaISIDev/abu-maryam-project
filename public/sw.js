@@ -6,7 +6,7 @@ const STATIC_ASSETS = [
   "/evenements",
   "/inscription",
   "/a-propos",
-  "/manifest.json",
+  "/manifest.webmanifest",
 ];
 
 self.addEventListener("install", (event) => {

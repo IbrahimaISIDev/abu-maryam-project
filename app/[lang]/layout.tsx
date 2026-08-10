@@ -65,7 +65,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: siteTitle,
     },
-    manifest: "/manifest.json",
+    manifest: "/manifest.webmanifest",
   };
 }
 
