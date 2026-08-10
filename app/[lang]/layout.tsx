@@ -113,7 +113,7 @@ export default async function LangLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-[#efe9dc] text-[#232a20]">
+      <body className="min-h-screen bg-[#efe9dc] dark:bg-[#1b211a] text-[#232a20] dark:text-[#f2ede0]">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:z-[200] focus:top-3 focus:left-3 focus:bg-[#3c4a37] focus:text-[#fbf9f3] focus:px-4 focus:py-2.5 focus:rounded-[8px] focus:font-[var(--font-hanken)] focus:text-[13.5px] focus:font-semibold focus:outline-none focus:ring-2 focus:ring-[#cda350] focus:ring-offset-2"
