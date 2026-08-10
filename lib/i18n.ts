@@ -1,7 +1,7 @@
 export const locales = ["fr", "ar"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "fr";
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://abumaryam.tv";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://abou-maryam.com";
 
 export function isLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);
