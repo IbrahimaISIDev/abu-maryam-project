@@ -223,7 +223,7 @@ export default async function DashboardPage() {
                     href={buildWhatsAppContactLink(r.phone)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded-[5px] text-[#25D366] hover:bg-[rgba(37,211,102,0.1)] transition-all"
+                    className="shrink-0 p-1 rounded-[5px] text-[#25D366] hover:bg-[rgba(37,211,102,0.1)] transition-colors"
                     title="WhatsApp"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">

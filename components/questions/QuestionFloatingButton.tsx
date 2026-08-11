@@ -10,7 +10,7 @@ export default function QuestionFloatingButton() {
     <>
       {/* FAB — Mobile : bouton rond bien visible en bas à droite */}
       {/* Desktop : bouton étendu avec label */}
-      <div className="fixed bottom-20 right-4 z-40 md:bottom-8 md:right-8">
+      <div className="fixed bottom-20 right-4 rtl:right-auto rtl:left-4 z-40 md:bottom-8 md:right-8 md:rtl:right-auto md:rtl:left-8">
         {/* Mobile FAB : bouton rond */}
         <button
           onClick={() => setIsOpen(true)}
@@ -44,7 +44,7 @@ export default function QuestionFloatingButton() {
           </svg>
           {/* Tooltip */}
           <span className="
-            pointer-events-none absolute bottom-full right-0 mb-2
+            pointer-events-none absolute bottom-full right-0 rtl:right-auto rtl:left-0 mb-2
             whitespace-nowrap rounded-lg bg-[#232a20] px-3 py-1.5
             text-xs font-semibold text-white shadow-lg
             opacity-0 translate-y-1

@@ -399,9 +399,12 @@ export default function ParametresPage() {
 
         {/* Notifications */}
         <section className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[14px] p-6">
-          <h2 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] mb-5">
+          <h2 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#232a20] mb-1">
             Notifications
           </h2>
+          <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] mb-5">
+            Bientôt disponible — le réglage est sauvegardé mais aucun e-mail ni message WhatsApp n&apos;est encore envoyé.
+          </p>
           <div className="space-y-4">
             {(
               [
@@ -426,19 +429,6 @@ export default function ParametresPage() {
           </div>
         </section>
 
-        {/* Zone danger */}
-        <section className="bg-[rgba(138,47,41,0.04)] border border-[rgba(138,47,41,0.2)] rounded-[14px] p-6">
-          <h2 className="font-[var(--font-cormorant)] font-semibold text-[22px] text-[#8a2f29] mb-2">Zone de danger</h2>
-          <p className="font-[var(--font-hanken)] text-[13px] text-[#6f7363] mb-4">
-            Ces actions sont irréversibles. Procédez avec précaution.
-          </p>
-          <button
-            onClick={() => toast("Contactez le développeur pour cette action.", "error")}
-            className="px-5 py-2.5 border border-[rgba(138,47,41,0.4)] text-[#8a2f29] font-[var(--font-hanken)] text-[13.5px] font-semibold rounded-[9px] hover:bg-[rgba(138,47,41,0.06)] transition-colors"
-          >
-            Réinitialiser toutes les données
-          </button>
-        </section>
       </div>
     </div>
   );
