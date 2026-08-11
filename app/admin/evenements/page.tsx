@@ -11,6 +11,13 @@ import { apiRoutes } from "@/lib/api-routes";
 
 const AGENDA_TYPES: AgendaItem["type"][] = ["séminaire", "conférence", "khoutba", "cours", "tafsir"];
 
+function formatAgendaDate(item: AgendaItem): string {
+  const startStr = new Date(item.dateStart).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  if (!item.dateEnd || item.dateEnd === item.dateStart) return startStr;
+  const endStr = new Date(item.dateEnd).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  return `${startStr} → ${endStr}`;
+}
+
 export default function EvenementsAdminPage() {
   const toast = useToast();
   const [sem, setSem] = useState<Seminar | null>(null);
@@ -194,7 +201,25 @@ export default function EvenementsAdminPage() {
 
       {/* Card séminaire */}
       {loading ? (
-        <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483] py-10 text-center">Chargement…</p>
+        <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[14px] overflow-hidden mb-6 animate-pulse">
+          <div className="bg-[#3c4a37] px-6 py-5">
+            <div className="h-3 w-36 bg-[rgba(251,249,243,0.15)] rounded-full mb-3" />
+            <div className="h-6 w-64 max-w-full bg-[rgba(251,249,243,0.15)] rounded mb-2" />
+            <div className="h-3 w-48 bg-[rgba(251,249,243,0.12)] rounded mb-1.5" />
+            <div className="h-3 w-32 bg-[rgba(251,249,243,0.12)] rounded" />
+          </div>
+          <div className="px-6 py-5">
+            <div className="flex items-center gap-6 mb-5">
+              {[0, 1, 2].map((i) => (
+                <div key={i}>
+                  <div className="h-7 w-10 bg-[#e2dac9] rounded mb-1.5" />
+                  <div className="h-2.5 w-20 bg-[#e2dac9] rounded" />
+                </div>
+              ))}
+            </div>
+            <div className="h-2.5 w-full bg-[#e2dac9] rounded-full" />
+          </div>
+        </div>
       ) : sem ? (
       <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[14px] overflow-hidden mb-6">
         <div className="bg-[#3c4a37] px-6 py-5">
@@ -261,7 +286,19 @@ export default function EvenementsAdminPage() {
           </button>
         </div>
         {loading ? (
-          <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483] py-12 text-center">Chargement…</p>
+          <ul className="divide-y divide-[#f0ece3]">
+            {[0, 1, 2].map((i) => (
+              <li key={i} className="flex items-center gap-4 px-5 py-4 animate-pulse">
+                <div className="w-[92px] shrink-0"><div className="h-3 w-14 bg-[#e2dac9] rounded mx-auto" /></div>
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="h-3.5 w-1/2 bg-[#e2dac9] rounded" />
+                  <div className="h-2.5 w-1/3 bg-[#e2dac9] rounded" />
+                </div>
+                <div className="h-5 w-16 bg-[#e2dac9] rounded-full shrink-0" />
+                <div className="w-[72px] shrink-0" />
+              </li>
+            ))}
+          </ul>
         ) : agenda.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-12">
             <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Aucun créneau pour l&apos;instant</p>
@@ -270,32 +307,60 @@ export default function EvenementsAdminPage() {
           <ul className="divide-y divide-[#f0ece3]">
             {agenda.map((item) => {
               const status = computeAgendaStatus(item);
+              const isLive = status === "live";
               return (
-              <li key={item.id} className="flex items-center gap-4 px-5 py-4 group hover:bg-[#f9f6ef] transition-colors">
-                <div className="w-[80px] shrink-0 text-center">
+              <li
+                key={item.id}
+                className={`flex items-center gap-4 px-5 py-4 transition-colors ${
+                  isLive ? "bg-[rgba(181,138,60,0.06)] hover:bg-[rgba(181,138,60,0.1)]" : "hover:bg-[#f9f6ef]"
+                }`}
+              >
+                <div className="w-[92px] shrink-0 text-center">
                   <span className="font-[var(--font-hanken)] text-[11px] font-semibold tabular-nums text-[#b58a3c]">
-                    {new Date(item.dateStart).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                    {formatAgendaDate(item)}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#232a20]">{item.title}</p>
-                  <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483]">{item.location} · <span className="capitalize">{item.type}</span></p>
+                  <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#232a20] line-clamp-1">{item.title}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span
+                      className={`shrink-0 text-[10px] font-semibold font-[var(--font-hanken)] px-1.5 py-0.5 rounded capitalize ${
+                        item.type === "séminaire" ? "bg-[rgba(181,138,60,0.12)] text-[#b58a3c]" : "bg-[rgba(60,74,55,0.08)] text-[#3c4a37]"
+                      }`}
+                    >
+                      {item.type}
+                    </span>
+                    <span className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] truncate">{item.location}</span>
+                  </div>
                 </div>
-                <span className={`shrink-0 text-[10.5px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full ${status !== "past" ? "bg-[#eef4e8] text-[#5f7050]" : "bg-[#f0ece3] text-[#9a9483]"}`}>
-                  {status === "upcoming" ? "À venir" : status === "live" ? "En cours" : "Passé"}
+                <span
+                  className={`shrink-0 inline-flex items-center gap-1.5 text-[10.5px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full ${
+                    isLive ? "bg-[rgba(181,138,60,0.18)] text-[#9e7832]" : status === "upcoming" ? "bg-[#eef4e8] text-[#5f7050]" : "bg-[#f0ece3] text-[#9a9483]"
+                  }`}
+                >
+                  {isLive && <span className="w-1.5 h-1.5 rounded-full bg-[#b58a3c] animate-pulse" />}
+                  {status === "upcoming" ? "À venir" : isLive ? "En cours" : "Passé"}
                 </span>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => setEditAgenda({ ...item })}
-                    className="font-[var(--font-hanken)] text-[12px] text-[#b58a3c] hover:text-[#9e7832] transition-colors"
+                    aria-label="Modifier"
+                    title="Modifier"
+                    className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#b58a3c] hover:bg-[rgba(181,138,60,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c]"
                   >
-                    Modifier
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                    </svg>
                   </button>
                   <button
                     onClick={() => setDeleteAgendaId(item.id)}
-                    className="font-[var(--font-hanken)] text-[12px] text-[#8a2f29] hover:text-[#6e2520] transition-colors"
+                    aria-label="Supprimer"
+                    title="Supprimer"
+                    className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#8a2f29] hover:bg-[rgba(138,47,41,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8a2f29]"
                   >
-                    Supprimer
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
                   </button>
                 </div>
               </li>
@@ -336,21 +401,37 @@ export default function EvenementsAdminPage() {
             + Ajouter
           </button>
         </div>
-        {replays.length === 0 ? (
+        {loading ? (
+          <ul className="divide-y divide-[#f0ece3]">
+            {[0, 1].map((i) => (
+              <li key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="h-3.5 w-2/5 bg-[#e2dac9] rounded" />
+                  <div className="h-2.5 w-1/4 bg-[#e2dac9] rounded" />
+                </div>
+                <div className="w-8 h-8 shrink-0" />
+              </li>
+            ))}
+          </ul>
+        ) : replays.length === 0 ? (
           <p className="font-[var(--font-hanken)] text-[13.5px] text-[#9a9483] py-8 text-center">Aucun replay pour l&apos;instant</p>
         ) : (
           <ul className="divide-y divide-[#f0ece3]">
             {replays.map((r) => (
-              <li key={r.id} className="flex items-center gap-4 px-5 py-3 group hover:bg-[#f9f6ef] transition-colors">
+              <li key={r.id} className="flex items-center gap-4 px-5 py-3 hover:bg-[#f9f6ef] transition-colors">
                 <div className="flex-1 min-w-0">
                   <p className="font-[var(--font-hanken)] text-[13.5px] font-semibold text-[#232a20]">{r.title}</p>
                   <p className="font-[var(--font-hanken)] text-[11.5px] text-[#9a9483]" dir="ltr">{r.youtubeId ?? "—"}</p>
                 </div>
                 <button
                   onClick={() => setDeleteReplayId(r.id)}
-                  className="opacity-0 group-hover:opacity-100 font-[var(--font-hanken)] text-[12px] text-[#8a2f29] hover:text-[#6e2520] transition-opacity"
+                  aria-label="Supprimer"
+                  title="Supprimer"
+                  className="w-8 h-8 shrink-0 flex items-center justify-center text-[#6f7363] hover:text-[#8a2f29] hover:bg-[rgba(138,47,41,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8a2f29]"
                 >
-                  Supprimer
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
                 </button>
               </li>
             ))}
