@@ -18,6 +18,7 @@ import { getDictionary } from "@/dictionaries";
 import { formatSeriesLabel, formatContentLanguage, formatLevel, formatThemeLabel, formatViews } from "@/lib/format";
 import { getTeachingTitle, getTeachingDescription, getSeriesTitle } from "@/lib/content-i18n";
 import { buildLanguageAlternates, SITE_URL, type Locale } from "@/lib/i18n";
+import { buildYoutubeThumbnailUrl } from "@/lib/youtube";
 
 const levelColor: Record<string, string> = {
   débutant: "text-[#5f7050] bg-[#eef0e6]",
@@ -42,6 +43,16 @@ export async function generateMetadata({
   if (!teaching) return { title: "Cours introuvable" };
   const title = getTeachingTitle(teaching, lang);
   const description = getTeachingDescription(teaching, lang);
+
+  // Un `openGraph` défini ici remplace entièrement celui hérité du layout (pas de fusion
+  // profonde côté Next.js) — sans `images` explicite, un lien partagé (WhatsApp, Facebook…)
+  // n'affiche aucune vignette. Vignette réelle si disponible (upload admin ou miniature
+  // YouTube), sinon on retombe explicitement sur l'image de partage par défaut du site.
+  const ogImage =
+    teaching.thumbnail ??
+    (teaching.youtubeId ? buildYoutubeThumbnailUrl(teaching.youtubeId, "hqdefault") : null) ??
+    `/${lang}/opengraph-image`;
+
   return {
     title,
     description:
@@ -52,6 +63,7 @@ export async function generateMetadata({
       title: `${title} | Abu Maryam TV`,
       description,
       type: "video.other",
+      images: [{ url: ogImage }],
     },
   };
 }
