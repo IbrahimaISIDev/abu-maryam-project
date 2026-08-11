@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 import type { Teaching, Theme, ContentType, Series, AgendaItem } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
@@ -32,6 +32,81 @@ function SortIcon({ active, dir }: { active: boolean; dir: "asc" | "desc" }) {
   );
 }
 
+function TeachingRow({
+  t, themeLabels, onEdit, onDelete, onTogglePublish,
+}: {
+  t: Teaching;
+  themeLabels: Record<Theme, string>;
+  onEdit: () => void;
+  onDelete: () => void;
+  onTogglePublish: () => void;
+}) {
+  return (
+    <tr className="hover:bg-[#f9f6ef] transition-colors group">
+      <td className="px-5 py-3.5">
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 text-[12px] ${t.type === "video" ? "bg-[#3c4a37] text-[#cda350]" : "bg-[rgba(181,138,60,0.12)] text-[#b58a3c]"}`}>
+            {t.type === "video" ? "▶" : "♪"}
+          </div>
+          <div className="min-w-0 flex items-center gap-2">
+            <span className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#232a20] line-clamp-1">{t.title}</span>
+            <button
+              onClick={onTogglePublish}
+              title={t.published === false ? "Publier" : "Repasser en brouillon"}
+              className={`shrink-0 text-[10px] font-semibold font-[var(--font-hanken)] px-1.5 py-0.5 rounded transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c] ${
+                t.published === false
+                  ? "bg-[rgba(154,148,131,0.2)] text-[#9a9483] hover:bg-[rgba(154,148,131,0.32)]"
+                  : "bg-[rgba(60,74,55,0.1)] text-[#3c4a37] hover:bg-[rgba(60,74,55,0.18)]"
+              }`}
+            >
+              {t.published === false ? "Brouillon" : "Publié"}
+            </button>
+          </div>
+        </div>
+      </td>
+      <td className="px-4 py-3.5 hidden md:table-cell">
+        <span className={`text-[11px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full ${t.type === "video" ? "bg-[rgba(60,74,55,0.1)] text-[#3c4a37]" : "bg-[rgba(181,138,60,0.1)] text-[#b58a3c]"}`}>
+          {t.type}
+        </span>
+      </td>
+      <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363]">{themeLabels[t.theme] ?? t.theme}</td>
+      <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] tabular-nums text-[#6f7363]">
+        {t.durationSeconds > 0 ? (
+          t.duration
+        ) : (
+          <span
+            className="inline-flex items-center gap-1 text-[#b58a3c]"
+            title="Durée pas encore connue — se corrigera automatiquement à la première lecture, ou clique Modifier → Récupérer les infos"
+          >
+            ⚠ {t.duration || "0:00"}
+          </span>
+        )}
+      </td>
+      <td className="px-4 py-3.5 hidden xl:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363] capitalize">{t.language}</td>
+      <td className="px-5 py-3.5 text-right">
+        <div className="flex items-center justify-end gap-1.5">
+          <button onClick={onEdit}
+            aria-label="Modifier"
+            title="Modifier"
+            className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#b58a3c] hover:bg-[rgba(181,138,60,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c]">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button onClick={onDelete}
+            aria-label="Supprimer"
+            title="Supprimer"
+            className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#8a2f29] hover:bg-[rgba(138,47,41,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8a2f29]">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
 export default function EnseignementsPage() {
   const toast = useToast();
   const [items, setItems] = useState<Teaching[]>([]);
@@ -45,6 +120,7 @@ export default function EnseignementsPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [publishFilter, setPublishFilter] = useState<"all" | "published" | "draft">("all");
+  const [collapsedSeries, setCollapsedSeries] = useState<Set<string>>(new Set());
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<Teaching | null>(null);
   const [isNew, setIsNew] = useState(false);
@@ -80,8 +156,9 @@ export default function EnseignementsPage() {
   }, [toast]);
 
   function handleSort(key: SortKey) {
-    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortKey(key); setSortDir("asc"); }
+    if (sortKey !== key) { setSortKey(key); setSortDir("asc"); return; }
+    if (sortDir === "asc") { setSortDir("desc"); return; }
+    setSortKey(null); setSortDir("asc");
   }
 
   function openNew() {
@@ -112,6 +189,48 @@ export default function EnseignementsPage() {
         return sortDir === "asc" ? v : -v;
       })
     : filtered;
+
+  function toggleSeriesCollapse(id: string) {
+    setCollapsedSeries((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  const groupedSections = !sortKey
+    ? (() => {
+        const bySeries = new Map<string, Teaching[]>();
+        const noSeries: Teaching[] = [];
+        for (const t of filtered) {
+          if (t.seriesId) {
+            const arr = bySeries.get(t.seriesId) ?? [];
+            arr.push(t);
+            bySeries.set(t.seriesId, arr);
+          } else {
+            noSeries.push(t);
+          }
+        }
+        const sections = Array.from(bySeries.entries()).map(([seriesId, episodes]) => {
+          const sortedEpisodes = [...episodes].sort((a, b) => {
+            if (a.episodeNumber != null && b.episodeNumber != null) return a.episodeNumber - b.episodeNumber;
+            if (a.episodeNumber != null) return -1;
+            if (b.episodeNumber != null) return 1;
+            return a.publishedAt.localeCompare(b.publishedAt);
+          });
+          const mostRecent = episodes.reduce((max, t) => (t.publishedAt > max ? t.publishedAt : max), episodes[0].publishedAt);
+          return {
+            seriesId,
+            title: seriesList.find((s) => s.id === seriesId)?.title ?? "Série",
+            episodes: sortedEpisodes,
+            mostRecent,
+          };
+        });
+        sections.sort((a, b) => b.mostRecent.localeCompare(a.mostRecent));
+        return { sections, noSeries };
+      })()
+    : null;
 
   async function handleQuickPublishToggle(t: Teaching) {
     const nextPublished = t.published === false ? true : false;
@@ -292,70 +411,80 @@ export default function EnseignementsPage() {
                   </div>
                 </td>
               </tr>
-            ) : sorted.map((t) => (
-              <tr key={t.id} className="hover:bg-[#f9f6ef] transition-colors group">
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 text-[12px] ${t.type === "video" ? "bg-[#3c4a37] text-[#cda350]" : "bg-[rgba(181,138,60,0.12)] text-[#b58a3c]"}`}>
-                      {t.type === "video" ? "▶" : "♪"}
-                    </div>
-                    <div className="min-w-0 flex items-center gap-2">
-                      <span className="font-[var(--font-hanken)] text-[13.5px] font-medium text-[#232a20] line-clamp-1">{t.title}</span>
-                      <button
-                        onClick={() => handleQuickPublishToggle(t)}
-                        title={t.published === false ? "Publier" : "Repasser en brouillon"}
-                        className={`shrink-0 text-[10px] font-semibold font-[var(--font-hanken)] px-1.5 py-0.5 rounded transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c] ${
-                          t.published === false
-                            ? "bg-[rgba(154,148,131,0.2)] text-[#9a9483] hover:bg-[rgba(154,148,131,0.32)]"
-                            : "bg-[rgba(60,74,55,0.1)] text-[#3c4a37] hover:bg-[rgba(60,74,55,0.18)]"
-                        }`}
-                      >
-                        {t.published === false ? "Brouillon" : "Publié"}
-                      </button>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3.5 hidden md:table-cell">
-                  <span className={`text-[11px] font-semibold font-[var(--font-hanken)] px-2 py-0.5 rounded-full ${t.type === "video" ? "bg-[rgba(60,74,55,0.1)] text-[#3c4a37]" : "bg-[rgba(181,138,60,0.1)] text-[#b58a3c]"}`}>
-                    {t.type}
-                  </span>
-                </td>
-                <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363]">{THEME_LABELS[t.theme] ?? t.theme}</td>
-                <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] tabular-nums text-[#6f7363]">
-                  {t.durationSeconds > 0 ? (
-                    t.duration
-                  ) : (
-                    <span
-                      className="inline-flex items-center gap-1 text-[#b58a3c]"
-                      title="Durée pas encore connue — se corrigera automatiquement à la première lecture, ou clique Modifier → Récupérer les infos"
-                    >
-                      ⚠ {t.duration || "0:00"}
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-3.5 hidden xl:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363] capitalize">{t.language}</td>
-                <td className="px-5 py-3.5 text-right">
-                  <div className="flex items-center justify-end gap-1.5">
-                    <button onClick={() => openEdit(t)}
-                      aria-label="Modifier"
-                      title="Modifier"
-                      className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#b58a3c] hover:bg-[rgba(181,138,60,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c]">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                      </svg>
-                    </button>
-                    <button onClick={() => setDeleteId(t.id)}
-                      aria-label="Supprimer"
-                      title="Supprimer"
-                      className="w-8 h-8 flex items-center justify-center text-[#6f7363] hover:text-[#8a2f29] hover:bg-[rgba(138,47,41,0.1)] rounded-[7px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8a2f29]">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            ) : groupedSections ? (
+              <>
+                {groupedSections.sections.map((section) => {
+                  const collapsed = collapsedSeries.has(section.seriesId);
+                  return (
+                    <Fragment key={section.seriesId}>
+                      <tr className="bg-[#f5f1e8] border-y border-[#e2dac9]">
+                        <td colSpan={6} className="px-5 py-2">
+                          <button
+                            onClick={() => toggleSeriesCollapse(section.seriesId)}
+                            className="flex items-center gap-2 font-[var(--font-hanken)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c] rounded"
+                          >
+                            <svg
+                              className={`shrink-0 transition-transform ${collapsed ? "" : "rotate-90"}`}
+                              width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a9483" strokeWidth="3"
+                            >
+                              <path d="M9 6l6 6-6 6" />
+                            </svg>
+                            <span className="text-[12.5px] font-semibold text-[#3f463a]">{section.title}</span>
+                            <span className="text-[11px] text-[#9a9483]">
+                              · {section.episodes.length} épisode{section.episodes.length > 1 ? "s" : ""}
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                      {!collapsed && section.episodes.map((t) => (
+                        <TeachingRow
+                          key={t.id}
+                          t={t}
+                          themeLabels={THEME_LABELS}
+                          onEdit={() => openEdit(t)}
+                          onDelete={() => setDeleteId(t.id)}
+                          onTogglePublish={() => handleQuickPublishToggle(t)}
+                        />
+                      ))}
+                    </Fragment>
+                  );
+                })}
+                {groupedSections.noSeries.length > 0 && (
+                  <Fragment>
+                    {groupedSections.sections.length > 0 && (
+                      <tr className="bg-[#f5f1e8] border-y border-[#e2dac9]">
+                        <td colSpan={6} className="px-5 py-2">
+                          <span className="font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#9a9483]">
+                            Sans série · {groupedSections.noSeries.length}
+                          </span>
+                        </td>
+                      </tr>
+                    )}
+                    {groupedSections.noSeries.map((t) => (
+                      <TeachingRow
+                        key={t.id}
+                        t={t}
+                        themeLabels={THEME_LABELS}
+                        onEdit={() => openEdit(t)}
+                        onDelete={() => setDeleteId(t.id)}
+                        onTogglePublish={() => handleQuickPublishToggle(t)}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </>
+            ) : (
+              sorted.map((t) => (
+                <TeachingRow
+                  key={t.id}
+                  t={t}
+                  themeLabels={THEME_LABELS}
+                  onEdit={() => openEdit(t)}
+                  onDelete={() => setDeleteId(t.id)}
+                  onTogglePublish={() => handleQuickPublishToggle(t)}
+                />
+              ))
+            )}
           </tbody>
         </table>
         {sorted.length > 0 && (
