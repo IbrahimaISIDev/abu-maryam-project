@@ -75,10 +75,14 @@ export const teachings = pgTable("teachings", {
   language: languageEnum("language").notNull(),
   duration: text("duration").notNull(),
   durationSeconds: integer("duration_seconds").notNull().default(0),
-  // Vues : synchronisées depuis YouTube pour youtubeId (source la plus fiable, voir
-  // lib/youtube.ts → fetchYoutubeViewCount), incrémentées par nos soins pour le contenu
-  // auto-hébergé (R2) via /api/teachings/[id]/view — YouTube ne voit pas ces lectures.
+  // Vues affichées publiquement : synchronisées depuis YouTube pour youtubeId (source la
+  // plus fiable, voir lib/youtube.ts → fetchYoutubeViewCount), incrémentées par nos soins
+  // pour le contenu auto-hébergé (R2) via /api/teachings/[id]/view.
   views: integer("views").notNull().default(0),
+  // Vues plateforme : lectures réellement démarrées sur abu-maryam.tv, pour tout contenu
+  // (YouTube compris) — distinct de `views`, qui pour YouTube ne reflète que le compteur
+  // public de YouTube (peut inclure des vues hors plateforme). Admin uniquement.
+  platformViews: integer("platform_views").notNull().default(0),
   thumbnail: text("thumbnail"),
   // Vidéo : `youtubeId` (hébergement YouTube) OU `videoUrl` (fichier auto-hébergé,
   // typiquement R2 — voir lib/r2.ts) selon le choix fait à la création. Audio : `audioUrl` seul.

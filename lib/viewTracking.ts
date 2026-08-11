@@ -9,11 +9,11 @@ function today(): string {
 }
 
 /**
- * Enregistre une vue pour un enseignement auto-hébergé, une fois par visiteur par jour
- * (localStorage — pas de compte utilisateur sur ce site). Ne rien envoyer pour le contenu
- * YouTube : ses vues viennent de YouTube lui-même, voir syncYoutubeViewCount côté serveur.
- * Volontairement silencieux en cas d'échec (fetch, quota localStorage…) — un compteur de
- * vues n'a pas besoin de faire planter la lecture.
+ * Enregistre une vue plateforme pour un enseignement, une fois par visiteur par jour
+ * (localStorage — pas de compte utilisateur sur ce site). Appelé pour tout type de contenu,
+ * YouTube compris — voir incrementTeachingViews côté serveur pour le détail de ce qui est
+ * mis à jour selon le type. Volontairement silencieux en cas d'échec (fetch, quota
+ * localStorage…) — un compteur de vues n'a pas besoin de faire planter la lecture.
  */
 export function registerView(teachingId: string): void {
   if (typeof window === "undefined") return;

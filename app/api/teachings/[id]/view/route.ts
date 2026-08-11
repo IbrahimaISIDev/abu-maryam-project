@@ -19,11 +19,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
   recentByKey.set(key, now);
 
-  const views = await incrementTeachingViews(id);
-  if (views === null) {
-    // Enseignement inconnu, brouillon, ou hébergé sur YouTube (vues gérées par YouTube) —
-    // pas une erreur côté appelant, juste rien à compter ici.
+  const result = await incrementTeachingViews(id);
+  if (result === null) {
+    // Enseignement inconnu ou brouillon — pas une erreur côté appelant, juste rien à compter ici.
     return NextResponse.json({ ok: false });
   }
-  return NextResponse.json({ ok: true, views });
+  return NextResponse.json({ ok: true, ...result });
 }

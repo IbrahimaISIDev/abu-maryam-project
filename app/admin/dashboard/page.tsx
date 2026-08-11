@@ -61,6 +61,19 @@ export default async function DashboardPage() {
       ),
     },
     {
+      label: "Vues plateforme",
+      value: teachings.reduce((s, t) => s + t.platformViews, 0).toLocaleString("fr-FR"),
+      sub: "Lectures démarrées sur abu-maryam.tv",
+      href: "/admin/enseignements",
+      color: "#7d5f26",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      ),
+    },
+    {
       label: "Prochain séminaire",
       value: seminar ? new Date(seminar.dateStart).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "—",
       sub: seminar?.location ?? "Aucun séminaire configuré",
@@ -159,7 +172,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 xl:grid-cols-6 gap-4 mb-8">
         {statCards.map((card) => (
           <Link key={card.label} href={card.href}>
             <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] p-5 hover:border-[#d0c9b8] hover:shadow-sm transition-all group">

@@ -1,0 +1,1 @@
+ALTER TABLE "teachings" ADD COLUMN "platform_views" integer DEFAULT 0 NOT NULL;

@@ -16,11 +16,11 @@ const THEME_LABELS: Record<Theme, string> = {
 };
 const THEMES = Object.keys(THEME_LABELS) as Theme[];
 
-type SortKey = "title" | "type" | "theme" | "duration" | "language";
+type SortKey = "title" | "type" | "theme" | "duration" | "language" | "platformViews";
 
 const EMPTY_TEACHING: Omit<Teaching, "id"> = {
   title: "", type: "video", theme: "tafsir", language: "wolof",
-  duration: "", durationSeconds: 0, views: 0, thumbnail: null, youtubeId: null, videoUrl: null, audioUrl: null,
+  duration: "", durationSeconds: 0, views: 0, platformViews: 0, thumbnail: null, youtubeId: null, videoUrl: null, audioUrl: null,
   publishedAt: new Date().toISOString().slice(0, 10),
 };
 
@@ -83,6 +83,7 @@ function TeachingRow({
         )}
       </td>
       <td className="px-4 py-3.5 hidden xl:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363] capitalize">{t.language}</td>
+      <td className="px-4 py-3.5 hidden xl:table-cell font-[var(--font-hanken)] text-[13px] tabular-nums text-[#6f7363]">{t.platformViews.toLocaleString("fr-FR")}</td>
       <td className="px-5 py-3.5 text-right">
         <div className="flex items-center justify-end gap-1.5">
           <button onClick={onEdit}
@@ -186,7 +187,12 @@ export default function EnseignementsPage() {
 
   const sorted = sortKey
     ? [...filtered].sort((a, b) => {
-        const v = String(a[sortKey] ?? "").localeCompare(String(b[sortKey] ?? ""), "fr");
+        const av = a[sortKey];
+        const bv = b[sortKey];
+        const v =
+          typeof av === "number" && typeof bv === "number"
+            ? av - bv
+            : String(av ?? "").localeCompare(String(bv ?? ""), "fr");
         return sortDir === "asc" ? v : -v;
       })
     : filtered;
@@ -407,19 +413,22 @@ export default function EnseignementsPage() {
               <th onClick={() => handleSort("language")} className={`${thClass} hidden xl:table-cell`}>
                 Langue <SortIcon active={sortKey === "language"} dir={sortDir} />
               </th>
+              <th onClick={() => handleSort("platformViews")} className={`${thClass} hidden xl:table-cell`} title="Lectures démarrées sur abu-maryam.tv, tout type de contenu confondu">
+                Vues <SortIcon active={sortKey === "platformViews"} dir={sortDir} />
+              </th>
               <th className="text-right px-5 py-3 font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#f0ece3]">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-5 py-14 text-center">
+                <td colSpan={7} className="px-5 py-14 text-center">
                   <p className="font-[var(--font-hanken)] text-[14px] text-[#9a9483]">Chargement…</p>
                 </td>
               </tr>
             ) : sorted.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-5 py-14 text-center">
+                <td colSpan={7} className="px-5 py-14 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d8d0bf" strokeWidth="1.5">
                       <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
@@ -439,7 +448,7 @@ export default function EnseignementsPage() {
                   return (
                     <Fragment key={section.seriesId}>
                       <tr className="bg-[#f5f1e8] border-y border-[#e2dac9]">
-                        <td colSpan={6} className="px-5 py-2">
+                        <td colSpan={7} className="px-5 py-2">
                           <button
                             onClick={() => toggleSeriesCollapse(section.seriesId)}
                             className="flex items-center gap-2 font-[var(--font-hanken)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#b58a3c] rounded"
@@ -474,7 +483,7 @@ export default function EnseignementsPage() {
                   <Fragment>
                     {groupedSections.sections.length > 0 && (
                       <tr className="bg-[#f5f1e8] border-y border-[#e2dac9]">
-                        <td colSpan={6} className="px-5 py-2">
+                        <td colSpan={7} className="px-5 py-2">
                           <span className="font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#9a9483]">
                             Sans série · {groupedSections.noSeries.length}
                           </span>

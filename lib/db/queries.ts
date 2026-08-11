@@ -21,6 +21,7 @@ function toTeaching(row: typeof teachings.$inferSelect): Teaching {
     duration: row.duration,
     durationSeconds: row.durationSeconds,
     views: row.views,
+    platformViews: row.platformViews,
     thumbnail: row.thumbnail,
     youtubeId: row.youtubeId,
     videoUrl: row.videoUrl,
@@ -147,24 +148,30 @@ export const getTeachingById = cache(async (id: string): Promise<Teaching | unde
 });
 
 /**
- * Incrémente le compteur de vues d'un enseignement auto-hébergé (jamais pour du contenu
- * YouTube, dont les vues viennent de syncYoutubeViewCount). Retourne le nouveau total, ou
- * `null` si l'enseignement n'existe pas, n'est pas publié, ou est hébergé sur YouTube.
+ * Incrémente le compteur de vues plateforme (`platformViews`) à chaque lecture réellement
+ * démarrée sur le site, pour tout type de contenu — y compris YouTube, qu'on ne peut pas
+ * savoir a été vu via abu-maryam.tv autrement. Incrémente aussi `views` (le nombre affiché
+ * publiquement), mais seulement pour le contenu auto-hébergé : pour YouTube, `views` reste
+ * la source la plus fiable pour l'affichage public, voir syncYoutubeViewCount.
+ * Retourne `null` si l'enseignement n'existe pas ou n'est pas publié.
  * Volontairement non mise en cache (mutation) et hors de `toTeaching` (effet de bord).
  */
-export async function incrementTeachingViews(id: string): Promise<number | null> {
+export async function incrementTeachingViews(id: string): Promise<{ views: number; platformViews: number } | null> {
   const [row] = await db
     .select({ published: teachings.published, youtubeId: teachings.youtubeId })
     .from(teachings)
     .where(eq(teachings.id, id));
-  if (!row || !row.published || row.youtubeId) return null;
+  if (!row || !row.published) return null;
 
   const [updated] = await db
     .update(teachings)
-    .set({ views: sql`${teachings.views} + 1` })
+    .set({
+      platformViews: sql`${teachings.platformViews} + 1`,
+      ...(row.youtubeId ? {} : { views: sql`${teachings.views} + 1` }),
+    })
     .where(eq(teachings.id, id))
-    .returning({ views: teachings.views });
-  return updated?.views ?? null;
+    .returning({ views: teachings.views, platformViews: teachings.platformViews });
+  return updated ?? null;
 }
 
 /**

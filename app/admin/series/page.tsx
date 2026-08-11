@@ -138,7 +138,7 @@ export default function SeriesAdminPage() {
             const progress = Math.round((episodes.length / s.totalEpisodes) * 100);
             return (
               <div key={s.id} className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] overflow-hidden hover:border-[#d0c9b8] transition-colors group">
-                <div className="bg-[#3c4a37] px-5 py-4">
+                <Link href={`/admin/series/${s.id}`} className="block bg-[#3c4a37] px-5 py-4 hover:bg-[#333f2f] transition-colors">
                   {s.arabicVerse && (
                     <p className="arabic text-[#cda350] text-[14px] text-right mb-1">{s.arabicVerse}</p>
                   )}
@@ -148,7 +148,7 @@ export default function SeriesAdminPage() {
                   <h3 className="font-[var(--font-cormorant)] font-semibold text-[18px] text-[#fbf9f3] leading-tight">
                     {s.title}
                   </h3>
-                </div>
+                </Link>
                 <div className="p-5">
                   <p className="font-[var(--font-hanken)] text-[12.5px] text-[#6f7363] leading-relaxed mb-4 line-clamp-2">
                     {s.description}
@@ -164,22 +164,28 @@ export default function SeriesAdminPage() {
                       <div className="h-full bg-[#b58a3c] rounded-full" style={{ width: `${progress}%` }} />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="font-[var(--font-hanken)] text-[11px] text-[#9a9483] capitalize">{s.language}</span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setEditItem({ ...s })}
-                        className="px-3 py-1.5 text-[12px] font-[var(--font-hanken)] font-medium text-[#b58a3c] hover:text-[#9e7832] border border-[#e2dac9] hover:border-[#b58a3c] rounded-[7px] transition-colors"
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        onClick={() => setDeleteId(s.id)}
-                        className="px-3 py-1.5 text-[12px] font-[var(--font-hanken)] font-medium text-[#8a2f29] border border-[#e2dac9] hover:border-[#8a2f29] rounded-[7px] transition-colors"
-                      >
-                        Supprimer
-                      </button>
-                    </div>
+                    <Link
+                      href={`/admin/series/${s.id}`}
+                      className="font-[var(--font-hanken)] text-[12px] font-medium text-[#b58a3c] hover:text-[#9e7832] transition-colors"
+                    >
+                      Voir détails →
+                    </Link>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditItem({ ...s })}
+                      className="flex-1 px-3 py-1.5 text-[12px] font-[var(--font-hanken)] font-medium text-[#b58a3c] hover:text-[#9e7832] border border-[#e2dac9] hover:border-[#b58a3c] rounded-[7px] transition-colors"
+                    >
+                      Modifier
+                    </button>
+                    <button
+                      onClick={() => setDeleteId(s.id)}
+                      className="flex-1 px-3 py-1.5 text-[12px] font-[var(--font-hanken)] font-medium text-[#8a2f29] border border-[#e2dac9] hover:border-[#8a2f29] rounded-[7px] transition-colors"
+                    >
+                      Supprimer
+                    </button>
                   </div>
                 </div>
               </div>

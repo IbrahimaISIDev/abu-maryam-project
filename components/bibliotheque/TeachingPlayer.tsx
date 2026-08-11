@@ -519,14 +519,14 @@ function VideoTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
   const nextTeaching = findNextTeaching(teaching, seriesEpisodes, relatedTeachings);
   const previousTeaching = findPreviousTeaching(teaching, seriesEpisodes, relatedTeachings);
 
-  // Compte une vue au premier démarrage de lecture — uniquement pour le contenu
-  // auto-hébergé (videoUrl) : les vidéos YouTube sont comptées par YouTube lui-même.
+  // Compte une vue plateforme au premier démarrage de lecture — pour tout type de contenu,
+  // YouTube compris (voir incrementTeachingViews : `views` public reste géré séparément).
   useEffect(() => {
-    if (isPlaying && !teaching.youtubeId && !hasRegisteredView.current) {
+    if (isPlaying && !hasRegisteredView.current) {
       hasRegisteredView.current = true;
       registerView(teaching.id);
     }
-  }, [isPlaying, teaching.id, teaching.youtubeId]);
+  }, [isPlaying, teaching.id]);
 
   // Applique les préférences persistées (volume/muet/vitesse) dès que le lecteur est prêt,
   // et se positionne sur le lien profond ?t= éventuel.
