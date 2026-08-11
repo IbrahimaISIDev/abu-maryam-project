@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Series, Teaching, Theme, Language, AgendaItem } from "@/lib/types";
 import { useToast } from "@/contexts/ToastContext";
@@ -21,6 +21,7 @@ const LANGUAGES: Language[] = ["wolof", "arabe"];
 
 export default function SeriesDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const toast = useToast();
   const [seriesList, setSeriesList] = useState<Series[]>([]);
   const [teachings, setTeachings] = useState<Teaching[]>([]);
@@ -129,6 +130,15 @@ export default function SeriesDetailPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-1.5 font-[var(--font-hanken)] text-[12.5px] font-medium text-[#6f7363] hover:text-[#b58a3c] transition-colors mb-3"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Retour
+        </button>
         <p className="font-[var(--font-hanken)] text-[12px] text-[#9a9483] uppercase tracking-widest mb-1">
           <Link href="/admin/dashboard" className="hover:text-[#b58a3c] transition-colors">Admin</Link>
           {" / "}

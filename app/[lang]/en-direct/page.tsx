@@ -5,12 +5,13 @@ import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import VideoPlayer from "@/components/live/VideoPlayer";
 import LiveSidebar from "@/components/live/LiveSidebar";
+import LiveActions from "@/components/live/LiveActions";
 import { getLiveStatus } from "@/lib/db/queries";
 import Image from "next/image";
 import { getDictionary } from "@/dictionaries";
 import { formatStartedAgo } from "@/lib/format";
 import { getLiveStatusTitle, getLiveStatusDescription } from "@/lib/content-i18n";
-import { buildLanguageAlternates, type Locale } from "@/lib/i18n";
+import { buildLanguageAlternates, SITE_URL, type Locale } from "@/lib/i18n";
 
 export const revalidate = 30;
 
@@ -93,14 +94,12 @@ export default async function EnDirectPage({ params }: { params: Promise<{ lang:
                 </div>
 
                 {/* Boutons action */}
-                <div className="flex gap-3 mb-5">
-                  <button type="button" className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
-                    ↗ {dict.common.share}
-                  </button>
-                  <button type="button" className="flex items-center gap-2 px-4 py-2 border border-[#d8d0bf] dark:border-[#454c3c] rounded-full font-[var(--font-hanken)] text-[13px] font-medium text-[#3f463a] dark:text-[#d8d4c4] hover:border-[#b58a3c] hover:text-[#b58a3c] transition-colors">
-                    🔔 {dict.live.notify}
-                  </button>
-                </div>
+                <LiveActions
+                  title={getLiveStatusTitle(liveStatus, lang)}
+                  url={`${SITE_URL}/${lang}/en-direct`}
+                  shareLabel={dict.common.share}
+                  notifyLabel={dict.live.notify}
+                />
 
                 <hr className="border-[#e2dac9] dark:border-[#3a4132] mb-4" />
 

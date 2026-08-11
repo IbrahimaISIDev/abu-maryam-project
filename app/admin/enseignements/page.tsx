@@ -244,6 +244,13 @@ export default function EnseignementsPage() {
       })()
     : null;
 
+  const allSeriesIds = groupedSections?.sections.map((s) => s.seriesId) ?? [];
+  const allSeriesCollapsed = allSeriesIds.length > 0 && allSeriesIds.every((id) => collapsedSeries.has(id));
+
+  function toggleAllSeries() {
+    setCollapsedSeries(allSeriesCollapsed ? new Set() : new Set(allSeriesIds));
+  }
+
   async function handleQuickPublishToggle(t: Teaching) {
     const nextPublished = t.published === false ? true : false;
     setItems((prev) => prev.map((it) => (it.id === t.id ? { ...it, published: nextPublished } : it)));
@@ -379,7 +386,18 @@ export default function EnseignementsPage() {
       </div>
 
       {groupedSections && (
-        <div className="flex justify-end mb-3">
+        <div className="flex items-center justify-between mb-3">
+          {allSeriesIds.length > 0 ? (
+            <button
+              onClick={toggleAllSeries}
+              className="flex items-center gap-1.5 font-[var(--font-hanken)] text-[12.5px] font-medium text-[#6f7363] hover:text-[#3f463a] transition-colors"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform ${allSeriesCollapsed ? "" : "rotate-90"}`}>
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+              <span>{allSeriesCollapsed ? "Tout déplier" : "Tout replier"}</span>
+            </button>
+          ) : <span />}
           <button
             onClick={() => setEpisodeSortDir((d) => (d === "asc" ? "desc" : "asc"))}
             className="flex items-center gap-1.5 font-[var(--font-hanken)] text-[12.5px] font-medium text-[#6f7363] hover:text-[#3f463a] transition-colors"
