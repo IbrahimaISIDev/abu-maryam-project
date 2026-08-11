@@ -2,8 +2,10 @@
 
 import React, { useState, useRef } from "react";
 import { adhkarData, DhikrItem } from "@/data/adhkar";
+import type { Locale } from "@/lib/i18n";
 
-export default function AdhkarContainer() {
+export default function AdhkarContainer({ lang }: { lang: Locale }) {
+  const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState<"matin" | "soir" | "priere">("matin");
   const [counters, setCounters] = useState<Record<string, number>>({});
   const [playingId, setPlayingId] = useState<string | null>(null);
@@ -59,8 +61,14 @@ export default function AdhkarContainer() {
           }`}
         >
           <span>☀️</span>
-          <span>Invocations du Matin</span>
-          <span className="arabic font-[var(--font-amiri)] text-[#ffd700]">(أذكار الصباح)</span>
+          {isAr ? (
+            <span className="arabic font-[var(--font-amiri)]">أذكار الصباح</span>
+          ) : (
+            <>
+              <span>Invocations du Matin</span>
+              <span className="arabic font-[var(--font-amiri)] text-[#ffd700]">(أذكار الصباح)</span>
+            </>
+          )}
         </button>
 
         <button
@@ -72,8 +80,14 @@ export default function AdhkarContainer() {
           }`}
         >
           <span>🌙</span>
-          <span>Invocations du Soir</span>
-          <span className="arabic font-[var(--font-amiri)] text-[#ffd700]">(أذكار المساء)</span>
+          {isAr ? (
+            <span className="arabic font-[var(--font-amiri)]">أذكار المساء</span>
+          ) : (
+            <>
+              <span>Invocations du Soir</span>
+              <span className="arabic font-[var(--font-amiri)] text-[#ffd700]">(أذكار المساء)</span>
+            </>
+          )}
         </button>
 
         <button
@@ -85,8 +99,14 @@ export default function AdhkarContainer() {
           }`}
         >
           <span>🕌</span>
-          <span>Après la Prière</span>
-          <span className="arabic font-[var(--font-amiri)] text-[#ffd700]">(أذكار الصلاة)</span>
+          {isAr ? (
+            <span className="arabic font-[var(--font-amiri)]">أذكار الصلاة</span>
+          ) : (
+            <>
+              <span>Après la Prière</span>
+              <span className="arabic font-[var(--font-amiri)] text-[#ffd700]">(أذكار الصلاة)</span>
+            </>
+          )}
         </button>
       </div>
 
@@ -108,8 +128,8 @@ export default function AdhkarContainer() {
             >
               {/* Top info bar */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-                <h3 className="font-[var(--font-hanken)] text-base font-bold text-[#e6cf8b] md:text-lg">
-                  {item.title}
+                <h3 className={`font-[var(--font-hanken)] text-base font-bold text-[#e6cf8b] md:text-lg ${isAr ? "arabic font-[var(--font-amiri)]" : ""}`}>
+                  {isAr ? item.titleAr : item.title}
                 </h3>
 
                 <div className="flex items-center gap-3">
@@ -122,12 +142,12 @@ export default function AdhkarContainer() {
                           : "border border-[#b58a3c]/40 bg-[#b58a3c]/15 text-[#f0d486] hover:bg-[#b58a3c]/30"
                       }`}
                     >
-                      <span>{isPlaying ? "⏸ Pause" : "🔊 Audio"}</span>
+                      <span>{isPlaying ? (isAr ? "⏸ إيقاف" : "⏸ Pause") : (isAr ? "🔊 استماع" : "🔊 Audio")}</span>
                     </button>
                   )}
 
                   <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
-                    Répéter : {item.repeatCount}x
+                    {isAr ? `التكرار: ${item.repeatCount}x` : `Répéter : ${item.repeatCount}x`}
                   </span>
                 </div>
               </div>
@@ -140,20 +160,24 @@ export default function AdhkarContainer() {
                 {item.arabicText}
               </div>
 
-              {/* Transliteration & Translation */}
-              <div className="space-y-2 border-t border-white/10 pt-4">
-                <p className="text-xs italic text-white/60">{item.transliteration}</p>
-                <p className="text-sm font-medium leading-relaxed text-white/90">
-                  {item.translation}
-                </p>
-              </div>
+              {/* Transliteration & Translation — inutiles en arabe, le texte original suffit */}
+              {!isAr && (
+                <div className="space-y-2 border-t border-white/10 pt-4">
+                  <p className="text-xs italic text-white/60">{item.transliteration}</p>
+                  <p className="text-sm font-medium leading-relaxed text-white/90">
+                    {item.translation}
+                  </p>
+                </div>
+              )}
 
               {/* Source & Merit */}
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-[#b58a3c]">
-                <span>Rapporté par : {item.source}</span>
-                {item.merit && (
-                  <span className="rounded-md bg-[#b58a3c]/10 px-2.5 py-1 text-emerald-400">
-                    ✨ Mérite : {item.merit}
+              <div className={`mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-[#b58a3c] ${!isAr ? "border-t border-white/10 pt-4" : ""}`}>
+                <span className={isAr ? "arabic font-[var(--font-amiri)] text-[13px]" : ""}>
+                  {isAr ? `رواه: ${item.sourceAr}` : `Rapporté par : ${item.source}`}
+                </span>
+                {(isAr ? item.meritAr : item.merit) && (
+                  <span className={`rounded-md bg-[#b58a3c]/10 px-2.5 py-1 text-emerald-400 ${isAr ? "arabic font-[var(--font-amiri)] text-[13px]" : ""}`}>
+                    {isAr ? `✨ الفضل: ${item.meritAr}` : `✨ Mérite : ${item.merit}`}
                   </span>
                 )}
               </div>
@@ -164,7 +188,7 @@ export default function AdhkarContainer() {
                   onClick={() => handleReset(item.id)}
                   className="text-xs text-white/40 underline hover:text-white/80"
                 >
-                  Réinitialiser
+                  {isAr ? "إعادة تعيين" : "Réinitialiser"}
                 </button>
 
                 <button
@@ -175,7 +199,7 @@ export default function AdhkarContainer() {
                       : "bg-[#b58a3c] text-white hover:bg-[#c99b45] shadow-lg shadow-[#b58a3c]/20"
                   }`}
                 >
-                  <span>{isCompleted ? "✓ Terminé !" : "Compteur"}</span>
+                  <span>{isCompleted ? (isAr ? "✓ اكتمل!" : "✓ Terminé !") : (isAr ? "العداد" : "Compteur")}</span>
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/25 text-xs font-black">
                     {currentCount} / {item.repeatCount}
                   </span>

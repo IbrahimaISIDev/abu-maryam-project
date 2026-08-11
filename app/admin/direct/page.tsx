@@ -12,6 +12,9 @@ export default function DirectAdminPage() {
   const [isLive, setIsLive] = useState(false);
   const [liveTitle, setLiveTitle] = useState("");
   const [channelId, setChannelId] = useState("");
+  const [arabicVerse, setArabicVerse] = useState("");
+  const [hostName, setHostName] = useState("");
+  const [description, setDescription] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
 
@@ -26,6 +29,9 @@ export default function DirectAdminPage() {
         setIsLive(data.liveStatus.isLive);
         setLiveTitle(data.liveStatus.title ?? "");
         setChannelId(data.liveStatus.youtubeChannelId ?? "");
+        setArabicVerse(data.liveStatus.arabicVerse ?? "");
+        setHostName(data.liveStatus.hostName ?? "");
+        setDescription(data.liveStatus.description ?? "");
       })
       .catch(() => {
         if (!cancelled) toast("Impossible de charger le statut du direct", "error");
@@ -47,7 +53,14 @@ export default function DirectAdminPage() {
       const res = await fetch(apiRoutes.live(), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isLive, title: liveTitle, youtubeChannelId: channelId || null }),
+        body: JSON.stringify({
+          isLive,
+          title: liveTitle,
+          youtubeChannelId: channelId || null,
+          arabicVerse,
+          hostName,
+          description,
+        }),
       });
       if (!res.ok) throw new Error();
       setIsDirty(false);
@@ -135,6 +148,49 @@ export default function DirectAdminPage() {
             onChange={(e) => { setLiveTitle(e.target.value); markDirty(); }}
             placeholder="Ex : Cours sur la Salât — Vendredi 16h"
             className="w-full px-4 py-3 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[10px] font-[var(--font-hanken)] text-[14px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c]"
+          />
+        </div>
+
+        {/* Verset arabe */}
+        <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] p-6">
+          <label className="block font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#9a9483] uppercase tracking-wider mb-2">
+            Verset ou hadith affiché
+          </label>
+          <input
+            type="text"
+            value={arabicVerse}
+            onChange={(e) => { setArabicVerse(e.target.value); markDirty(); }}
+            dir="rtl"
+            placeholder="النص العربي…"
+            className="w-full px-4 py-3 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[10px] font-[var(--font-amiri)] text-[16px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c]"
+          />
+        </div>
+
+        {/* Intervenant */}
+        <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] p-6">
+          <label className="block font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#9a9483] uppercase tracking-wider mb-2">
+            Nom de l&apos;intervenant
+          </label>
+          <input
+            type="text"
+            value={hostName}
+            onChange={(e) => { setHostName(e.target.value); markDirty(); }}
+            placeholder="Ex : Oustaz Niang Mbaye (H.A)"
+            className="w-full px-4 py-3 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[10px] font-[var(--font-hanken)] text-[14px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c]"
+          />
+        </div>
+
+        {/* Description */}
+        <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] p-6">
+          <label className="block font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#9a9483] uppercase tracking-wider mb-2">
+            Description affichée sous le lecteur
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => { setDescription(e.target.value); markDirty(); }}
+            rows={3}
+            placeholder="Décrit le sujet du direct pour les visiteurs…"
+            className="w-full px-4 py-3 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[10px] font-[var(--font-hanken)] text-[14px] text-[#232a20] placeholder:text-[#9a9483] focus:outline-none focus:border-[#b58a3c] resize-none"
           />
         </div>
 
