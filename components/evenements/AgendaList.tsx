@@ -27,11 +27,13 @@ export default function AgendaList({
   teachings?: Teaching[];
 }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
+  const [dir, setDir] = useState<"asc" | "desc">("asc");
 
   const filtered = agendaItems.filter((e) => {
     const status = computeAgendaStatus(e);
     return tab === "upcoming" ? status !== "past" : status === "past";
   });
+  const sorted = dir === "asc" ? filtered : [...filtered].reverse();
 
   const parseDate = (d: string) => {
     const [y, m, day] = d.split("-").map(Number);
@@ -69,9 +71,27 @@ export default function AgendaList({
         </div>
       </div>
 
+      {/* Tri */}
+      <div className="flex justify-end mb-3">
+        <button
+          type="button"
+          onClick={() => setDir((d) => (d === "asc" ? "desc" : "asc"))}
+          className="flex items-center gap-1.5 font-[var(--font-hanken)] text-[12px] font-medium text-[#6f7363] dark:text-[#8f8973] hover:text-[#3f463a] dark:hover:text-[#d8d4c4] transition-colors"
+        >
+          <span>
+            {dir === "asc"
+              ? lang === "ar" ? "الأقرب ← الأبعد" : "Plus proche → plus lointain"
+              : lang === "ar" ? "الأبعد ← الأقرب" : "Plus lointain → plus proche"}
+          </span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform ${dir === "desc" ? "rotate-180" : ""}`}>
+            <path d="M12 5v14M5 12l7 7 7-7" />
+          </svg>
+        </button>
+      </div>
+
       {/* Liste */}
       <ul className="space-y-3">
-        {filtered.map((item) => {
+        {sorted.map((item) => {
           const d = parseDate(item.dateStart);
           const eventTeachings = teachings.filter((t) => t.agendaItemId === item.id);
           const preview = eventTeachings.slice(0, GRID_PREVIEW_LIMIT);

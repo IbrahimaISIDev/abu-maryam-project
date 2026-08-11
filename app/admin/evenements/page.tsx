@@ -32,6 +32,7 @@ export default function EvenementsAdminPage() {
   const [newReplayTitle, setNewReplayTitle] = useState("");
   const [newReplayUrl, setNewReplayUrl] = useState("");
   const [deleteReplayId, setDeleteReplayId] = useState<string | null>(null);
+  const [agendaSortDir, setAgendaSortDir] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
     let cancelled = false;
@@ -105,6 +106,11 @@ export default function EvenementsAdminPage() {
   const confirmed = registrations.filter((r) => r.status === "confirmed").length;
   const capacity = sem?.totalPlaces ?? 150;
   const pct = Math.round((confirmed / capacity) * 100);
+
+  const sortedAgenda = [...agenda].sort((a, b) => {
+    const v = a.dateStart.localeCompare(b.dateStart);
+    return agendaSortDir === "asc" ? v : -v;
+  });
 
   async function saveSeminar() {
     if (!semEdit) return;
@@ -278,12 +284,24 @@ export default function EvenementsAdminPage() {
       <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#e2dac9]">
           <h2 className="font-[var(--font-cormorant)] font-semibold text-[20px] text-[#232a20]">Programme</h2>
-          <button
-            onClick={openNewAgenda}
-            className="font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#b58a3c] hover:text-[#9e7832] transition-colors"
-          >
-            + Ajouter un créneau
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setAgendaSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+              className="flex items-center gap-1.5 font-[var(--font-hanken)] text-[12.5px] font-medium text-[#6f7363] hover:text-[#3f463a] transition-colors"
+              title="Inverser l'ordre des créneaux"
+            >
+              <span>{agendaSortDir === "asc" ? "Plus proche → plus lointain" : "Plus lointain → plus proche"}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform ${agendaSortDir === "desc" ? "rotate-180" : ""}`}>
+                <path d="M12 5v14M5 12l7 7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={openNewAgenda}
+              className="font-[var(--font-hanken)] text-[12.5px] font-semibold text-[#b58a3c] hover:text-[#9e7832] transition-colors"
+            >
+              + Ajouter un créneau
+            </button>
+          </div>
         </div>
         {loading ? (
           <ul className="divide-y divide-[#f0ece3]">
@@ -305,7 +323,7 @@ export default function EvenementsAdminPage() {
           </div>
         ) : (
           <ul className="divide-y divide-[#f0ece3]">
-            {agenda.map((item) => {
+            {sortedAgenda.map((item) => {
               const status = computeAgendaStatus(item);
               const isLive = status === "live";
               return (

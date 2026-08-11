@@ -121,6 +121,7 @@ export default function EnseignementsPage() {
 
   const [publishFilter, setPublishFilter] = useState<"all" | "published" | "draft">("all");
   const [collapsedSeries, setCollapsedSeries] = useState<Set<string>>(new Set());
+  const [episodeSortDir, setEpisodeSortDir] = useState<"asc" | "desc">("asc");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<Teaching | null>(null);
   const [isNew, setIsNew] = useState(false);
@@ -214,10 +215,15 @@ export default function EnseignementsPage() {
         }
         const sections = Array.from(bySeries.entries()).map(([seriesId, episodes]) => {
           const sortedEpisodes = [...episodes].sort((a, b) => {
-            if (a.episodeNumber != null && b.episodeNumber != null) return a.episodeNumber - b.episodeNumber;
-            if (a.episodeNumber != null) return -1;
-            if (b.episodeNumber != null) return 1;
-            return a.publishedAt.localeCompare(b.publishedAt);
+            const v =
+              a.episodeNumber != null && b.episodeNumber != null
+                ? a.episodeNumber - b.episodeNumber
+                : a.episodeNumber != null
+                  ? -1
+                  : b.episodeNumber != null
+                    ? 1
+                    : a.publishedAt.localeCompare(b.publishedAt);
+            return episodeSortDir === "asc" ? v : -v;
           });
           const mostRecent = episodes.reduce((max, t) => (t.publishedAt > max ? t.publishedAt : max), episodes[0].publishedAt);
           return {
@@ -365,6 +371,21 @@ export default function EnseignementsPage() {
           />
         </div>
       </div>
+
+      {groupedSections && (
+        <div className="flex justify-end mb-3">
+          <button
+            onClick={() => setEpisodeSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+            className="flex items-center gap-1.5 font-[var(--font-hanken)] text-[12.5px] font-medium text-[#6f7363] hover:text-[#3f463a] transition-colors"
+            title="Inverser l'ordre des épisodes dans chaque série"
+          >
+            <span>Épisodes : {episodeSortDir === "asc" ? "1 → dernier" : "dernier → 1"}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform ${episodeSortDir === "desc" ? "rotate-180" : ""}`}>
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Tableau */}
       <div className="bg-[#fbf9f3] border border-[#e2dac9] rounded-[12px] overflow-hidden">

@@ -8,6 +8,7 @@ import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import TeachingPlayer from "@/components/bibliotheque/TeachingPlayer";
 import SeriesProgress from "@/components/bibliotheque/SeriesProgress";
+import SeriesEpisodesList from "@/components/bibliotheque/SeriesEpisodesList";
 import ShareButtons from "@/components/bibliotheque/ShareButtons";
 import ContentCard from "@/components/ui/ContentCard";
 import Badge from "@/components/ui/Badge";
@@ -259,39 +260,7 @@ export default async function TeachingDetailPage({
 
                   <SeriesProgress episodes={seriesEpisodes} lang={lang} />
 
-                  {/* Liste des épisodes */}
-                  <ul className="divide-y divide-[#e2dac9] dark:divide-[#3a4132]">
-                    {seriesEpisodes.map((ep) => {
-                      const isCurrent = ep.id === teaching.id;
-                      return (
-                        <li key={ep.id}>
-                          <Link
-                            href={`/bibliotheque/${ep.id}`}
-                            className={`flex items-center gap-3 px-5 py-3.5 transition-colors ${
-                              isCurrent
-                                ? "bg-[rgba(181,138,60,0.08)] dark:bg-[rgba(205,163,80,0.14)] border-l-2 border-[#b58a3c]"
-                                : "hover:bg-[#f5f0e8] dark:hover:bg-[rgba(255,255,255,0.04)]"
-                            }`}
-                          >
-                            <span className={`font-[var(--font-cormorant)] text-[22px] font-semibold shrink-0 ${isCurrent ? "text-[#7d5f26] dark:text-[#e3c685]" : "text-[#d8d0bf] dark:text-[#4a5240]"}`}>
-                              {ep.episodeNumber}
-                            </span>
-                            <div className="min-w-0">
-                              <p className={`font-[var(--font-hanken)] text-[13px] font-medium leading-snug line-clamp-2 ${isCurrent ? "text-[#232a20] dark:text-[#f2ede0]" : "text-[#6f7363] dark:text-[#b7b2a0]"}`}>
-                                {getTeachingTitle(ep, lang)}
-                              </p>
-                              <p className="font-[var(--font-hanken)] text-[11px] text-[#6f7363] dark:text-[#8f8973] mt-0.5">
-                                {ep.duration}
-                              </p>
-                            </div>
-                            {isCurrent && (
-                              <span className="ml-auto shrink-0 w-2 h-2 rounded-full bg-[#b58a3c]" />
-                            )}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <SeriesEpisodesList episodes={seriesEpisodes} currentTeachingId={teaching.id} lang={lang} />
                 </div>
               )}
 
