@@ -63,7 +63,7 @@ export default async function DashboardPage() {
     {
       label: "Vues plateforme",
       value: teachings.reduce((s, t) => s + t.platformViews, 0).toLocaleString("fr-FR"),
-      sub: "Lectures démarrées sur abu-maryam.tv",
+      sub: "Lectures démarrées sur abou-maryam.com",
       href: "/admin/enseignements",
       color: "#7d5f26",
       icon: (

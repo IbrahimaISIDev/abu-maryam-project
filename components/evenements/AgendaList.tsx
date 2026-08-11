@@ -176,25 +176,28 @@ export default function AgendaList({
             {/* Vidéos rattachées à cet événement */}
             {preview.length > 0 && (
               <div className="mt-5 pt-5 border-t border-[#e2dac9] dark:border-[#3a4132]">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="font-[var(--font-hanken)] text-[12px] font-semibold uppercase tracking-widest text-[#7d5f26] dark:text-[#e3c685]">
-                    {lang === "ar" ? "فيديوهات هذا الحدث" : "Vidéos de cet événement"}
-                  </p>
-                  {eventTeachings.length > preview.length && (
-                    <Link
-                      href={`/bibliotheque?event=${item.id}`}
-                      className="font-[var(--font-hanken)] text-[12.5px] font-medium text-[#7d5f26] dark:text-[#e3c685] hover:text-[#9e7832] dark:hover:text-[#cda350] underline underline-offset-4 transition-colors"
-                    >
-                      {lang === "ar" ? "عرض الكل ←" : "Voir tout →"}
-                    </Link>
-                  )}
-                </div>
+                <p className="font-[var(--font-hanken)] text-[12px] font-semibold uppercase tracking-widest text-[#7d5f26] dark:text-[#e3c685] mb-3">
+                  {lang === "ar" ? "فيديوهات هذا الحدث" : "Vidéos de cet événement"}
+                </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                   {preview.map((t) => (
                     <Link key={t.id} href={`/bibliotheque/${t.id}`} className="block">
                       <ContentCard teaching={t} lang={lang} />
                     </Link>
                   ))}
+                  {eventTeachings.length > preview.length && (
+                    <Link
+                      href={`/bibliotheque?event=${item.id}`}
+                      className="flex flex-col items-center justify-center gap-1.5 h-[148px] rounded-[9px] border border-dashed border-[#d8d0bf] dark:border-[#454c3c] text-[#7d5f26] dark:text-[#e3c685] hover:border-[#b58a3c] hover:bg-[rgba(181,138,60,0.05)] transition-colors"
+                    >
+                      <span className="font-[var(--font-cormorant)] font-semibold text-[28px] leading-none">
+                        +{eventTeachings.length - preview.length}
+                      </span>
+                      <span className="font-[var(--font-hanken)] text-[12px] font-medium">
+                        {lang === "ar" ? "عرض الكل ←" : "Voir tout →"}
+                      </span>
+                    </Link>
+                  )}
                 </div>
               </div>
             )}

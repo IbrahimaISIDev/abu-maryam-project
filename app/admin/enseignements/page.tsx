@@ -431,7 +431,7 @@ export default function EnseignementsPage() {
               <th onClick={() => handleSort("language")} className={`${thClass} hidden xl:table-cell`}>
                 Langue <SortIcon active={sortKey === "language"} dir={sortDir} />
               </th>
-              <th onClick={() => handleSort("platformViews")} className={`${thClass} hidden xl:table-cell`} title="Lectures démarrées sur abu-maryam.tv, tout type de contenu confondu">
+              <th onClick={() => handleSort("platformViews")} className={`${thClass} hidden xl:table-cell`} title="Lectures démarrées sur abou-maryam.com, tout type de contenu confondu">
                 Vues <SortIcon active={sortKey === "platformViews"} dir={sortDir} />
               </th>
               <th className="text-right px-5 py-3 font-[var(--font-hanken)] text-[11px] font-semibold text-[#9a9483] uppercase tracking-wider">Actions</th>
