@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { seminars } from "@/lib/db/schema";
 import { hasValidAdminSession } from "@/lib/adminAuth";
+import { toSeminar } from "@/lib/db/queries";
 
 const seminarUpdateSchema = z.object({
   title: z.string().min(1).optional(),
@@ -19,7 +20,7 @@ export async function GET() {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
   const [row] = await db.select().from(seminars).limit(1);
-  return NextResponse.json({ seminar: row ?? null });
+  return NextResponse.json({ seminar: row ? toSeminar(row) : null });
 }
 
 export async function PUT(req: Request) {
@@ -50,5 +51,5 @@ export async function PUT(req: Request) {
     .where(eq(seminars.id, current.id))
     .returning();
 
-  return NextResponse.json({ seminar: updated });
+  return NextResponse.json({ seminar: toSeminar(updated) });
 }

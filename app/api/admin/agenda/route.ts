@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db/client";
 import { agendaItems } from "@/lib/db/schema";
 import { hasValidAdminSession } from "@/lib/adminAuth";
-import { asc } from "drizzle-orm";
+import { getAgendaItems, toAgendaItem } from "@/lib/db/queries";
 
 const agendaSchema = z.object({
   type: z.enum(["séminaire", "conférence", "khoutba", "cours", "tafsir"]),
@@ -23,7 +23,7 @@ export async function GET() {
   if (!(await hasValidAdminSession())) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
-  const items = await db.select().from(agendaItems).orderBy(asc(agendaItems.dateStart));
+  const items = await getAgendaItems();
   return NextResponse.json({ agendaItems: items });
 }
 
@@ -47,5 +47,5 @@ export async function POST(req: Request) {
   const id = `a-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   const [created] = await db.insert(agendaItems).values({ id, ...parsed.data }).returning();
 
-  return NextResponse.json({ agendaItem: created }, { status: 201 });
+  return NextResponse.json({ agendaItem: toAgendaItem(created) }, { status: 201 });
 }

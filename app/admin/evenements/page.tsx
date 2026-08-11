@@ -428,11 +428,19 @@ export default function EvenementsAdminPage() {
                 </select>
               </div>
               <div>
-                <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">Date</label>
+                <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">Date de début</label>
                 <input type="date" value={editAgenda.dateStart} onChange={(e) => setEditAgenda({ ...editAgenda, dateStart: e.target.value })}
                   className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]"
                 />
               </div>
+            </div>
+            <div>
+              <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">
+                Date de fin (optionnel — pour un événement sur plusieurs jours)
+              </label>
+              <input type="date" value={editAgenda.dateEnd ?? ""} onChange={(e) => setEditAgenda({ ...editAgenda, dateEnd: e.target.value || null })}
+                className="w-full px-3.5 py-2.5 bg-[#f5f1e8] border border-[#d8d0bf] rounded-[9px] font-[var(--font-hanken)] text-[13.5px] text-[#232a20] focus:outline-none focus:border-[#b58a3c]"
+              />
             </div>
             <div>
               <label className="block font-[var(--font-hanken)] text-[12px] font-semibold text-[#9a9483] uppercase tracking-wider mb-1.5">Lieu</label>

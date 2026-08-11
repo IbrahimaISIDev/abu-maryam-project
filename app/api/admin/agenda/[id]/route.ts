@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { agendaItems } from "@/lib/db/schema";
 import { hasValidAdminSession } from "@/lib/adminAuth";
+import { toAgendaItem } from "@/lib/db/queries";
 
 const agendaUpdateSchema = z.object({
   type: z.enum(["séminaire", "conférence", "khoutba", "cours", "tafsir"]).optional(),
@@ -47,7 +48,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Activité introuvable" }, { status: 404 });
   }
 
-  return NextResponse.json({ agendaItem: updated });
+  return NextResponse.json({ agendaItem: toAgendaItem(updated) });
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {

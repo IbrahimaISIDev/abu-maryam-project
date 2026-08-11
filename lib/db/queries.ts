@@ -49,7 +49,7 @@ function toSeries(row: typeof series.$inferSelect): Series {
   };
 }
 
-function toAgendaItem(row: typeof agendaItems.$inferSelect): AgendaItem {
+export function toAgendaItem(row: typeof agendaItems.$inferSelect): AgendaItem {
   return {
     id: row.id,
     type: row.type,
@@ -88,7 +88,7 @@ function minutesSince(iso: string | null): number | null {
   return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000));
 }
 
-function toSeminar(row: typeof seminars.$inferSelect): Seminar {
+export function toSeminar(row: typeof seminars.$inferSelect): Seminar {
   return {
     id: row.id,
     arabicVerse: row.arabicVerse,
