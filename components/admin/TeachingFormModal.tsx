@@ -87,7 +87,10 @@ export default function TeachingFormModal({
       });
       setResolvedTitle(data.title);
       if (!data.durationAvailable) {
-        toast("Vidéo trouvée — durée non récupérée (clé API YouTube absente), à saisir manuellement", "info");
+        toast(
+          "Vidéo trouvée — durée pas encore disponible (fréquent juste après un direct, le temps que YouTube finisse de traiter la vidéo). Pas de souci pour enregistrer maintenant : la durée se corrigera automatiquement à la première lecture, ou réessaie \"Récupérer les infos\" plus tard.",
+          "info"
+        );
       } else {
         toast("Informations récupérées", "success");
       }

@@ -6,6 +6,7 @@ import { YOUTUBE_IFRAME_API_SRC } from "@/lib/youtube";
 interface YTPlayerInstance {
   seekTo(seconds: number, allowSeekAhead: boolean): void;
   getCurrentTime(): number;
+  getDuration(): number;
   playVideo(): void;
   pauseVideo(): void;
   setVolume(volume: number): void;
@@ -134,6 +135,10 @@ export function useYoutubePlayer({ videoId, onStateChange, onError, onReady }: U
     return playerRef.current?.getCurrentTime() ?? 0;
   }, []);
 
+  const getDuration = useCallback((): number => {
+    return playerRef.current?.getDuration() ?? 0;
+  }, []);
+
   const playVideo = useCallback(() => playerRef.current?.playVideo(), []);
   const pauseVideo = useCallback(() => playerRef.current?.pauseVideo(), []);
 
@@ -156,6 +161,7 @@ export function useYoutubePlayer({ videoId, onStateChange, onError, onReady }: U
     isReady,
     seekTo,
     getCurrentTime,
+    getDuration,
     playVideo,
     pauseVideo,
     setVolume,

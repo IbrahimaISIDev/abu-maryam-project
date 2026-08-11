@@ -12,8 +12,9 @@ import type { Teaching } from "@/lib/types";
 import type { Dictionary } from "@/dictionaries/types";
 import type { Locale } from "@/lib/i18n";
 import { getChapterLabel } from "@/lib/content-i18n";
-import { buildYoutubeWatchUrl } from "@/lib/youtube";
+import { buildYoutubeWatchUrl, formatDurationString } from "@/lib/youtube";
 import { registerView } from "@/lib/viewTracking";
+import { syncDurationIfNeeded } from "@/lib/durationSync";
 
 interface TeachingPlayerProps {
   teaching: Teaching;
@@ -25,8 +26,24 @@ interface TeachingPlayerProps {
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
 
+// Même logique que formatDurationString (lib/youtube.ts) — la position affichée doit gérer les
+// heures comme la durée totale (teaching.duration), sinon on obtient "71:31" au lieu de "1:11:31"
+// pour un enseignement de plus d'une heure.
 function fmtTime(s: number): string {
-  return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  return formatDurationString(Math.max(0, s));
+}
+
+/** Progression 0-100, jamais NaN/Infinity même si la durée stockée est temporairement à 0
+ *  (en attendant l'auto-correction — voir lib/durationSync.ts). */
+function safeProgressPercent(positionSeconds: number, durationSeconds: number): number {
+  if (durationSeconds <= 0) return 0;
+  return Math.min(100, Math.max(0, (positionSeconds / durationSeconds) * 100));
+}
+
+/** Ne plafonne le saut avant que si on connaît une vraie durée — sinon +30s resterait bloqué à
+ *  0 en boucle tant que la durée stockée n'a pas été auto-corrigée. */
+function clampSeekTarget(target: number, durationSeconds: number): number {
+  return durationSeconds > 0 ? Math.min(durationSeconds, target) : Math.max(0, target);
 }
 
 function currentChapterIndexFor(teaching: Teaching, positionSeconds: number): number {
@@ -166,7 +183,7 @@ function ChapterBar({
   dict: Dictionary;
   lang: Locale;
 }) {
-  const progress = (positionSeconds / teaching.durationSeconds) * 100;
+  const progress = safeProgressPercent(positionSeconds, teaching.durationSeconds);
   return (
     <>
       <div
@@ -183,13 +200,14 @@ function ChapterBar({
           className="h-full bg-[#b58a3c] rounded-full transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
-        {teaching.chapters?.map((ch, i) => (
-          <div
-            key={i}
-            className="absolute top-1/2 -translate-y-1/2 w-[2px] h-2 bg-[rgba(251,249,243,0.6)] pointer-events-none"
-            style={{ left: `${(ch.timeSeconds / teaching.durationSeconds) * 100}%` }}
-          />
-        ))}
+        {teaching.durationSeconds > 0 &&
+          teaching.chapters?.map((ch, i) => (
+            <div
+              key={i}
+              className="absolute top-1/2 -translate-y-1/2 w-[2px] h-2 bg-[rgba(251,249,243,0.6)] pointer-events-none"
+              style={{ left: `${(ch.timeSeconds / teaching.durationSeconds) * 100}%` }}
+            />
+          ))}
         <div
           className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[#b58a3c] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
           style={{ left: `calc(${progress}% - 6px)` }}
@@ -321,7 +339,7 @@ function AudioTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
         if (isThisLoaded) seek(Math.max(0, positionSeconds - 5));
       } else if (e.code === "ArrowRight") {
         e.preventDefault();
-        if (isThisLoaded) seek(Math.min(teaching.durationSeconds, positionSeconds + 5));
+        if (isThisLoaded) seek(clampSeekTarget(positionSeconds + 5, teaching.durationSeconds));
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -330,6 +348,7 @@ function AudioTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
   }, [isThisLoaded, positionSeconds, teaching.durationSeconds]);
 
   function handleSeekClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (teaching.durationSeconds <= 0) return; // durée pas encore connue — rien à mapper
     const rect = e.currentTarget.getBoundingClientRect();
     const ratio = (e.clientX - rect.left) / rect.width;
     const newPos = Math.floor(ratio * teaching.durationSeconds);
@@ -444,7 +463,7 @@ function AudioTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
 
           <button type="button"
             onClick={() =>
-              isThisLoaded ? seek(Math.min(teaching.durationSeconds, positionSeconds + 30)) : play(teaching, 0)
+              isThisLoaded ? seek(clampSeekTarget(positionSeconds + 30, teaching.durationSeconds)) : play(teaching, 0)
             }
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
             aria-label={dict.live.forwardAria}
@@ -520,6 +539,10 @@ function VideoTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
       playerRef.current?.seekTo(initialTimestamp);
       setPositionSeconds(initialTimestamp);
     }
+    // Auto-correction de la durée dès que le lecteur (YouTube ou natif) connaît la vraie —
+    // voir lib/durationSync.ts. N'écrit que si elle diffère vraiment de celle stockée.
+    const realDuration = playerRef.current?.getDuration() ?? 0;
+    if (realDuration > 0) syncDurationIfNeeded(teaching.id, teaching.durationSeconds, realDuration);
   }
 
   // Filet de sécurité : un ID mal formé ne déclenche parfois ni onReady ni
@@ -596,7 +619,7 @@ function VideoTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
         seekAndDisplay(Math.max(0, positionSeconds - 5));
       } else if (e.code === "ArrowRight") {
         e.preventDefault();
-        seekAndDisplay(Math.min(teaching.durationSeconds, positionSeconds + 5));
+        seekAndDisplay(clampSeekTarget(positionSeconds + 5, teaching.durationSeconds));
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -605,6 +628,7 @@ function VideoTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
   }, [isPlaying, positionSeconds, teaching.durationSeconds]);
 
   function handleSeekClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (teaching.durationSeconds <= 0) return; // durée pas encore connue — rien à mapper
     const rect = e.currentTarget.getBoundingClientRect();
     const ratio = (e.clientX - rect.left) / rect.width;
     seekAndDisplay(Math.floor(ratio * teaching.durationSeconds));
@@ -712,7 +736,7 @@ function VideoTeachingPlayer({ teaching, dict, lang, seriesEpisodes, relatedTeac
           </button>
 
           <button type="button"
-            onClick={() => seekAndDisplay(Math.min(teaching.durationSeconds, positionSeconds + 30))}
+            onClick={() => seekAndDisplay(clampSeekTarget(positionSeconds + 30, teaching.durationSeconds))}
             className="text-[rgba(251,249,243,0.6)] hover:text-[#fbf9f3] transition-colors text-[12px] font-[var(--font-hanken)]"
             aria-label={dict.live.forwardAria}
             dir="ltr"

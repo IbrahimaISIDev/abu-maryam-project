@@ -321,7 +321,18 @@ export default function EnseignementsPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363]">{THEME_LABELS[t.theme] ?? t.theme}</td>
-                <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] tabular-nums text-[#6f7363]">{t.duration}</td>
+                <td className="px-4 py-3.5 hidden lg:table-cell font-[var(--font-hanken)] text-[13px] tabular-nums text-[#6f7363]">
+                  {t.durationSeconds > 0 ? (
+                    t.duration
+                  ) : (
+                    <span
+                      className="inline-flex items-center gap-1 text-[#b58a3c]"
+                      title="Durée pas encore connue — se corrigera automatiquement à la première lecture, ou clique Modifier → Récupérer les infos"
+                    >
+                      ⚠ {t.duration || "0:00"}
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3.5 hidden xl:table-cell font-[var(--font-hanken)] text-[13px] text-[#6f7363] capitalize">{t.language}</td>
                 <td className="px-5 py-3.5 text-right">
                   <div className="flex items-center justify-end gap-1.5">

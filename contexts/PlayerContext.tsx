@@ -12,6 +12,7 @@ import {
 import type { Teaching, PlayerState } from "@/lib/types";
 import { useProgress } from "@/hooks/useProgress";
 import { useVolume } from "@/hooks/useVolume";
+import { syncDurationIfNeeded } from "@/lib/durationSync";
 
 interface PlayerContextValue {
   state: PlayerState;
@@ -126,14 +127,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       if (!audio || !audio.src) return; // pas de source assignée pour l'instant, pas une vraie erreur
       setState((prev) => ({ ...prev, isPlaying: false, hasError: true }));
     }
+    // Auto-correction de la durée dès que le fichier audio charge réellement — voir
+    // lib/durationSync.ts. Couvre le cas d'une durée manquante ou fausse, sans action admin.
+    function handleLoadedMetadata() {
+      const teaching = state.teaching;
+      if (!teaching || !audio) return;
+      syncDurationIfNeeded(teaching.id, teaching.durationSeconds, audio.duration);
+    }
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", handleError);
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
     };
   }, [state.teaching, updateProgress]);
 
@@ -154,9 +164,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     navigator.mediaSession.setActionHandler("play", resume);
     navigator.mediaSession.setActionHandler("pause", pause);
     navigator.mediaSession.setActionHandler("seekbackward", () => seek(Math.max(0, state.positionSeconds - 15)));
-    navigator.mediaSession.setActionHandler("seekforward", () =>
-      seek(Math.min(teaching.durationSeconds, state.positionSeconds + 30))
-    );
+    navigator.mediaSession.setActionHandler("seekforward", () => {
+      // Ne plafonne que si on connaît une vraie durée (>0) — sinon +30s resterait bloqué à 0
+      // tant que la durée stockée n'a pas été auto-corrigée par la lecture réelle.
+      const target = state.positionSeconds + 30;
+      seek(teaching.durationSeconds > 0 ? Math.min(teaching.durationSeconds, target) : target);
+    });
     navigator.mediaSession.setActionHandler("seekto", (details) => {
       if (typeof details.seekTime === "number") seek(details.seekTime);
     });

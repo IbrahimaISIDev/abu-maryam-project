@@ -28,6 +28,7 @@ const NativeVideoPlayer = forwardRef<NativeVideoPlayerHandle, NativeVideoPlayerP
         if (videoRef.current) videoRef.current.currentTime = seconds;
       },
       getCurrentTime: () => videoRef.current?.currentTime ?? 0,
+      getDuration: () => videoRef.current?.duration ?? 0,
       play: () => {
         videoRef.current?.play().catch(() => {});
       },

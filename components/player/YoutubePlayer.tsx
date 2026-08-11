@@ -6,6 +6,7 @@ import { useYoutubePlayer } from "@/hooks/useYoutubePlayer";
 export interface YoutubePlayerHandle {
   seekTo: (seconds: number) => void;
   getCurrentTime: () => number;
+  getDuration: () => number;
   play: () => void;
   pause: () => void;
   setVolume: (volume: number) => void;
@@ -29,6 +30,7 @@ const YoutubePlayer = forwardRef<YoutubePlayerHandle, YoutubePlayerProps>(functi
     containerRef,
     seekTo,
     getCurrentTime,
+    getDuration,
     playVideo,
     pauseVideo,
     setVolume,
@@ -38,8 +40,8 @@ const YoutubePlayer = forwardRef<YoutubePlayerHandle, YoutubePlayerProps>(functi
 
   useImperativeHandle(
     ref,
-    () => ({ seekTo, getCurrentTime, play: playVideo, pause: pauseVideo, setVolume, setMuted, setPlaybackRate }),
-    [seekTo, getCurrentTime, playVideo, pauseVideo, setVolume, setMuted, setPlaybackRate]
+    () => ({ seekTo, getCurrentTime, getDuration, play: playVideo, pause: pauseVideo, setVolume, setMuted, setPlaybackRate }),
+    [seekTo, getCurrentTime, getDuration, playVideo, pauseVideo, setVolume, setMuted, setPlaybackRate]
   );
 
   return <div ref={containerRef} className={className} />;

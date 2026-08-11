@@ -90,7 +90,14 @@ export interface YoutubeDurationResult {
   durationSeconds: number;
 }
 
-/** Nécessite YOUTUBE_API_KEY — retourne null si la vidéo est introuvable ou la clé absente. */
+/**
+ * Nécessite YOUTUBE_API_KEY — retourne null si la vidéo est introuvable, la clé absente, ou la
+ * durée pas encore disponible. Cas fréquent juste après un direct : YouTube renvoie une durée
+ * à "PT0S" (ou "P0D", hors du format PT.. donc non reconnu par parseIsoDuration) tant qu'il n'a
+ * pas fini de traiter la vidéo — on traite ce cas comme "pas encore disponible" plutôt que
+ * d'enregistrer silencieusement une durée de 0, qui casse la barre de progression et les
+ * boutons de saut côté lecteur (voir components/bibliotheque/TeachingPlayer.tsx).
+ */
 export async function fetchYoutubeDuration(id: string): Promise<YoutubeDurationResult | null> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) return null;
@@ -103,6 +110,7 @@ export async function fetchYoutubeDuration(id: string): Promise<YoutubeDurationR
   if (!iso) return null;
 
   const durationSeconds = parseIsoDuration(iso);
+  if (durationSeconds <= 0) return null;
   return { duration: formatDurationString(durationSeconds), durationSeconds };
 }
 

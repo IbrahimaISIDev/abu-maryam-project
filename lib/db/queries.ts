@@ -8,6 +8,7 @@ import {
   computeLiveCheckRevalidateSeconds,
   buildYoutubeWatchUrl,
   fetchYoutubeViewCount,
+  formatDurationString,
 } from "@/lib/youtube";
 
 function toTeaching(row: typeof teachings.$inferSelect): Teaching {
@@ -178,6 +179,28 @@ export async function syncYoutubeViewCount(id: string, youtubeId: string, curren
   if (fresh === null || fresh === currentViews) return currentViews;
   await db.update(teachings).set({ views: fresh }).where(eq(teachings.id, id));
   return fresh;
+}
+
+/**
+ * Auto-correction de la durée depuis la vraie source : le lecteur (YouTube ou natif) connaît
+ * la durée réelle dès qu'un média charge, que ce soit un enseignement fraîchement créé sans
+ * durée connue (ex. juste après un direct, avant que YouTube ait fini de traiter la vidéo) ou
+ * une saisie manuelle erronée. Appelé à chaque lecture réelle (voir lib/durationSync.ts) —
+ * silencieux, n'écrit que si l'écart dépasse 2s pour ne pas générer d'écriture à chaque lecture
+ * une fois la valeur correcte. Borné à 24h pour ignorer une valeur aberrante côté client.
+ */
+export async function syncTeachingDuration(id: string, realDurationSeconds: number): Promise<void> {
+  if (!Number.isFinite(realDurationSeconds) || realDurationSeconds <= 0 || realDurationSeconds > 24 * 3600) return;
+  const [row] = await db.select({ durationSeconds: teachings.durationSeconds }).from(teachings).where(eq(teachings.id, id));
+  if (!row) return;
+
+  const rounded = Math.round(realDurationSeconds);
+  if (Math.abs(rounded - row.durationSeconds) < 2) return;
+
+  await db
+    .update(teachings)
+    .set({ duration: formatDurationString(rounded), durationSeconds: rounded })
+    .where(eq(teachings.id, id));
 }
 
 export const getSeriesEpisodes = cache(async (seriesId: string): Promise<Teaching[]> => {
