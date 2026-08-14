@@ -46,8 +46,8 @@ const fr: Dictionary = {
   },
   home: {
     liveBadge: "En direct chaque vendredi · Khoutba",
-    heroTitleLine1: "Le savoir qui élève",
-    heroTitleLine2: "les cœurs vers Allah",
+    heroTitleLine1: "Le savoir élève une maison qui n'a pas de piliers,",
+    heroTitleLine2: "et l'ignorance détruit la maison de la gloire et de l'honneur.",
     heroParagraph:
       "Suivez les cours, conférences et sermons d'Oustaz Niang Mbaye (H.A) — le Qur'an et la Sunna selon la compréhension des Sahaba, accessibles à votre rythme.",
     watchLive: "Regarder le live",

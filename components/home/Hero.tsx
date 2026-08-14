@@ -2,8 +2,10 @@ import Link from "@/components/ui/LocalizedLink";
 import Image from "next/image";
 import LiveDot from "@/components/ui/LiveDot";
 import type { Dictionary } from "@/dictionaries/types";
+import type { Locale } from "@/lib/i18n";
 
-export default function Hero({ dict }: { dict: Dictionary["home"] }) {
+export default function Hero({ dict, lang }: { dict: Dictionary["home"]; lang: Locale }) {
+  const isArabic = lang === "ar";
   return (
     <section className="relative min-h-[400px] md:min-h-[560px] overflow-hidden">
       {/* Image de fond */}
@@ -40,13 +42,14 @@ export default function Hero({ dict }: { dict: Dictionary["home"] }) {
             </span>
           </div>
 
-          {/* Verset arabe */}
-          <p className="arabic text-[#cda350] text-[20px] md:text-[23px] mb-4 rtl:text-right ltr:text-left">
-            العلم نورٌ يهدي القلوب
-          </p>
-
           {/* Titre H1 */}
-          <h1 className="font-[var(--font-cormorant)] font-semibold text-[33px] md:text-[62px] leading-[1.05] text-[#fbf9f3] mb-4 md:mb-5">
+          <h1
+            className={
+              isArabic
+                ? "arabic font-[var(--font-amiri)] font-semibold text-[28px] md:text-[44px] leading-[1.5] text-[#fbf9f3] mb-4 md:mb-5"
+                : "font-[var(--font-cormorant)] font-semibold text-[26px] md:text-[42px] leading-[1.2] text-[#fbf9f3] mb-4 md:mb-5"
+            }
+          >
             {dict.heroTitleLine1}<br className="hidden md:block" /> {dict.heroTitleLine2}
           </h1>
 

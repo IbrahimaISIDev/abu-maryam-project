@@ -32,7 +32,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: Loc
       <MobileHeader />
 
       <main id="main-content" className="pb-20 md:pb-0">
-        <Hero dict={dict.home} />
+        <Hero dict={dict.home} lang={lang} />
 
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 space-y-12 md:space-y-14 py-10 md:py-14">
           {showDailyVerse && <DailyVerseWidget />}
